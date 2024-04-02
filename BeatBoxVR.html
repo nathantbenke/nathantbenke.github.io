@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/uikit.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/uikit.js"></script>
+    <script src="js/uikit-icons.js"></script>
+
+    <title>BeatBoxVR</title>
+</head>
+
+
+<body>
+    <!-- Navigation Bar -->
+        <nav class="uk-navbar-container uk-margin-small-left uk-margin-small-right uk-visible@m uk-margin-xlarge-left uk-margin-xlarge-right" uk-navbar uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
+        
+        <div class="uk-navbar-left">
+            <a href="./" class="uk-navbar-item uk-logo uk-light">NathanThomas-Benke.</a>
+        </div>
+    
+        <div class="uk-navbar-right">
+    
+            <ul class="uk-navbar-nav uk-light">
+                <!--<li><a class="uk-button-text uk-text-capitalize" href="./#about" uk-scroll>About</a></li>
+                 <li><a class="uk-button-text uk-text-capitalize" href="./index.html#projects" uk-scroll>Projects</a></li>
+                <li><a class="uk-button-text uk-text-capitalize" href="./index.html#games" uk-scroll>My Games</a></li> -->
+                <li><a class="uk-button-text uk-text-capitalize" href="mailto:thomasbenke@wisc.edu" uk-scroll>Contact</a></li>
+    
+            </ul>
+        </div>
+    </nav>
+    <!-- Navigation Bar Ends  -->
+    
+    <!-- Navigation Bar Mobile -->
+    <nav class="uk-navbar-container uk-margin-small-left uk-margin-small-right uk-hidden@m uk-margin-xlarge-left uk-margin-xlarge-right" uk-navbar uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
+    
+        <div class="uk-navbar-left">
+            <a href="./" class="uk-navbar-item uk-logo uk-light">NathanThomas-Benke.</a>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav uk-light">
+                <li><button uk-toggle="target: #offcanvas-nav" type="button" uk-navbar-toggle-icon></button></li>
+            </ul>
+    
+        </div>
+    </nav>
+    
+    <!-- Change This -->
+    <div id="offcanvas-nav" uk-offcanvas="overlay: true">
+        <div class="uk-offcanvas-bar uk-flex uk-flex-column">
+            <ul class="uk-nav uk-nav-primary uk-nav-center uk-margin-auto-vertical">
+                <li class="uk-active"><a href="./" uk-scroll>Home</a></li>
+           <!---<li class="uk-active"><a href="./i" uk-scroll>About</a></li>
+                <li class="uk-active"><a href="./index.html/#projects" uk-scroll>Projects</a></li>
+                <li class="uk-active"><a href="./#games" uk-scroll>My Games</a></li> -->
+                <li class="uk-active"><a href="mailto:thomasbenke@wisc.edu">Contact</a></li> <!--- change to ur email-->
+            </ul>
+        </div>
+    </div>
+    <!-- Navigation Bar Mobile Ends -->
