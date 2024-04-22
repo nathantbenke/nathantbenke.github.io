@@ -214,62 +214,125 @@
             Timeline
         </h2>
         <h3 class="uk-margin-xlarge-left uk-margin-remove-top uk-margin-remove-bottom uk-light">
-           Concept Exploration
+           Recording Studio Environment
         </h3>
         <h5 class="uk-margin-xlarge-left uk-margin-remove-top uk-margin-remove-bottom uk-light uk-margin-xlarge-right"> 
-            For this project, I worked to come up with many of them concepts used for both functionality and game flow  </h5>
-
-            <h4 class="uk-margin-xlarge-left uk-margin-remove-bottom uk-light">
-                Character Concepts </h4>
-                <h5 class="uk-margin-xlarge-left uk-margin-remove-top uk-light"> 
-                    I worked on multiple character concepts which would be used on the character cards </h5>
-                <!-- INSERT IMAGE: CHARACTER CONCEPT PAGES -->
-                <center>
-                <img src="ADuelistImages/CharacterConcepts1.jpg" width="350" height="350">
-                <img src="ADuelistImages/CharacterConcepts2.jpg" width="350" height="350">
-                <img src="ADuelistImages/CharacterConcepts3.jpg" width="350" height="350">
+            During the first weeks of the project, I spent them gathering resources and modelings assets to be used in a realistic looking
+            recording studio based off of various reference photos. My initial design later had to be scaled down due to processing issues within the headset </h5>
+        <br>
+            <center>
+            <img src="BeatBoxVRImages/RecordingStudioLARGE.png" width="700" height="500" >
+            <img src="BeatBoxVRImages/RecordingStudioSMALL.png" width="700" height="500">
             </center>
+            <details class="uk-margin-xlarge-left">
+            
+            <summary>[View Reference Images]</summary>
+            <center>  
+                <img src="BeatBoxVRImages/Environment_PrimaryReference.png" width="500" height="400">
+                <img src="BeatBoxVRImages/Environment_SecondaryReference.png" width="500" height="400">
+            </center>        
+            </details>
+        <br>
+
+        <h3 class="uk-margin-xlarge-left uk-margin-remove-top uk-margin-remove-bottom uk-light">
+            Play Along Mode
+            </h3>
+            <h5 class="uk-margin-xlarge-left uk-margin-remove-top uk-margin-remove-bottom uk-light uk-margin-xlarge-right"> 
+                After completing the recording studio, I than began working creating the Play Along mode. I was in charge of all aspects of this mode 
+                including the UI, programming, and audio </h5>
+
+
+                <h4 class="uk-margin-xlarge-left uk-margin-remove-bottom uk-light"> UI Design </h4> 
+                
+                <h5 class="uk-margin-xlarge-left uk-margin-remove-top uk-margin-remove-bottom uk-light uk-margin-xlarge-right"> 
+                    In Adobe Photoshop, I created the design of the UI to match the style of typical audio players. This ment that I would include information about each song and display
+                    it simply. </h5> <br>
+                    <center>
+                    <img src="BeatBoxVRImages/PlayAlongModeUI.png" width="600" height="400">
+                    </center>
+                    <details class="uk-margin-xlarge-left">
+            
+                        <summary>[UI Hierarchy]</summary>
+                        <center>  
+                            <img src="BeatBoxVRImages/PlayAlongHierarchy.png">
+                        </center>        
+                        </details>
+
+                    <details class="uk-margin-xlarge-left">
+                        <summary>Show PlayAlongDetailLoader and Song Details Table</summary>
+                        <center>  
+                            <img src="BeatBoxVRImages/PlayAlongDetailLoader1.png" width="500" height="400"> 
+                            <img src="BeatBoxVRImages/PlayAlongDetailLoader2.png" width="500" height="400"> 
+                            <img src="BeatBoxVRImages/PlayAlongDetailLoaderSupporting.png" width="700" height="400"> 
+                        </center>                    
+                        </details>
+
+
+                <h4 class="uk-margin-xlarge-left uk-margin-remove-bottom uk-light"> Audio Player Functionality </h4> 
+            
+                <h5 class="uk-margin-xlarge-left uk-margin-remove-top uk-margin-remove-bottom uk-light uk-margin-xlarge-right"> 
+                    In order to match that of a normal audio player, I implemented typical commands which would allow for the user to play/pause the current song while also skipping forward
+                    or backwards by 10 seconds. I also worked to implement a scrub feature so that, by pointing the ray and clicking on the lower bar it would accurately fill the bar and calculate
+                    the approximate time in which it correlated to in the current song.
+                </h5> <br>
+                    <center>
+                    <img src="BeatBoxVRImages/PlayAlongScrubFeature.png" width="600" height="400">
+                    <img src="BeatBoxVRImages/PlayAlongSkipFeature.png" width="600" height="400">
+                    </center>
+
+                    <details class="uk-margin-xlarge-left">
+                    <summary>Show PlayAlongButtonManager</summary>
+                    <center>  
+                        <img src="BeatBoxVRImages/PlayAlongButtonManager1.png" width="700" height="400"> 
+                        <img src="BeatBoxVRImages/PlayAlongButtonManager2.png" width="700" height="400"> 
+                        <img src="BeatBoxVRImages/PlayAlongButtonManager3.png" width="700" height="400"> 
+                        <img src="BeatBoxVRImages/PlayAlongButtonManager4.png" width="700" height="400"> 
+                    </center>                    
+                  </details>                    
+                
+                  <details class="uk-margin-xlarge-left">
+                  <summary>Show ScrubFeature</summary>
+                  <center>  
+                      <img src="BeatBoxVRImages/ScrubFeature.png" width="1200"> 
+                  </center>                    
+                </details>
 
             <h4 class="uk-margin-xlarge-left uk-margin-remove-bottom uk-light">
-                Playspace Concepts </h4>
+                Song Track Control </h4>
                 <h5 class="uk-margin-xlarge-left uk-margin-remove-top uk-light"> 
-                    I worked to create the early concepts for the UI  </h5>
+                    Something that I thought would be unique was to build the audio player in a way to that the user could control volume the drum and main tracks. This would allow the user
+                    to play along with the normal song, play with just the drums, or play without drums. </h5>
+
+                    <h5 class="uk-margin-xlarge-left uk-margin-remove-bottom uk-light">
+                        Song Selection </h4>
+                        <h6 class="uk-margin-xlarge-left uk-margin-remove-top uk-light"> 
+                        I attempted to pick a set of popular songs from a wide range of genres that had easy to moderatly difficult drumming parts. THen through the use of AI, I was able to
+                        break the songs down into the essential main and drum parts. </h6>
+
                 <!-- INSERT IMAGE: PLAYSPACE DRAFT PAGE-->
-                <img src="ADuelistImages/PlayspaceDraft.jpg" class="uk-margin-xlarge-left" width="400" height="400">
+                <img src="BeatBoxVRImages/TrackAdjustment.png" class="uk-margin-xlarge-left" width="700" height="400">
 
-
-
-            <h4 class="uk-margin-xlarge-left uk-margin-remove-bottom uk-light">
-                Script Drafting </h4>
-                <h5 class="uk-margin-xlarge-left uk-margin-xlarge-right uk-margin-remove-top uk-light"> 
-                    I worked on creating a script roadmap which allowed for an easier software development workflow and better cohesion for the coding team (Joseph and Nathan) </h5>
-                <!-- INSERT IMAGE: SCRIPT DRAFT DOCS-->
-                <details class="uk-margin-xlarge-left">
-                    <summary>[View Draft Scripts]</summary>
-                <center>  <img src="ADuelistImages/ScriptDraftingP1.png" width="350" height="400">
-                    <img src="ADuelistImages/ScriptDraftingP2.png" width="350" height="400">
-                </center>                    
-                  </details>
-                
-                
-
-            <h5 class="uk-margin-xlarge-left uk-light">
-                
-            </h5>
 
 
         <h3 class="uk-margin-xlarge-left uk-light">
-            UI Development
-            </h3>
+            UI Refactoring
+        </h3>
                 <h4 class="uk-margin-xlarge-left uk-margin-remove-top uk-light">
-                    Main Healthbar UI
+                    Once I had completed the Play Along mode, I worked to refactor the UI's design. Its old version was very distracting and it was hard to understand 
+                    some of the options. With the help of Jake who created additional UI components that matched the coloring and design of my Play Along UI, I worked to reapply
+                    the textures. I also remade the customization page to have shifting functionality rather than having everything on the screen at once.
                 </h4>
+
+
                 <h5 class="uk-margin-xlarge-left uk-light uk-margin-remove-top"> 
-                    I worked to create the Main UI display including the player, health, and turn display. 
+                    OLD UI Design
                 </h5>
-                <!-- INSERT IMAGE: Main Healthbar UI-->
-                <img class="uk-margin-xlarge-left" src="ADuelistImages/PhoneScreenshots/IMG_2080.PNG" width="500" height="400">
-                <img src="ADuelistImages/PhoneScreenshots/IMG_2081.PNG" width="500" height="400">
+                    <img src="BeatBoxVRImages/OldUIDesign.png" class="uk-margin-xlarge-left" width="700" height="400">
+
+
+                <h5 class="uk-margin-xlarge-left uk-light uk-margin-remove-top"> 
+                    Refactored Design
+                </h5>
 
                 <h4 class="uk-margin-xlarge-left uk-light">
                     Win Screen
