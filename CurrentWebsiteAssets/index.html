@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/uikit.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/uikit.js"></script>
+    <script src="js/uikit-icons.js"></script>
+
+    <title>Portfolio</title>
+</head>
+
+<body>
+<!-- Navigation Bar -->
+    <nav class="uk-navbar-container uk-margin-small-left uk-margin-small-right uk-visible@m uk-margin-xlarge-left uk-margin-xlarge-right" uk-navbar uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
+    
+    <div class="uk-navbar-left">
+        <a href="" class="uk-navbar-item uk-logo uk-light">NathanThomas-Benke.</a>
+    </div>
+
+    <div class="uk-navbar-right">
+
+        <ul class="uk-navbar-nav uk-light">
+            <li><a class="uk-button-text uk-text-capitalize" href="#about" uk-scroll>About</a></li>
+            <li><a class="uk-button-text uk-text-capitalize" href="#projects" uk-scroll>Projects</a></li>
+            <li><a class="uk-button-text uk-text-capitalize" href="#games" uk-scroll>My Games</a></li>
+            <li><a class="uk-button-text uk-text-capitalize" href="https://drive.google.com/uc?export=download&id=1yh8iDnCoZdgIK9v7k1a_8_1-9pdZ4SdQ" uk-scroll>Resume</a></li>
+            <li><a class="uk-button-text uk-text-capitalize" href="mailto:thomasbenke@wisc.edu:" uk-scroll>Contact</a></li>
+
+        </ul>
+    </div>
+</nav>
+<!-- Navigation Bar Ends  -->
+
+<!-- Navigation Bar Mobile -->
+<nav class="uk-navbar-container uk-margin-small-left uk-margin-small-right uk-hidden@m uk-margin-xlarge-left uk-margin-xlarge-right" uk-navbar uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
+
+    <div class="uk-navbar-left">
+        <a href="" class="uk-navbar-item uk-logo uk-light">NathanThomas-Benke.</a>
+    </div>
+    <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav uk-light">
+            <li><button uk-toggle="target: #offcanvas-nav" type="button" uk-navbar-toggle-icon></button></li>
+        </ul>
+
+    </div>
+</nav>
+
+<!-- Change This -->
+<div id="offcanvas-nav" uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar uk-flex uk-flex-column">
+        <ul class="uk-nav uk-nav-primary uk-nav-center uk-margin-auto-vertical">
+            <li class="uk-active"><a href="#" uk-scroll>Home</a></li>
+            <li class="uk-active"><a href="#about" uk-scroll>About</a></li>
+            <li class="uk-active"><a href="#projects" uk-scroll>Projects</a></li>
+            <li class="uk-active"><a href="#games" uk-scroll>My Games</a></li>
+            <li class="uk-active"><a href="https://drive.google.com/uc?export=download&id=1GxxcAmy8lHyKLl9M-bhctFhO9TH8KYgf" uk-scroll>Resume</a></li>
+            <li class="uk-active"><a href="mailto:">Contact</a></li> <!--- change to ur email-->
+        </ul>
+
+    </div>
+</div>
+
+<!-- Navigation Bar Mobile Ends -->
+<!-- Home -->
+<section class="uk-margin-small-left uk-margin-small-right uk-margin-xlarge-top uk-margin-xlarge-bottom">
+    <h1 class="uk-margin-xlarge-left uk-light uk-text-left uk-margin-xlarge-right">I'm Nathan Thomas-Benke, a Virtual and Augmented Reality MSc student at the <br> University of London, Goldsmiths.</h1>
+    <a href="#about" class="uk-margin-xlarge-left uk-text-capitalize uk-button uk-button-secondary" uk-scroll>About Me</a>
+
+
+</section>
+
+<!-- Home Ends <br> -->
+
+
+<hr class="uk-margin-xlarge-top uk-margin-xlarge-left uk-margin-xlarge-right">
+
+<!-- About Me -->
+<section id="about" class="uk-margin-small-left uk-margin-small-right uk-margin-xlarge-top uk-margin-xlarge-bottom">
+<h3 class="uk-margin-xlarge-left uk-light">About Me</h3>
+<!-- Change here to ur paragraph -->
+<p class="uk-margin-xlarge-left uk-margin-xlarge-right"> I graduated from the University of Wisconsin-Madison in 2023 with a B.S. in Computer Science and a certificate (minor) in 4D Digital Art. I've interned at Sandia National Laboratories, 3D Systems, and Quad/Graphics holding software and AR/VR development positions.
+    For more information, feel free to check out my <a href="https://drive.google.com/uc?export=download&id=1GxxcAmy8lHyKLl9M-bhctFhO9TH8KYgf">resume</a>!
+</p>
+<a href="https://www.instagram.com/nathantbenke/" class="uk-margin-xlarge-left uk-light uk-button-text" uk-icon="instagram"></a> &nbsp;
+<!--<a href="" class="uk-light uk-button-text" uk-icon="dribbble"></a> &nbsp; -->
+<a href="https://github.com/nathantbenke" class="uk-button-text uk-light" uk-icon="github"></a> &nbsp;
+<a href="https://www.linkedin.com/in/nathan-thomas-benke-a0a607192/" class=" uk-light uk-button-text" uk-icon="linkedin"></a>
+
+<!-- About Me Ends -->
+</section>
+
+<!-- Projects Section -->
+<hr class="uk-margin-xlarge-left uk-margin-xlarge-right">
+<section id="projects" class="uk-margin-small-left uk-margin-small-right uk-margin-xlarge-top uk-margin-xlarge-bottom">
+<h3 class="uk-margin-xlarge-left uk-light">Projects</h3>
+<p class="uk-margin-xlarge-left">Projects that I've been working on</p>
+
+<div class="uk-margin-xlarge-left uk-margin-xlarge-right">
+    <!-- Change all of this to ur projects -->
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4>Artillery Rocket Simulator</h4>
+        <p> A fully-built artillery/rocket simulator using a Thrustmaster T.16000M and a custom controller. The Unity-based application was created from scratch! </p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/KXMUKRciyz0">
+            <span uk-icon="icon: youtube">
+            </span> Video Demo </a>
+        <a class="uk-button-text uk-text-decoration-none" href="https://github.com/nathantbenke/Artillery-Rocket-Simulator/">
+            <span uk-icon="icon: link">
+            </span> GitHub Project </a>
+    </div>
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4>Augmented Duelists </h4>
+        <p> An AR app run through Snapchat that lets you use custom monster and action cards to do battle with another player. Equipped with custom models and animations</p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://www.youtube.com/watch?v=6_3PXCIS3cw">
+            <span uk-icon="icon: youtube">
+            </span> Video Demo </a>
+        <a class="uk-button-text uk-text-decoration-none" href="./AugmentedDuelists.html">
+            <span uk-icon="icon: link">
+            </span> Website Link </a>
+    </div>
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4>L-System Visualizer</h4>
+        <p> A Unity application which holds various L-System presets and customization capabilities that allow for the visualization 
+            and exploration of Lindenmayer systems.
+        </p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/z9MgIKpZqHU">
+            <span uk-icon="icon: youtube">
+            </span> Video Demo </a>
+        <a class="uk-button-text uk-text-decoration-none" href="https://github.com/nathantbenke/ParameterizedLSystemGenerator-Unity">
+            <span uk-icon="icon: link">
+            </span> GitHub Project </a>
+    </div>
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4> Perlin Noise/Diamond-Square Terrain Generator </h4>
+        <p> A Unity application which allows for the user to generate custom Perlin Noise or Diamond-Square terrains through the manipulation of various parameters.
+        </p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/x8m7HaC-pTg">
+            <span uk-icon="icon: youtube">
+            </span> Video Demo </a>
+            <a class="uk-button-text uk-text-decoration-none" href="https://github.com/nathantbenke/D-SqXPerlin--Terrain-Generator">
+                <span uk-icon="icon: link">
+                </span> GitHub Project </a>
+    </div>
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4>Mellow Curve</h4>
+        <p> A website application which allows the user to import sample audio files and then apply various audio effects.</p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://github.com/nathantbenke/MellowCurve">
+            <span uk-icon="icon: link">
+            </span> GitHub Project </a>
+    </div>
+</div>
+
+<br>
+</div>
+<!-- Projects Section Ends -->
+</section>
+
+
+<hr class="uk-margin-xlarge-left uk-margin-xlarge-right">
+<section id="games" class="uk-margin-small-left uk-margin-small-right uk-margin-xlarge-top uk-margin-xlarge-bottom">
+<h3 class="uk-margin-xlarge-left uk-light">My Games:</h3>
+<p class="uk-margin-xlarge-left">Here are some games that I've worked on!</p>
+
+<div class="uk-margin-xlarge-left uk-margin-xlarge-right">
+    <!-- Change all of this to ur projects -->
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4> BeatBoxVR</h4>
+        <p> 
+            A VR Drums experience that allows for the user to experience their 
+            greatest drumming fantasy! Including 3D environments with realistic audio, haptic feedback, and visual effects. 
+            <br><br>
+            Innovate UK Immersive Tech Awards 2024 -- Technical Innovation Finalist
+        </p>
+            <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/oBdALCK0mpA">
+            <span uk-icon="icon: youtube">
+            </span> Gameplay Demo </a>
+            <a class="uk-button-text uk-text-decoration-none" href="./BeatBoxVR.html">
+                <span uk-icon="icon: link">
+                </span> Website Link </a>
+    </div>
+    
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4>Valley Memoirs</h4>
+        <p> A Unity game where the players goal is to find the pages and escape before getting caught my the monster!
+        </p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/2ZSwRS6sPtg">
+            <span uk-icon="icon: youtube">
+            </span> Gameplay Trailer </a>
+        <a class="uk-button-text uk-text-decoration-none" href="https://nathantbenke.itch.io/valley-memoirs?password=goldsmiths">
+            <span uk-icon="icon: link">
+            </span> Play Here! </a>
+    </div>
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4> The Arcane Colossus</h4>
+        <p> A Unity game where the players goal is to defeat the god Helios while surviving each of his attack phases.
+        </p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://nathantbenke.itch.io/the-arcane-colossus">
+            <span uk-icon="icon: link">
+            </span> Play Here! </a>
+    </div>
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4>Origin of Humanity</h4>
+        <p> Procedurally generate your civilization!
+            <br>
+            Interact with the slider to impact the land-to-water ratio. You can hit the regenerate button for different 
+            permutations if you find a ratio you like!
+
+        </p>
+        <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/FPN-BfpsZSg">
+            <span uk-icon="icon: youtube">
+            </span> Gameplay Trailer </a>
+        <a class="uk-button-text uk-text-decoration-none" href="https://nathantbenke.itch.io/origin-of-humanity">
+            <span uk-icon="icon: link">
+            </span> Play Here! </a>
+    </div>
+     <!-- <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4> Black Friday Frenzy</h4>
+        <p> A new Unity game coming soon!
+        </p>
+       
+            <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/2ZSwRS6sPtg">
+            <span uk-icon="icon: youtube">
+            </span> Gameplay Trailer </a>
+        <a class="uk-button-text uk-text-decoration-none" href="https://nathantbenke.itch.io/valley-memoirs?password=goldsmiths">
+            <span uk-icon="icon: link">
+            </span> Play Here! </a>
+        
+    </div>   -->
+    <div class="uk-margin uk-card uk-card-secondary uk-card-body ">
+        <h4> Tomb Rush VR</h4>
+        <p> A virtual reality game where your goal is to navigate through a maze while avoiding traps to escape!
+        </p>
+            <a class="uk-button-text uk-text-decoration-none" href="https://youtu.be/lxlijfVq8zY">
+            <span uk-icon="icon: youtube">
+            </span> Gameplay Demo </a>
+            <a class="uk-button-text uk-text-decoration-none" href="https://github.com/nathantbenke/TombRushVR">
+                <span uk-icon="icon: link">
+                </span> GitHub Project </a>
+    </div>
+</div>
+</section>
+<hr class="uk-margin-xlarge-left uk-margin-xlarge-right">
+
+</body>
+</html>
