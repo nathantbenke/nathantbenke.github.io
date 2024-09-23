@@ -983,25 +983,26 @@ a:hover{
 .timeline::before {
     content: '';
     position: absolute;
-    width: 6px;
-    height: 100%;
-    background: #fff;
-    top: 0;
-    left: 50%;
-    margin-left: -3px;
-    z-index: -1;
-    box-shadow: 2px 2px 0px inset var(--primary-color), -2px -2px 0px inset transparent;
+    /*box-shadow: 2px 2px 0px inset var(--primary-color), -2px -2px 0px inset transparent;
     -webkit-box-shadow: 2px 2px 0px inset var(--primary-color), -2px -2px 0px inset transparent;
     transition-duration: .5s;
-    -webkit-transition-duration: .5s;
+    -webkit-transition-duration: .5s;*/
 }
 
 .timeline:hover::before {
-    transform: translate(-23px,-23px);
+/*    transform: translate(-23px,-23px);
     transition-duration: .5s;
-    -webkit-transition-duration: .5s;
+    -webkit-transition-duration: .5s; */
 }
 
+/* Initial styles for the timeline */
+.timeline {
+    position: relative;
+    max-width: 1200px;
+    margin: 100px auto;
+}
+
+/* Central line default state (fully drawn) */
 .timeline::after {
     content: '';
     position: absolute;
@@ -1012,75 +1013,90 @@ a:hover{
     left: 50%;
     margin-left: -3px;
     z-index: -1;
-    animation: moveline 8s linear forwards;
 }
-@keyframes moveline{
-    0%{
+
+/* Keyframes for central line animation */
+@keyframes moveline {
+    0% {
         height: 0%;
     }
-    100%{
+    100% {
         height: 100%;
     }
 }
 
 .timeline:hover::after {
-    transform: translate(35px,30px);
-    transition-duration: .5s;
-    -webkit-transition-duration: .5s;
+    animation: moveline 8s linear forwards;
 }
 
-
-
-
-
-
-
-
-
-.timeline-container{
+.timeline-container {
     padding: 10px 50px;
     position: relative;
     width: 50%;
-    animation: movedown 1s linear forwards;
-    opacity: 0;
+    opacity: 1;
+    transform: translateY(0); /* Position them as if they've been animated already */
 }
+
+/* Keyframes for the movedown animation */
 @keyframes movedown {
-    0%{
-        opacity: 1;
+    0% {
+        opacity: 0;
         transform: translateY(-30px);
     }
-    100%{
+    100% {
         opacity: 1;
-        transform: translateY(0px);
+        transform: translateY(0);
     }
-
 }
 
-.timeline-container:nth-child(1){
+/* On hover over the timeline, reset the state and apply the movedown animation */
+.timeline:hover .timeline-container {
+    opacity: 0; /* Reset opacity */
+    transform: translateY(-30px); /* Reset position */
+}
+
+/* Apply the movedown animation on hover, with delays for each container */
+.timeline:hover .timeline-container {
+    animation: movedown 1s forwards;
+    opacity: 1; /* Ensure opacity is part of the animation */
+}
+
+.timeline:hover .timeline-container:nth-child(1) {
     animation-delay: 0s;
 }
-.timeline-container:nth-child(2){
+.timeline:hover .timeline-container:nth-child(2) {
+    opacity: 0;
     animation-delay: 1s;
 }
-.timeline-container:nth-child(3){
+.timeline:hover .timeline-container:nth-child(3) {
+    opacity: 0;
     animation-delay: 2s;
 }
-.timeline-container:nth-child(4){
+.timeline:hover .timeline-container:nth-child(4) {
+    opacity: 0;
     animation-delay: 3s;
 }
-.timeline-container:nth-child(5){
+.timeline:hover .timeline-container:nth-child(5) {
+    opacity: 0;
     animation-delay: 4s;
 }
-.timeline-container:nth-child(6){
+.timeline:hover .timeline-container:nth-child(6) {
+    opacity: 0;
     animation-delay: 5s;
 }
-.timeline-container:nth-child(7){
+.timeline:hover .timeline-container:nth-child(7) {
+    opacity: 0;
     animation-delay: 6s;
 }
-.timeline-container:nth-child(8){
+.timeline:hover .timeline-container:nth-child(8) {
+    opacity: 0;
     animation-delay: 7s;
 }
 
+.timeline-container.show {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 
 .text-box{
