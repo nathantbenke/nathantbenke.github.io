@@ -638,6 +638,7 @@ a:hover{
 
 .skill-image{
     width: 71px;
+    height: 71px;
     padding: 8px;
 }
 
@@ -674,6 +675,7 @@ a:hover{
 
 .tool-image{
     width: 71px;
+    height: 71px;
     padding: 8px;
 }
 
@@ -978,6 +980,63 @@ a:hover{
     margin: 100px auto;
 }
 
+.timeline::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background: #fff;
+    top: 0;
+    left: 50%;
+    margin-left: -3px;
+    z-index: -1;
+    box-shadow: 2px 2px 0px inset var(--primary-color), -2px -2px 0px inset transparent;
+    -webkit-box-shadow: 2px 2px 0px inset var(--primary-color), -2px -2px 0px inset transparent;
+    transition-duration: .5s;
+    -webkit-transition-duration: .5s;
+}
+
+.timeline:hover::before {
+    transform: translate(-23px,-23px);
+    transition-duration: .5s;
+    -webkit-transition-duration: .5s;
+}
+
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 100%;
+    background: #fff;
+    top: 0;
+    left: 50%;
+    margin-left: -3px;
+    z-index: -1;
+    animation: moveline 8s linear forwards;
+}
+@keyframes moveline{
+    0%{
+        height: 0%;
+    }
+    100%{
+        height: 100%;
+    }
+}
+
+.timeline:hover::after {
+    transform: translate(35px,30px);
+    transition-duration: .5s;
+    -webkit-transition-duration: .5s;
+}
+
+
+
+
+
+
+
+
+
 .timeline-container{
     padding: 10px 50px;
     position: relative;
@@ -1043,16 +1102,20 @@ a:hover{
 .timeline-container img{
     position: absolute;
     width: 40px;
-    border-radius: 50%;
+    height: 40px;
+    border-radius: 15%; /* Make the image non-circular */
     right: -20px;
     top: 32px;
     z-index: 10;
+
+    background-color: #fff;
+    box-shadow: 0 0 0 10px #fff;
 }
 
 .right-container img{
     left: -20px;
 }
-
+/*
 .timeline::after {
     content: '';
     position: absolute;
@@ -1064,15 +1127,7 @@ a:hover{
     margin-left: -3px;
     z-index: -1;
     animation: moveline 8s linear forwards;
-}
-@keyframes moveline{
-    0%{
-        height: 0%;
-    }
-    100%{
-        height: 100%;
-    }
-}
+}*/
 
 
 .text-box h2 {
@@ -1108,6 +1163,10 @@ a:hover{
     left: -15px;
 }
 
+.left-container img, .right-container img{
+    background: #fff;
+}
+
 @media screen and (max-width: 600px) {
     .timeline
     {
@@ -1139,9 +1198,6 @@ a:hover{
         border-left: 0;
         left: -15px;
     }
-
-
-
 }
 
 /*--------------------------------------------------------------
