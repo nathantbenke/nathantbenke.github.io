@@ -41,6 +41,61 @@ a:hover{
     color: var(--secondary-color);
 }
 
+.outer-headings {
+}
+
+.inner-headings {
+    border: 0px solid #ddd;
+    height: 50px;
+    line-height: 50px;
+    font-size: 45px;
+    text-transform: uppercase;
+    overflow: hidden;
+}
+
+.inner-headings span {
+    position: relative;
+    color: crimson;
+    animation: roleAnimation 20s ease infinite;
+}
+@keyframes roleAnimation {
+    0%,
+    100% {
+        top: 0;
+    }
+    20% {
+        top: 0;
+    } 30% {
+        top: -50px;
+    } 35% {
+        top: -50px;
+    } 40% {
+        top: -100px;
+    } 45% {
+        top: -100px;
+    } 50% {
+        top: -150px;
+    } 55% {
+        top: -150px;
+    } 60% {
+        top: -200px;
+    } 65% {
+        top: -200px;
+    } 75% {
+        top: -250px;
+    } 80% {
+        top: -250px;
+    } 85% {
+        top: -300px;
+    } 90% {
+        top: -300px;
+    } 95% {
+        top: -350px;
+    }
+
+}
+
+
 /* Dark Mode */
 [data-bs-theme="dark"] {
     position: relative;
@@ -200,6 +255,7 @@ a:hover{
 
 .underline{
     position: relative;
+    font-weight: bold;
 }
 
 .underline::after {
