@@ -769,6 +769,12 @@ a:hover{
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 0 1px 0 rgba(144,81,227,.5), 0 0 0.5px 0.5px rgba(141,53,229,.336);
     -webkit-box-shadow: 0 0 1px 0 rgba(144,81,227,.5), 0 0 0.5px 0.5px rgba(141,53,229,.336);
+    max-width: 650px;
+    height: 785px;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .project-card .title {
@@ -866,6 +872,470 @@ a:hover{
     background-color: transparent;
     border: 1px solid var(--bg-color);
 }
+
+.project-buttons {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%); /* Centers the container properly */
+
+    display: flex; /* Enables flexbox for centering the buttons */
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center; /* Aligns buttons vertically (if needed) */
+
+    width: 90%; /* Makes the button container span most of the width of the parent */
+    padding: 10px; /* Optional padding for aesthetics */
+}
+
+.project-buttons button {
+    flex: 1; /* Makes buttons stretch to take up equal space */
+    margin: 0 10px; /* Adds space between buttons */
+    padding: 15px 0; /* Ensures buttons have enough vertical padding */
+    text-align: center; /* Centers text inside buttons */
+    border-radius: 20px; /* Optional: Gives buttons rounded corners */
+}
+
+
+/* Carousel container */
+.carousel-container {
+    position: relative;
+    width: 1200px;
+    max-width: 100%;
+    height: 100vh;
+    padding: 20px;
+    border: 2px dashed #555;
+    box-sizing: border-box;
+}
+
+
+.carousel-component {
+    position: absolute;
+    top: 50%;
+    left:  50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 100%;
+    margin: 0 auto;
+    border: 2px solid #555;
+    box-sizing: border-box;
+    overflow:hidden;
+}
+
+input.input {
+    display: none;
+}
+
+.carousel-items {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1200px;
+    height: 1000px;
+    aspect-ratio: 16/9;
+    margin: 10px auto;
+    padding: 20px;
+    perspective: 1000px;
+}
+
+.carousel-item {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    transition: transform .7s;
+}
+
+.carousel-nav {
+    display: flex;
+    justify-content: center;
+}
+
+.dot-carousel {
+    width: 13px;
+    height: 13px;
+    margin: 10px;
+    border-radius: 10px;
+    background: #444;
+    cursor: pointer;
+}
+
+/*
+@keyframes carousel-blur {
+    from {
+        filter: blur(0);
+    }
+    to {
+        filter: blur(5px);
+    }
+    
+}
+
+@keyframes carousel-unblur {
+    from {
+        filter: blur(5px);
+    }
+    to {
+        filter: blur(0);
+    }
+}
+
+/* Project1 
+#Project1:checked ~ .carousel-nav label[for="Project1"] {
+    background: #999;
+    transform: scale(1.5);
+    cursor: default;
+}
+#Project1:checked ~ .carousel-nav label[for="Project2"],
+#Project1:checked ~ .carousel-nav label[for="Project3"],
+#Project1:checked ~ .carousel-nav label[for="Project4"],
+#Project1:checked ~ .carousel-nav label[for="Project5"] {
+    background: #444;
+    transform: scale(1);
+    cursor: pointer;
+}
+
+#Project1:checked ~ .carousel-items label[for="Project1"] {
+    animation: carousel-unblur 1s 1 forwards;
+    z-index: 3;
+    cursor: default;
+}
+#Project1:checked ~ .carousel-items label[for="Project2"],
+#Project1:checked ~ .carousel-items label[for="Project3"],
+#Project1:checked ~ .carousel-items label[for="Project4"],
+#Project1:checked ~ .carousel-items label[for="Project5"] {
+    animation: carousel-blur 1s 1 forwards;
+}
+
+#Project1:checked ~ .carousel-items label[for="Project2"] {
+    transform: translate3d(250px, 0, -100px) rotateY(-20deg);
+    z-index: 2;
+}
+#Project1:checked ~ .carousel-items label[for="Project3"] {
+    transform: translate3d(500px, 0, -200px) rotateY(-40deg);
+    z-index: 1;
+}
+#Project1:checked ~ .carousel-items label[for="Project4"] {
+    transform: translate3d(500px, 0, -200px) rotateY(40deg);
+    z-index: 1;
+}
+#Project1:checked ~ .carousel-items label[for="Project5"] {
+    transform: translate3d(-250px, 0, -100px) rotateY(20deg);
+    z-index: 2;
+}
+
+
+/* Project2 
+#Project2:checked ~ .carousel-nav label[for="Project2"] {
+    background: #999;
+    transform: scale(1.5);
+    cursor: default;
+}
+#Project2:checked ~ .carousel-nav label[for="Project1"],
+#Project2:checked ~ .carousel-nav label[for="Project3"],
+#Project2:checked ~ .carousel-nav label[for="Project4"],
+#Project2:checked ~ .carousel-nav label[for="Project5"] {
+    background: #444;
+    transform: scale(1);
+    cursor: pointer;
+}
+
+#Project2:checked ~ .carousel-items label[for="Project2"] {
+    animation: carousel-unblur 1s 1 forwards;
+    z-index: 3;
+    cursor: default;
+}
+#Project2:checked ~ .carousel-items label[for="Project1"],
+#Project2:checked ~ .carousel-items label[for="Project3"],
+#Project2:checked ~ .carousel-items label[for="Project4"],
+#Project2:checked ~ .carousel-items label[for="Project5"] {
+    animation: carousel-blur 1s 1 forwards;
+}
+
+#Project2:checked ~ .carousel-items label[for="Project3"] {
+    transform: translate3d(250px, 0, -100px) rotateY(-20deg);
+    z-index: 2;
+}
+#Project2:checked ~ .carousel-items label[for="Project4"] {
+    transform: translate3d(500px, 0, -200px) rotateY(-40deg);
+    z-index: 1;
+}
+#Project2:checked ~ .carousel-items label[for="Project5"] {
+    transform: translate3d(500px, 0, -200px) rotateY(40deg);
+    z-index: 1;
+}
+#Project2:checked ~ .carousel-items label[for="Project1"] {
+    transform: translate3d(-250px, 0, -100px) rotateY(20deg);
+    z-index: 2;
+}
+
+/* Project3 
+#Project3:checked ~ .carousel-nav label[for="Project3"] {
+    background: #999;
+    transform: scale(1.5);
+    cursor: default;
+}
+#Project3:checked ~ .carousel-nav label[for="Project1"],
+#Project3:checked ~ .carousel-nav label[for="Project2"],
+#Project3:checked ~ .carousel-nav label[for="Project4"],
+#Project3:checked ~ .carousel-nav label[for="Project5"] {
+    background: #444;
+    transform: scale(1);
+    cursor: pointer;
+}
+
+#Project3:checked ~ .carousel-items label[for="Project3"] {
+    animation: carousel-unblur 1s 1 forwards;
+    z-index: 3;
+    cursor: default;
+}
+#Project3:checked ~ .carousel-items label[for="Project1"],
+#Project3:checked ~ .carousel-items label[for="Project2"],
+#Project3:checked ~ .carousel-items label[for="Project4"],
+#Project3:checked ~ .carousel-items label[for="Project5"] {
+    animation: carousel-blur 1s 1 forwards;
+}
+
+#Project3:checked ~ .carousel-items label[for="Project4"] {
+    transform: translate3d(250px, 0, -100px) rotateY(-20deg);
+    z-index: 2;
+}
+#Project3:checked ~ .carousel-items label[for="Project5"] {
+    transform: translate3d(500px, 0, -200px) rotateY(-40deg);
+    z-index: 1;
+}
+#Project3:checked ~ .carousel-items label[for="Project1"] {
+    transform: translate3d(500px, 0, -200px) rotateY(40deg);
+    z-index: 1;
+}
+#Project3:checked ~ .carousel-items label[for="Project2"] {
+    transform: translate3d(-250px, 0, -100px) rotateY(20deg);
+    z-index: 2;
+}
+
+/* Project4 
+#Project4:checked ~ .carousel-nav label[for="Project4"] {
+    background: #999;
+    transform: scale(1.5);
+    cursor: default;
+}
+#Project4:checked ~ .carousel-nav label[for="Project1"],
+#Project4:checked ~ .carousel-nav label[for="Project2"],
+#Project4:checked ~ .carousel-nav label[for="Project3"],
+#Project4:checked ~ .carousel-nav label[for="Project5"] {
+    background: #444;
+    transform: scale(1);
+    cursor: pointer;
+}
+
+#Project4:checked ~ .carousel-items label[for="Project4"] {
+    animation: carousel-unblur 1s 1 forwards;
+    z-index: 3;
+    cursor: default;
+}
+#Project4:checked ~ .carousel-items label[for="Project1"],
+#Project4:checked ~ .carousel-items label[for="Project2"],
+#Project4:checked ~ .carousel-items label[for="Project3"],
+#Project4:checked ~ .carousel-items label[for="Project5"] {
+    animation: carousel-blur 1s 1 forwards;
+}
+
+#Project4:checked ~ .carousel-items label[for="Project5"] {
+    transform: translate3d(250px, 0, -100px) rotateY(-20deg);
+    z-index: 2;
+}
+#Project4:checked ~ .carousel-items label[for="Project1"] {
+    transform: translate3d(500px, 0, -200px) rotateY(-40deg);
+    z-index: 1;
+}
+#Project4:checked ~ .carousel-items label[for="Project2"] {
+    transform: translate3d(500px, 0, -200px) rotateY(40deg);
+    z-index: 1;
+}
+#Project4:checked ~ .carousel-items label[for="Project3"] {
+    transform: translate3d(-250px, 0, -100px) rotateY(20deg);
+    z-index: 2;
+}
+
+/* Project5 
+#Project5:checked ~ .carousel-nav label[for="Project5"] {
+    background: #999;
+    transform: scale(1.5);
+    cursor: default;
+}
+#Project5:checked ~ .carousel-nav label[for="Project1"],
+#Project5:checked ~ .carousel-nav label[for="Project2"],
+#Project5:checked ~ .carousel-nav label[for="Project3"],
+#Project5:checked ~ .carousel-nav label[for="Project4"] {
+    background: #444;
+    transform: scale(1);
+    cursor: pointer;
+}
+
+#Project5:checked ~ .carousel-items label[for="Project5"] {
+    animation: carousel-unblur 1s 1 forwards;
+    z-index: 3;
+    cursor: default;
+}
+#Project5:checked ~ .carousel-items label[for="Project1"],
+#Project5:checked ~ .carousel-items label[for="Project2"],
+#Project5:checked ~ .carousel-items label[for="Project3"],
+#Project5:checked ~ .carousel-items label[for="Project4"] {
+    animation: carousel-blur 1s 1 forwards;
+}
+
+#Project5:checked ~ .carousel-items label[for="Project1"] {
+    transform: translate3d(250px, 0, -100px) rotateY(-20deg);
+    z-index: 2;
+}
+#Project5:checked ~ .carousel-items label[for="Project2"] {
+    transform: translate3d(500px, 0, -200px) rotateY(-40deg);
+    z-index: 1;
+}
+#Project5:checked ~ .carousel-items label[for="Project3"] {
+    transform: translate3d(500px, 0, -200px) rotateY(40deg);
+    z-index: 1;
+}
+#Project5:checked ~ .carousel-items label[for="Project4"] {
+    transform: translate3d(-250px, 0, -100px) rotateY(20deg);
+    z-index: 2;
+}
+
+
+*/
+
+
+
+/* Slideshow container */
+.slideshow-container {
+    max-width: 600px;
+    position: relative;
+    margin: auto;
+    display: flex;
+    justify-content: center; /* Horizontally centers */
+    align-items: center;
+  }
+  
+  .slideshow-container img{
+    height: 350px;
+    width: 500px;
+    border-radius: 37px;
+  }
+
+    /* Hide all images by default */
+    .mySlides1, .mySlides2, .mySlides3 {
+        display: none;
+    }
+  
+  /* Next & previous buttons */
+  .prev-slide, .next-slide {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 4px;
+    color: white;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000; 
+    font-weight: bold;
+    font-size: 30px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+  }
+  
+/* Position the "next button" to the right */
+.next-slide {
+    right: 0;
+    border-radius: 3px 0 0 3px; /* Rounded corner on the left */
+}
+
+/* Position the "prev button" to the left */
+.prev-slide {
+    left: 0;
+    border-radius: 0 3px 3px 0; /* Rounded corner on the right */
+}
+  
+  /* On hover, add a black background color with a little bit see-through */
+  .prev-slide:hover, .next-slide:hover {
+    background-color: rgba(0,0,0,0.8);
+  }
+  
+  .caption-text {
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;    
+    font-size: 15px;
+    padding: 8px 12px;
+    position: relative;
+    bottom: 8px;
+    text-align: center;
+  }
+  
+  /* Number text (1/3 etc) */
+  .numbertext {
+    color: #f2f2f2;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;    
+    font-size: 15px;
+    font-size: 12px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 0;
+  }
+  
+  /* The dots/bullets/indicators */
+  .dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+  }
+
+  .dot:hover {
+    background-color: #717171;
+  }
+  
+  /* Fading animation */
+  .fade {
+      animation: fadeInAnimation ease 1.5s;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+  }
+  
+  @keyframes fadeInAnimation {
+      0% {
+          opacity: 0.4;
+      }
+      100% {
+          opacity: 1;
+      }
+  }
+  
+  .white-arrow
+  {
+      color: #cdcdcd;
+      text-shadow:
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;  
+  }
+
+
 
 /*--------------------------------------------------------------
 # Testimonials Section

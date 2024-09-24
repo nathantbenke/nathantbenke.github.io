@@ -59,7 +59,7 @@ $(document).ready(function(){
         nav:true,
         loop: true,
         autoplay: true,
-        autoplayTimeout: 3000,
+        autoplayTimeout: 15000,
         responsive:{
             0:{
                 items:1,

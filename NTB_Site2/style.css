@@ -750,9 +750,15 @@ span.text {
   margin: auto;
 }
 
-/* Hide the images by default */
-.mySlides {
-  display: none;
+/* Hide all images by default */
+.mySlides1, .mySlides2, .mySlides3 {
+    display: none;
+}
+
+/* Ensure the current visible image is displayed */
+.mySlides1 img, .mySlides2 img, .mySlides3 img {
+    width: 100%;  /* Ensure images take up the full container width */
+    display: block;
 }
 
 /* Next & previous buttons */
