@@ -895,6 +895,17 @@ a:hover{
     border-radius: 20px; /* Optional: Gives buttons rounded corners */
 }
 
+.center-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    color: #850dd5;
+    font-size: 30px;
+}
+
+
+
 
 /* Carousel container */
 .carousel-container {
