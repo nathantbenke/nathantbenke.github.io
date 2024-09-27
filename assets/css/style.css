@@ -1263,6 +1263,10 @@ input.input {
   }
 }
 
+    .row2-adjustment {
+     position: relative;
+     top: 500px;   
+    }
 
     /* Hide all images by default */
     .mySlides1, .mySlides2, .mySlides3, .mySlides4 {
