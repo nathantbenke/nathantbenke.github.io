@@ -256,28 +256,21 @@ a:hover{
 .underline{
     position: relative;
     font-weight: bold;
-    display: inline;
-    text-decoration: underline;
-    text-decoration-color: var(--secondary-color); /* Keeps the original underline color */
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px; /* Adjust the default underline to be closer to the text */
 }
 
 .underline::after {
     content: "";
     position: absolute;
-    bottom: -2px; /* Position slightly below the original underline */
+    bottom: 0;
     left: 0;
-    right: 0;
+    width: 100%;
     height: 2px;
     background-image: var(--underline-gradient);
-    pointer-events: none; /* Ensures hover does not affect the underline itself */
 }
 
 .underline:hover {
     color: var(--secondary-color);
 }
-
 
 .theme-button{
     border-radius: 4px;
@@ -1227,7 +1220,10 @@ input.input {
 /* Slideshow container */
 .slideshow-container {
     max-width: 600px;
-    position: relative;
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%); /* Centers the container properly */
     margin: auto;
     display: flex;
     justify-content: center; /* Horizontally centers */
@@ -1235,13 +1231,22 @@ input.input {
   }
   
   .slideshow-container img{
-    height: 350px;
-    width: 500px;
-    border-radius: 37px;
+    width: 500px; /* Makes the image take up the full width of the container */
+    max-width: 500px; /* Sets a maximum width, ensuring it doesn’t grow too large */
+    height: 350px; /* Keeps the aspect ratio consistent */
+    border-radius: 10%; /* Keeps rounded corners proportionate */
   }
 
+  @media (max-width: 768px) {
+    .slideshow-container img {
+      max-width: 100%; /* Make sure the image doesn’t exceed the screen size on small devices */
+      border-radius: 5%; /* Reduce the border-radius for smaller devices if needed */
+    }
+  }
+
+
     /* Hide all images by default */
-    .mySlides1, .mySlides2, .mySlides3 {
+    .mySlides1, .mySlides2, .mySlides3, .mySlides4 {
         display: none;
     }
   
@@ -1325,6 +1330,14 @@ input.input {
 
   .dot:hover {
     background-color: #717171;
+  }
+
+  .slide-dots {
+    text-align:center;
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
   /* Fading animation */
