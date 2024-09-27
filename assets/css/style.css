@@ -1255,7 +1255,8 @@ input.input {
   }
 
   .slideshow-container img {
-    width: 420px; /* Keeps the aspect ratio consistent */
+    width: 100%; /* Keeps the aspect ratio consistent */
+    max-width: 420px;
     height: 300px; /* Keeps the aspect ratio consistent */
   }
 }
