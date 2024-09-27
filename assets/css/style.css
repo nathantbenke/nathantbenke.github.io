@@ -256,21 +256,28 @@ a:hover{
 .underline{
     position: relative;
     font-weight: bold;
+    display: inline;
+    text-decoration: underline;
+    text-decoration-color: var(--secondary-color); /* Keeps the original underline color */
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px; /* Adjust the default underline to be closer to the text */
 }
 
 .underline::after {
     content: "";
     position: absolute;
-    bottom: 0;
+    bottom: -2px; /* Position slightly below the original underline */
     left: 0;
-    width: 100%;
+    right: 0;
     height: 2px;
     background-image: var(--underline-gradient);
+    pointer-events: none; /* Ensures hover does not affect the underline itself */
 }
 
 .underline:hover {
     color: var(--secondary-color);
 }
+
 
 .theme-button{
     border-radius: 4px;

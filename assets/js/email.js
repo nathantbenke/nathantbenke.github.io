@@ -1,3 +1,4 @@
+//email.js
 function SendMail() {
     var params = {
         from_name : document.getElementById("fullName").value,
@@ -5,7 +6,7 @@ function SendMail() {
         subject : document.getElementById("subject").value,
         message : document.getElementById("message").value
     };
-    
+
     emailjs.send("service_id3xvvf", "template_p1unncs", params).then(
         (response) => {
             console.log("Success! " + res.status);             
