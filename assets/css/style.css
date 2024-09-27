@@ -742,6 +742,7 @@ a:hover{
 
 .tool-name{
     letter-spacing: 2px;
+    text-align: center;
     font-size: 17px;
     padding-top: 5px;
     margin: 0;
