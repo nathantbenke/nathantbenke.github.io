@@ -1260,6 +1260,7 @@ input.input {
     max-width: 420px;
     height: 300px; /* Keeps the aspect ratio consistent */
     object-fit: contain; 
+    border-radius: 5%; /* Keeps rounded corners proportionate */
   }
 }
 
