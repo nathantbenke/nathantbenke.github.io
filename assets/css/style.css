@@ -1252,7 +1252,7 @@ input.input {
   .slideshow-container {
     width: 90%; /* Slightly reduce the width for mobile devices to keep spacing */
     max-width: 500px; /* Ensure the max-width remains the same */
-    overflow:auto; /* Ensures any overflow is hidden */
+    overflow: visible; 
   }
 
   .slideshow-container img {
