@@ -743,6 +743,8 @@ a:hover{
 .tool-name{
     letter-spacing: 2px;
     text-align: center;
+    display: flex;
+    justify-content: center;  /* Centers horizontally */
     font-size: 17px;
     padding-top: 5px;
     margin: 0;
@@ -1253,7 +1255,7 @@ input.input {
   }
 
   .slideshow-container img {
-    width: 600px; /* Keeps the aspect ratio consistent */
+    width: 420px; /* Keeps the aspect ratio consistent */
     height: 300px; /* Keeps the aspect ratio consistent */
   }
 }
