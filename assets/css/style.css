@@ -1678,7 +1678,7 @@ input.input {
 }
 
 .timeline:hover::after {
-    animation: moveline 8s linear forwards;
+    animation: moveline 10s linear forwards;
 }
 
 .timeline-container {
@@ -1743,6 +1743,14 @@ input.input {
 .timeline:hover .timeline-container:nth-child(8) {
     opacity: 0;
     animation-delay: 7s;
+}
+.timeline:hover .timeline-container:nth-child(9) {
+    opacity: 0;
+    animation-delay: 8s;
+}
+.timeline:hover .timeline-container:nth-child(10) {
+    opacity: 0;
+    animation-delay: 9s;
 }
 
 .timeline-container.show {
