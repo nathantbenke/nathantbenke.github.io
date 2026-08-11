@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07050e">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf9fd">
+
+    <title>Projects | Nathan Thomas-Benke</title>
+    <meta name="description" content="A fuller catalog of coursework, personal builds, and experiments from Nathan Thomas-Benke.">
+    <meta name="author" content="Nathan Thomas-Benke">
+    <link rel="canonical" href="https://nathantbenke.github.io/projects.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Projects | Nathan Thomas-Benke">
+    <meta property="og:description" content="A fuller catalog of coursework, personal builds, and experiments.">
+    <meta property="og:url" content="https://nathantbenke.github.io/projects.html">
+    <meta property="og:image" content="https://nathantbenke.github.io/assets/img/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Projects | Nathan Thomas-Benke">
+    <meta name="twitter:description" content="A fuller catalog of coursework, personal builds, and experiments.">
+    <meta name="twitter:image" content="https://nathantbenke.github.io/assets/img/og-image.jpg">
+
+    <link rel="preload" href="assets/fonts/agustina-logo.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/img/favicon-48.png">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+    <!-- Theme FOUC guard: set data-theme before first paint.
+         ?theme=light|dark also honored (theme-able links + headless testing). -->
+    <script>
+        try {
+            var q = new URLSearchParams(location.search).get('theme');
+            var t = (q === 'dark' || q === 'light') ? q : localStorage.getItem('theme');
+            if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+    </script>
+
+    <!-- MS Clarity: injected after load so analytics never competes with first paint -->
+    <script type="text/javascript">
+    window.addEventListener('load', function () {
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "ld2h640kif");
+    });
+    </script>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+    <div class="bg-atmo"></div>
+    <div class="bg-stars bg-stars-1"></div>
+    <div class="bg-stars bg-stars-2"></div>
+    <div class="bg-stars bg-stars-3"></div>
+</div>
+
+<a class="skip-link" href="#projects">Skip to content</a>
+
+<header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+        <a class="brand" href="index.html" aria-label="Nathan Thomas-Benke, home">
+            <span class="brand-bracket" aria-hidden="true">&lt;</span>
+            <span class="brand-sig">Nathan Thomas-Benke</span>
+            <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html#labs">NTB Labs</a>
+            <a href="index.html#work">Work</a>
+            <a href="projects.html" aria-current="page">Projects</a>
+            <a href="index.html#experience">Experience</a>
+            <a href="index.html#contact">Contact</a>
+            <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch color theme">
+                <svg class="icon icon-sun" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+            </button>
+        </div>
+    </nav>
+</header>
+
+<main id="top" class="page-narrow">
+
+    <p class="backlink"><a href="index.html">&#8592; Back to home</a></p>
+
+    <section id="projects" aria-labelledby="projects-heading">
+        <h1 id="projects-heading" class="page-title">Projects</h1>
+        <p class="mp-lede">A fuller catalog of coursework, personal builds, and experiments. The five featured on the
+            <a href="index.html#work">home page</a> are the ones I would lead with.</p>
+
+        <ul class="mp-list">
+
+            <li class="mp-item">
+                <div class="slideshow mp-slideshow" data-slideshow aria-roledescription="carousel" aria-label="L-System Visualizer media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/more/lsystem/s1.webp" alt="A Sierpinski triangle generated from an L-System grammar" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/lsystem/s2.webp" alt="A dragon curve beside the rule and angle controls" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/lsystem/s3.webp" alt="A branching plant form at a high iteration depth" width="840" height="560" loading="lazy">
+                    </div>
+                    <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                    <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                    <div class="ss-dots"></div>
+                </div>
+                <div class="mp-body">
+                    <h2 class="mp-name">L-System Visualizer</h2>
+                    <p class="mp-desc">A Unity tool for exploring Lindenmayer systems: preset grammars plus editable rules, angle, and iteration depth, redrawn live as you change them.</p>
+                    <p class="mp-meta"><span class="mp-tag">Masters project</span>
+                        <a href="https://github.com/nathantbenke/ParameterizedLSystemGenerator-Unity" target="_blank" rel="noopener">Repo</a>
+                        <a href="https://www.youtube.com/watch?v=z9MgIKpZqHU" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item">
+                <div class="slideshow mp-slideshow" data-slideshow aria-roledescription="carousel" aria-label="Terrain Generator media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/more/terrain/s1.webp" alt="Generated 3D terrain with lakes, forest, and snow-capped peaks" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/terrain/s2.webp" alt="Diamond-Square terrain beside its parameter controls" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/terrain/s3.webp" alt="A generated island viewed from a low angle" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/terrain/s4.webp" alt="Top-down noise map next to the greyscale height data behind it" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/terrain/s5.webp" alt="The Perlin noise parameter panel in the Unity editor" width="840" height="560" loading="lazy">
+                    </div>
+                    <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                    <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                    <div class="ss-dots"></div>
+                </div>
+                <div class="mp-body">
+                    <h2 class="mp-name">Perlin / Diamond-Square Terrain Generator</h2>
+                    <p class="mp-desc">Generates terrain from either Perlin noise or the Diamond-Square algorithm, with the parameters exposed so the effect of each one is visible while you tune it.</p>
+                    <p class="mp-meta"><span class="mp-tag">Masters group project</span>
+                        <a href="https://github.com/nathantbenke/D-SqXPerlin--Terrain-Generator" target="_blank" rel="noopener">Repo</a>
+                        <a href="https://www.youtube.com/watch?v=x8m7HaC-pTg" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item">
+                <div class="slideshow mp-slideshow" data-slideshow aria-roledescription="carousel" aria-label="The Arcane Colossus media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/more/arcane/s1.webp" alt="The Arcane Colossus title art" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/arcane/s2.webp" alt="Facing Helios mid-fight, weapon raised" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/arcane/s3.webp" alt="The boss winding up an attack phase" width="840" height="560" loading="lazy">
+                    </div>
+                    <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                    <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                    <div class="ss-dots"></div>
+                </div>
+                <div class="mp-body">
+                    <h2 class="mp-name">The Arcane Colossus</h2>
+                    <p class="mp-desc">A Unity boss fight against the god Helios, built around learning his attack phases and surviving them.</p>
+                    <p class="mp-meta"><span class="mp-tag">Masters project &#183; Game</span>
+                        <a href="https://nathantbenke.itch.io/the-arcane-colossus" target="_blank" rel="noopener">Play on itch.io</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item">
+                <div class="slideshow mp-slideshow" data-slideshow aria-roledescription="carousel" aria-label="Valley Memoirs media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/more/valley/s1.webp" alt="A page waiting to be collected among gravestones in the fog" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/valley/s2.webp" alt="A watchtower silhouetted against the night sky" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/valley/s3.webp" alt="A cross in the mist further out in the valley" width="840" height="560" loading="lazy">
+                        <img class="slide" data-src="assets/img/more/valley/s4.webp" alt="The red-lit exit door with the collected-pages counter on screen" width="840" height="560" loading="lazy">
+                    </div>
+                    <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                    <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                    <div class="ss-dots"></div>
+                </div>
+                <div class="mp-body">
+                    <h2 class="mp-name">Valley Memoirs</h2>
+                    <p class="mp-desc">A Slenderman-style horror game: collect the pages scattered across the map, then escape through the door while something follows you. I hand-built the map and the pursuer.</p>
+                    <p class="mp-meta"><span class="mp-tag">Masters &#183; Games programming</span>
+                        <a href="https://nathantbenke.itch.io/valley-memoirs" target="_blank" rel="noopener">Play on itch.io</a>
+                        <a href="https://www.youtube.com/watch?v=2ZSwRS6sPtg" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item">
+                <img class="mp-media" src="assets/img/more/tombrush.webp" alt="Inside the tomb maze, stone corridors lit by torchlight" width="840" height="560" loading="lazy">
+                <div class="mp-body">
+                    <h2 class="mp-name">Tomb Rush VR</h2>
+                    <p class="mp-desc">A VR maze escape with an intro and outro around it. I built the majority of it. The original concept was larger and got scoped down to what the deadline allowed.</p>
+                    <p class="mp-meta"><span class="mp-tag">UW-Madison group project</span>
+                        <a href="https://github.com/nathantbenke/TombRushVR" target="_blank" rel="noopener">Repo</a>
+                        <a href="https://www.youtube.com/watch?v=lxlijfVq8zY" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item">
+                <img class="mp-media" src="assets/img/more/gofish.webp" alt="Go Fish XR title card" width="840" height="560" loading="lazy">
+                <div class="mp-body">
+                    <h2 class="mp-name">Go Fish XR</h2>
+                    <p class="mp-desc">A mixed-reality multiplayer take on the card game, with a shared map and synced state between players. Built at a hackathon, so it covers what two days allowed rather than a finished game.</p>
+                    <p class="mp-meta"><span class="mp-tag">Reality Smiths &#183; 4th Frontier</span>
+                        <a href="https://www.youtube.com/watch?v=eEkHqLXhraI" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item mp-item--textonly">
+                <div class="mp-body">
+                    <h2 class="mp-name">Mellow Curve</h2>
+                    <p class="mp-desc">A browser app for loading audio samples and applying effects to them.</p>
+                    <p class="mp-meta"><span class="mp-tag">UW-Madison group project &#183; Web app</span>
+                        <a href="https://github.com/nathantbenke/MellowCurve" target="_blank" rel="noopener">Repo</a>
+                    </p>
+                </div>
+            </li>
+
+        </ul>
+    </section>
+
+    <section id="experiments" aria-labelledby="experiments-heading">
+        <h2 id="experiments-heading" class="page-title page-title--sub">Experiments</h2>
+        <p class="mp-lede">Engine experiments from teaching myself Unreal. These are studies, not shipped work and not
+            a service I offer: I put them here because what I tried is part of an honest picture, not because they
+            represent production experience.</p>
+
+        <ul class="mp-list mp-list--experiments">
+
+            <li class="mp-item">
+                <img class="mp-media" src="assets/img/more/crowd.webp" alt="A crowd of agents lined up in the Unreal editor viewport" width="840" height="560" loading="lazy">
+                <div class="mp-body">
+                    <h3 class="mp-name">Crowd control demo</h3>
+                    <p class="mp-desc">A study in crowd simulation: many agents pathing and reacting as a group, put together to see how the system behaves rather than to ship anything.</p>
+                    <p class="mp-meta"><span class="mp-tag">Engine experiment &#183; Unreal Engine 4.27</span>
+                        <a href="https://www.youtube.com/watch?v=-1ejIdptjG4" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+            <li class="mp-item">
+                <img class="mp-media" src="assets/img/more/water.webp" alt="A character suspended in a water volume in the Unreal editor" width="840" height="560" loading="lazy">
+                <div class="mp-body">
+                    <h3 class="mp-name">Water simulation</h3>
+                    <p class="mp-desc">A study in water and buoyancy: surface behaviour and how a body moves through it, again as a learning exercise inside the editor.</p>
+                    <p class="mp-meta"><span class="mp-tag">Engine experiment &#183; Unreal Engine 5</span>
+                        <a href="https://www.youtube.com/watch?v=2ctJddb5_mw" target="_blank" rel="noopener">Video</a>
+                    </p>
+                </div>
+            </li>
+
+        </ul>
+    </section>
+
+    <p class="backlink backlink--end"><a class="btn" href="index.html">&#8592; Back to home</a></p>
+
+</main>
+
+<footer class="site-footer">
+    <p>© <span id="footer-year">2026</span> Nathan Thomas-Benke</p>
+</footer>
+
+</body>
+</html>
