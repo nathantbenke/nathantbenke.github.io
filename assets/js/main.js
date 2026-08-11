@@ -176,10 +176,16 @@
     }
 
     // ---------- Starfield scroll parallax ----------
-    // Perf-critical: transforms are written DIRECTLY to the three fixed star
+    // Perf-critical: transforms are written DIRECTLY to the fixed background
     // layers (compositor-only). Never a custom property on :root, because that
     // invalidates style for the whole document every frame (the round-3 jank).
+    //
+    // The nebula is FIRST and SLOWEST on purpose. It is the deepest plane, so
+    // anything faster than the nearest stars would invert the depth cue and
+    // read as the background sliding past the foreground. At -0.008 it barely
+    // moves at all, which is the point: a cloud that far away shouldn't.
     var starLayers = [
+        { el: document.querySelector('.bg-nebula'), speed: -0.008 },
         { el: document.querySelector('.bg-stars-1'), speed: -0.025 },
         { el: document.querySelector('.bg-stars-2'), speed: -0.055 },
         { el: document.querySelector('.bg-stars-3'), speed: -0.11 }
@@ -386,4 +392,14 @@
     // ---------- Footer year ----------
     var year = document.getElementById('footer-year');
     if (year) year.textContent = String(new Date().getFullYear());
+
+    // ---------- v1.1 nebula lab (experiment branch only) ----------
+    // The tuning panel is fetched ONLY when ?neb is in the URL, so a normal
+    // visitor never pays a byte for it. The preset it writes is read back by
+    // the pre-paint guard in <head>, so a pick survives navigation.
+    if (/[?&]neb(&|=|$)/.test(location.search)) {
+        var lab = document.createElement('script');
+        lab.src = 'assets/js/nebula-lab.js';
+        document.body.appendChild(lab);
+    }
 })();
