@@ -175,37 +175,108 @@
         });
     }
 
-    // ---------- Starfield scroll parallax ----------
+    // ---------- Background scroll parallax ----------
     // Perf-critical: transforms are written DIRECTLY to the fixed background
     // layers (compositor-only). Never a custom property on :root, because that
     // invalidates style for the whole document every frame (the round-3 jank).
     //
-    // The nebula is FIRST and SLOWEST on purpose. It is the deepest plane, so
-    // anything faster than the nearest stars would invert the depth cue and
-    // read as the background sliding past the foreground. At -0.008 it barely
-    // moves at all, which is the point: a cloud that far away shouldn't.
-    var starLayers = [
-        { el: document.querySelector('.bg-nebula'), speed: -0.008 },
+    // v1.1.1: the nebula is FOUR PLANES, not one sheet. v1.1.0 translated it
+    // rigidly at -0.008 and it read as a burn mark on the glass - and sliding a
+    // rigid sheet faster would only have produced a faster burn mark, because a
+    // sheet has no interior. What reads as volume is DIFFERENTIAL travel: the
+    // near dust sweeping past while the far colour mass barely moves. Every
+    // nebula plane stays slower than the slowest star layer (-0.025), so the
+    // nebula still sits behind the starfield instead of racing through it.
+    var NEB_PLANES = [
+        ['.neb-field', -0.011],   // deepest: the colour mass barely drifts
+        ['.neb-grain', -0.013],
+        ['.neb-veil',  -0.017],
+        ['.neb-cols',  -0.023]    // nearest: the dust columns lead the motion
+    ];
+
+    var nebGroup = document.querySelector('.bg-nebula');
+    var nebSpeed = 1;        // live multiplier, driven by the ?neb panel
+    var nebTop = 1;          // group opacity at the hero
+    var nebFloor = 0.42;     // group opacity once past the falloff
+    var nebFalloff = 1400;   // px of scroll the top->floor transition spans
+
+    // Must match the max-width: 56rem block in style.css that drops the planes'
+    // will-change. Writing a per-frame transform to an UN-PROMOTED layer makes
+    // it repaint every frame - strictly worse than no parallax - so the CSS and
+    // this query have to agree. If you move one, move the other.
+    var nebStatic = window.matchMedia('(max-width: 56rem)').matches;
+
+    var parallaxLayers = (nebStatic ? [] : NEB_PLANES.map(function (p) {
+        return { el: document.querySelector(p[0]), speed: p[1], neb: true };
+    })).concat([
         { el: document.querySelector('.bg-stars-1'), speed: -0.025 },
         { el: document.querySelector('.bg-stars-2'), speed: -0.055 },
         { el: document.querySelector('.bg-stars-3'), speed: -0.11 }
-    ].filter(function (l) { return l.el; });
+    ]).filter(function (l) { return l.el; });
 
-    if (starLayers.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-        var parallaxTicking = false;
-        var applyParallax = function () {
-            var y = window.scrollY;
-            starLayers.forEach(function (l) {
-                l.el.style.transform = 'translate3d(0,' + (y * l.speed).toFixed(1) + 'px,0)';
-            });
-            parallaxTicking = false;
-        };
+    var parallaxTicking = false;
+    var lastNebOpacity = -1;
+
+    function applyParallax() {
+        var y = window.scrollY;
+        parallaxLayers.forEach(function (l) {
+            var v = y * l.speed * (l.neb ? nebSpeed : 1);
+            l.el.style.transform = 'translate3d(0,' + v.toFixed(1) + 'px,0)';
+        });
+
+        // Density falloff: dense at the hero, thinner once you are past it.
+        //
+        // This is ONE opacity write on an already-promoted group, and only when
+        // the value has actually moved - so the vast majority of scroll frames
+        // write nothing here at all. Opacity on a composited layer is a
+        // compositor property: it re-composites, it does not re-rasterise
+        // (verified against a paint trace, not assumed). It is emphatically NOT
+        // --neb-i on :root - a custom property there would invalidate style for
+        // the entire document on every frame, which is the exact mechanism
+        // behind the original jank.
+        if (nebGroup && !nebStatic) {
+            var t = Math.min(1, y / nebFalloff);
+            t = t * t * (3 - 2 * t);   // smoothstep, so the floor is not a step
+            var o = nebTop + (nebFloor - nebTop) * t;
+            if (o < lastNebOpacity - 0.004 || o > lastNebOpacity + 0.004) {
+                lastNebOpacity = o;
+                nebGroup.style.opacity = o.toFixed(3);
+            }
+        }
+        parallaxTicking = false;
+    }
+
+    if (parallaxLayers.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
         window.addEventListener('scroll', function () {
             if (parallaxTicking) return;
             parallaxTicking = true;
             requestAnimationFrame(applyParallax);
         }, { passive: true });
+        applyParallax();   // also covers a reload part-way down the page
     }
+
+    if (nebGroup && (nebStatic || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) {
+        // Reduced motion, or a small viewport: nothing scroll-coupled. The
+        // nebula still renders - it is depth, not motion - at one fixed density
+        // partway between the hero value and the floor.
+        nebGroup.style.opacity = String(nebFloor + (1 - nebFloor) * 0.5);
+    }
+
+    // Tuning hooks for the ?neb panel. Defined unconditionally so the panel can
+    // drive a page that has parallax disabled; no-ops harmlessly if it is.
+    window.__nebula = {
+        state: function () {
+            return { speed: nebSpeed, top: nebTop, floor: nebFloor, falloff: nebFalloff };
+        },
+        set: function (k, v) {
+            if (k === 'speed') nebSpeed = v;
+            else if (k === 'top') nebTop = v;
+            else if (k === 'floor') nebFloor = v;
+            else if (k === 'falloff') nebFalloff = v;
+            lastNebOpacity = -1;   // force the next write through the threshold
+            applyParallax();
+        }
+    };
 
     // ---------- "I build …" ticker ----------
     // Type-in, hold, fade, next. Pauses on hover. Reduced-motion: static.

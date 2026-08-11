@@ -20,12 +20,29 @@ const REPS = Number(process.argv[2] || 13);
 
 const VARIANTS = {
     'before (no nebula)': { url: '?nebula=off', mutate: () => {} },
-    'after  (subtle)': { url: '?nebula=subtle', mutate: () => {} },
-    'after  (medium)': { url: '?nebula=medium', mutate: () => {} },
-    'after  (present)': { url: '?nebula=present', mutate: () => {} },
+    'v1.1.0 (1 static plane)': {
+        // what the previous build did: one rigid layer, no density falloff
+        url: '?nebula=present',
+        mutate: () => {
+            if (window.__nebula) window.__nebula.set('speed', 0);
+            const g = document.querySelector('.bg-nebula');
+            g.style.opacity = '1';
+            Object.defineProperty(g.style, 'opacity', { set() {}, get: () => '1' });
+        },
+    },
+    'v1.1.1 (4 planes moving)': { url: '?nebula=present', mutate: () => {} },
+    'v1.1.1 @ 2x rate': {
+        url: '?nebula=present',
+        mutate: () => { if (window.__nebula) window.__nebula.set('speed', 2); },
+    },
     'ctl-no-will-change': {
         url: '?nebula=present',
-        mutate: () => { document.querySelector('.bg-nebula').style.willChange = 'auto'; },
+        mutate: () => {
+            document.querySelector('.bg-nebula').style.willChange = 'auto';
+            ['.neb-field', '.neb-veil', '.neb-cols', '.neb-grain'].forEach(s => {
+                document.querySelector(s).style.willChange = 'auto';
+            });
+        },
     },
 };
 
@@ -111,8 +128,17 @@ for (let rep = 0; rep < REPS; rep++) {
         await new Promise(r => setTimeout(r, 250));
 
         const f = await page.evaluate(() => window.__f.slice(5));
+        const sorted = [...f].sort((a, b) => a - b);
+        const pct = (p) => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * p))];
         acc[name].push({
-            long: (100 * f.filter(x => x > 25).length) / f.length,
+            long25: (100 * f.filter(x => x > 25).length) / f.length,
+            // 25ms is ~3.5x the frame budget on this box (7ms avg, ~144Hz) and
+            // has no resolution: an earlier run put the KNOWN-BAD control at
+            // 0.00% alongside the baseline, which means that metric proved
+            // nothing either way. 16ms and the tail percentiles do separate.
+            long16: (100 * f.filter(x => x > 16).length) / f.length,
+            p95: pct(0.95),
+            p99: pct(0.99),
             avg: f.reduce((a, b) => a + b, 0) / f.length,
         });
         await page.close();
@@ -131,16 +157,21 @@ const trimmed = xs => {
 };
 
 console.log(`\n\nSCROLL TIMING - ${REPS} interleaved reps, 1280x900, dark, 6000px down + 6000px up\n`);
-console.log('  variant                long% median   long% trimmed-mean   avg frame   worst rep');
+console.log('  variant                    >25ms%   >16ms%   p95 frame   p99 frame   avg frame');
 for (const [name, xs] of Object.entries(acc)) {
-    const longs = xs.map(x => x.long);
-    const avgs = xs.map(x => x.avg);
     console.log(
-        `  ${name.padEnd(22)} ${med(longs).toFixed(2).padStart(11)}   ${trimmed(longs).toFixed(2).padStart(17)}` +
-        `   ${med(avgs).toFixed(1).padStart(8)}ms   ${Math.max(...longs).toFixed(1).padStart(6)}%`
+        `  ${name.padEnd(24)} ${trimmed(xs.map(x => x.long25)).toFixed(2).padStart(6)}   ` +
+        `${trimmed(xs.map(x => x.long16)).toFixed(2).padStart(6)}   ` +
+        `${med(xs.map(x => x.p95)).toFixed(1).padStart(7)}ms   ` +
+        `${med(xs.map(x => x.p99)).toFixed(1).padStart(7)}ms   ` +
+        `${med(xs.map(x => x.avg)).toFixed(1).padStart(7)}ms`
     );
 }
-console.log('\n  (worst rep is shown to make the machine noise visible rather than hidden:');
-console.log('   interference spikes hit the no-nebula baseline too.)');
+console.log('\n  >25/>16 are trimmed means (top and bottom 20% of reps dropped, because');
+console.log('  this box spikes); p95/p99/avg are medians across reps.');
+console.log('\n  READ ctl-no-will-change FIRST. It is a deliberately un-promoted nebula that');
+console.log('  the paint trace shows doing ~70x the rasterisation. If it does NOT separate');
+console.log('  from the baseline, this run had no discriminating power and the other rows');
+console.log('  are evidence of nothing - do not read them as a pass.');
 
 await browser.close();

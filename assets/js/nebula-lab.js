@@ -16,11 +16,12 @@
     'use strict';
 
     var root = document.documentElement;
+    // These set density AT THE HERO; main.js fades to "density below" past it.
     var PRESETS = [
         ['off', 'Off', 'baseline - nebula removed entirely'],
-        ['subtle', 'Barely there', '0.5x - you notice it only if you look'],
-        ['medium', 'Medium', '1x - reads as depth, still staging'],
-        ['present', 'More present', '1.7x - the cloud is a visible feature']
+        ['subtle', 'Barely there', '--neb-i 1.2 at the hero'],
+        ['medium', 'Medium', '--neb-i 1.8 at the hero'],
+        ['present', 'Dense hero', '--neb-i 2.5 - every sub-layer at full opacity']
     ];
 
     function current() {
@@ -32,6 +33,8 @@
     panel.style.cssText = [
         'position:fixed', 'right:16px', 'bottom:16px', 'z-index:9999',
         'width:268px', 'padding:14px 16px 12px',
+        // the panel grew past a short viewport once the motion controls landed
+        'max-height:calc(100vh - 32px)', 'overflow-y:auto',
         'font:13px/1.45 system-ui,sans-serif', 'color:#eae7f2',
         'background:rgba(10,8,20,.94)', 'border:1px solid #362a55',
         'border-radius:12px', 'box-shadow:0 12px 40px rgba(0,0,0,.6)'
@@ -116,6 +119,50 @@
         syncReadout();
         paintActive();
     });
+
+    // ---- motion + falloff controls (v1.1.1) ----
+    // These drive plain JS numbers in main.js's rAF, NOT CSS custom properties.
+    // A --var write on :root would invalidate style for the whole document on
+    // every frame, which is the original jank; these touch nothing until the
+    // next scroll frame reads them.
+    var motionWrap = document.createElement('div');
+    motionWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55';
+    panel.appendChild(motionWrap);
+
+    function slider(label, key, min, max, step, fmt) {
+        var lab = document.createElement('label');
+        lab.style.cssText = 'display:block;margin-bottom:2px;font-size:11px;color:#c4bfd9';
+        var input = document.createElement('input');
+        input.type = 'range';
+        input.min = String(min); input.max = String(max); input.step = String(step);
+        input.style.cssText = 'width:100%;accent-color:#a78bfa;margin-bottom:6px';
+
+        var api = window.__nebula;
+        var start = api ? api.state()[key] : min;
+        input.value = String(start);
+
+        function paint(v) { lab.textContent = label + ': ' + fmt(v); }
+        paint(start);
+        input.addEventListener('input', function () {
+            var v = parseFloat(input.value);
+            paint(v);
+            if (window.__nebula) window.__nebula.set(key, v);
+        });
+        motionWrap.appendChild(lab);
+        motionWrap.appendChild(input);
+        return input;
+    }
+
+    // 2x cap is not cosmetic: the layers carry 520px of bottom slack, and the
+    // fastest plane at 2x travels ~391px over a 10k page. Past that the layer
+    // would scroll out from under the bottom of the viewport.
+    slider('parallax rate', 'speed', 0, 2, 0.05, function (v) {
+        var travel = Math.round(0.023 * v * Math.max(0, document.documentElement.scrollHeight - innerHeight));
+        return v.toFixed(2) + 'x  (near plane travels ' + travel + 'px)';
+    });
+    slider('density at hero', 'top', 0.2, 1, 0.02, function (v) { return v.toFixed(2); });
+    slider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
+    slider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
 
     var layersWrap = document.createElement('div');
     layersWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';

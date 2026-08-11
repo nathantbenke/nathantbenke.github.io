@@ -13,24 +13,38 @@
 import puppeteer from 'puppeteer-core';
 
 const CASES = [
-    ['nebula off        ', '?nebula=off', () => {}],
-    ['nebula present    ', '?nebula=present', () => {}],
-    ['ctl: no will-change', '?nebula=present',
-        () => { document.querySelector('.bg-nebula').style.willChange = 'auto'; }],
+    ['nebula off             ', '?nebula=off', () => {}],
+    ['v1.1.0 static 1 plane  ', '?nebula=present',
+        () => { if (window.__nebula) window.__nebula.set('speed', 0); }],
+    ['v1.1.1 4 planes moving ', '?nebula=present', () => {}],
+    ['v1.1.1 @ 2x rate       ', '?nebula=present',
+        () => { if (window.__nebula) window.__nebula.set('speed', 2); }],
+    ['ctl: no will-change    ', '?nebula=present',
+        () => {
+            document.querySelector('.bg-nebula').style.willChange = 'auto';
+            ['.neb-field', '.neb-veil', '.neb-cols', '.neb-grain'].forEach(s => {
+                document.querySelector(s).style.willChange = 'auto';
+            });
+        }],
 ];
+
+// node tools/nebula-layers.mjs [width] [height] [dpr]
+const W = Number(process.argv[2] || 1280);
+const H = Number(process.argv[3] || 900);
+const DPR = Number(process.argv[4] || 1);
 
 const browser = await puppeteer.launch({
     executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     headless: 'new',
-    args: ['--no-sandbox', '--window-size=1280,900'],
+    args: ['--no-sandbox', `--window-size=${W},${H}`],
 });
 
-console.log('PAINT WORK DURING A 6000px SCROLL (1280x900, dark)\n');
-console.log('  case                  Paint   RasterTask   UpdateLayer   Layout   RecalcStyle');
+console.log(`PAINT WORK DURING A 6000px SCROLL (${W}x${H} @ DPR ${DPR}, dark)\n`);
+console.log('  case                       Paint   RasterTask   UpdateLayer   Layout   RecalcStyle');
 
 for (const [label, url, mutate] of CASES) {
     const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 900 });
+    await page.setViewport({ width: W, height: H, deviceScaleFactor: DPR });
     const cdp = await page.createCDPSession();
     await cdp.send('Emulation.setEmulatedMedia', {
         features: [{ name: 'prefers-color-scheme', value: 'dark' },
@@ -44,7 +58,7 @@ for (const [label, url, mutate] of CASES) {
         categories: ['devtools.timeline', 'disabled-by-default-devtools.timeline'],
         path: 'tools/shots/_trace.json',
     });
-    await cdp.send('Input.synthesizeScrollGesture', { x: 640, y: 450, xDistance: 0, yDistance: -6000, speed: 2000 });
+    await cdp.send('Input.synthesizeScrollGesture', { x: Math.round(W / 2), y: Math.round(H / 2), xDistance: 0, yDistance: -6000, speed: 2000 });
     await new Promise(r => setTimeout(r, 600));
     await page.tracing.stop();
 

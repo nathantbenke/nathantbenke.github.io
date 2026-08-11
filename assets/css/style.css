@@ -56,7 +56,7 @@
        without `filter: blur()`, which would be a live per-frame GPU pass. The
        tiles are small and upscaled hard by background-size - the bilinear
        upscale IS the blur, baked in at rasterize time and never recomputed. */
-    --neb-i: 1;
+    --neb-i: 2.5;
 
     /* dust: black, alpha driven by the noise (patchy, ~50% coverage) */
     --neb-tile-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='d' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23d)'/%3E%3C/svg%3E");
@@ -68,7 +68,7 @@
     --neb-tile-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E");
     /* keeps the turbulence inside the cloud region instead of veiling the
        whole viewport (which would just read as a dirty screen) */
-    --neb-mask: radial-gradient(68% 58% at 64% 48%, #000 10%, rgba(0, 0, 0, 0.45) 50%, transparent 78%);
+    --neb-mask: radial-gradient(68vw 74vh at 64vw 61vh, #000 10%, rgba(0, 0, 0, 0.45) 50%, transparent 78%);
 
     /* star tiles: small (far), small (mid, reused at other scale), bright w/ glow */
     --star-alpha: 0.55;
@@ -201,38 +201,51 @@ body {
     background-size: cover;
 }
 
-/* ---------- v1.1 nebula: the deep plane, behind everything ----------
+/* ---------- v1.1 nebula: a VOLUME behind everything ----------
 
    Sits above .bg-atmo and BELOW all three star layers, so it is staging, never
-   subject. Perf contract, in order of how much each one matters:
+   subject.
 
-   1. ONE composited layer for the whole thing. .bg-nebula is the only promoted
-      element; its four children carry static paint (one has a static rotate)
-      and rasterize into that single texture once. Four elements != four layers.
-   2. Nothing here repaints on scroll. The only per-frame write is a translate3d
-      on .bg-nebula, exactly the mechanism the star layers already use.
-   3. No live filter. All softness comes from gradients and from upscaled
+   WHY FOUR PLANES AND NOT ONE LAYER. v1.1.0 translated the whole nebula as one
+   rigid sheet, and it read as a smudge pinned to the glass no matter how far it
+   slid - because a rigid sheet has no interior. Depth is not distance travelled,
+   it is DIFFERENTIAL travel: near gas sweeping past faster than far gas is the
+   entire cue. So the field, grain, veil and dust columns each get their own rate
+   and each becomes its own compositor layer. All four stay slower than the
+   slowest star layer (-0.025), so the nebula still sits behind the starfield.
+
+   Perf contract, in order of how much each one matters:
+
+   1. Per frame, the ONLY writes are four transforms and (at most) one opacity.
+      Both are compositor properties on already-promoted layers: no raster, no
+      layout, no style invalidation beyond the element written. Measured, not
+      assumed - see tools/nebula-layers.mjs.
+   2. No live filter. All softness comes from gradients and from upscaled
       pre-rendered turbulence (see the tile tokens above).
+   3. The scroll-driven density falloff is ONE opacity write on the group, and
+      only when the value actually moves (see main.js). It is not a per-frame
+      repaint, and it is not --neb-i on :root - writing a custom property to
+      the root would invalidate style for the whole document every frame, which
+      is precisely the round-3 jank.
 
    Sizing: .bg has `contain: strict`, so children are PAINT-CLIPPED to the
-   viewport box - extending a layer upward buys nothing. Parallax here is
-   negative (content translates up), so the slack has to be on the BOTTOM or
-   the last screenful of a long page scrolls out from under the layer. 240px
-   covers the ~90px of travel a 10k-tall page produces at this speed, with room
-   to spare. (The existing .bg-stars layers put their slack on the top instead,
-   which is why .bg-stars-3 leaves the viewport entirely near the page bottom -
-   noted, not touched here.) */
+   viewport box - extending a layer upward buys nothing. Parallax is negative
+   (layers translate up as you scroll down), so the slack has to be on the
+   BOTTOM or the last screenful scrolls out from under the layer. 520px covers
+   the fastest plane at the panel's 2x speed cap (0.022 * 2 * ~8900px = 391px).
+   (The existing .bg-stars layers put their slack on the top instead, which is
+   why .bg-stars-3 leaves the viewport entirely near the page bottom - noted,
+   not touched here.) */
 
 /* `.bg > .bg-nebula`, not `.bg-nebula`: the shared `.bg, .bg > div { inset: 0 }`
    rule above is (0,1,1) and silently outranks a bare class selector. That is
    also why `.bg-stars { inset: -140px 0 0 0 }` has never actually applied -
    measured, not assumed: every star layer computes to exactly viewport height. */
 .bg > .bg-nebula {
-    inset: 0 0 -240px 0;
-    /* promoted deliberately: the star layers above it animate, and without its
-       own layer this one risks being re-rastered into their group every frame */
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
+    inset: 0 0 -520px 0;
+    /* The group no longer moves - its children do. What animates here is
+       opacity (the scroll density falloff), so that is what it declares. */
+    will-change: opacity;
 }
 
 /* Geometry only. background-repeat deliberately does NOT live here: a
@@ -245,6 +258,39 @@ body {
     inset: 0;
 }
 
+/* Each plane is independently promoted, because each now carries its own
+   per-frame transform. Four layers, four textures, zero raster once settled. */
+.neb-field,
+.neb-veil,
+.neb-cols,
+.neb-grain { will-change: transform; }
+
+/* Small viewports: collapse to ONE static plane.
+   Five promoted full-bleed layers (the group, for its opacity, plus four
+   planes) is ~41MB of GPU texture at 1440x900 DPR 1, which is fine. The same
+   markup on a 390x844 phone at DPR 3 is ~96MB, which is not - and the fixed
+   520px of parallax slack is the aggravating factor, since it is sized for a
+   ~10k desktop page but is a far larger fraction of a short viewport.
+   The art is unchanged here; only the depth separation and the parallax go.
+   main.js makes the SAME decision for the transform writes, and that pairing
+   is load-bearing: an un-promoted layer that still gets a per-frame transform
+   repaints every frame, which is strictly worse than having no parallax. */
+@media (max-width: 56rem) {
+    .bg > .bg-nebula { inset: 0; will-change: auto; }
+    .neb-field,
+    .neb-veil,
+    .neb-cols,
+    .neb-grain { will-change: auto; }
+}
+
+/* ART IS SIZED IN vh, NOT %.
+   These boxes are viewport-height PLUS 520px of parallax slack, so a percentage
+   would re-place every gradient whenever the slack changed, and the composition
+   would drift down the screen. vh is measured against the viewport, and the
+   boxes are top-aligned to it, so the art stays put no matter what the slack is.
+   The bottom 520px is deliberately left near-empty: the art fades out well
+   before the box edge, so translating up never reveals a hard cut. */
+
 /* Broad emission field: the cloud's colour mass. Right-of-centre and low on
    purpose - the hero's spectral bloom owns the upper left, and these two must
    not sit on top of each other. */
@@ -256,12 +302,12 @@ body {
            so the column has something to silhouette against. Tiny and warm, so
            it reads as "something is lit behind that dust" rather than as a
            second luminous event. The one place the nebula is warm at all. */
-        radial-gradient(closest-side at 68% 44%,
+        radial-gradient(closest-side at 68vw 56vh,
             rgba(255, 206, 158, 0.030), rgba(240, 171, 252, 0.016) 46%, transparent 72%),
-        radial-gradient(30% 24% at 68% 44%, rgba(206, 104, 190, 0.044), transparent 72%),
-        radial-gradient(54% 42% at 63% 40%, rgba(120, 86, 212, 0.055), transparent 74%),
-        radial-gradient(50% 38% at 86% 16%, rgba(58, 168, 206, 0.040), transparent 72%),
-        radial-gradient(54% 42% at 14% 72%, rgba(66, 112, 196, 0.030), transparent 74%);
+        radial-gradient(30vw 30vh at 68vw 56vh, rgba(206, 104, 190, 0.044), transparent 72%),
+        radial-gradient(54vw 53vh at 63vw 51vh, rgba(120, 86, 212, 0.055), transparent 74%),
+        radial-gradient(50vw 48vh at 86vw 20vh, rgba(58, 168, 206, 0.040), transparent 72%),
+        radial-gradient(54vw 53vh at 14vw 91vh, rgba(66, 112, 196, 0.030), transparent 74%);
 }
 
 /* Turbulence veil: what stops the field from reading as five smooth blobs.
@@ -282,28 +328,41 @@ body {
    The structure is carried by what the dust BLOCKS, not by more glow: that is
    what keeps the value histogram bimodal (one big dark mass, one bright spike
    at the hero) instead of quietly adding a second bright region. */
-.neb-cols {
-    opacity: calc(0.55 * var(--neb-i));
+/* The dust columns are the NEAREST plane, so they parallax fastest. That needs
+   .neb-cols's transform free for the per-frame translate, but the art also has
+   to be rotated - and JS overwriting style.transform would wipe the rotation.
+   Hence the split: the outer box translates, the inner box holds the static
+   rotate/scale. Two elements, still one layer, and no per-frame string-building
+   to preserve a static transform. */
+.neb-cols { opacity: calc(0.55 * var(--neb-i)); }
+
+.neb-cols-art {
+    position: absolute;
+    inset: 0;
     /* rotate: CSS cannot tilt an individual gradient, so the whole group tilts.
        scale: at 11deg a 1:1 box would expose bare corners, and it also buys the
        columns real size - they are the "vast structure" half of the scale
-       contrast, not fine detail. */
+       contrast, not fine detail.
+       transform-origin is pinned to the viewport's centre rather than the box's,
+       because the box is viewport+520px tall and a 50% origin would drop the
+       pivot 260px below where the art was composed. */
     transform: rotate(11deg) scale(1.5);
+    transform-origin: 50% 50vh;
     background-repeat: no-repeat;
     background-image:
         /* Rim light on the lit (left) flank of each column, offset so it runs
            ALONG the silhouette instead of washing over it. Wide and soft on
            purpose: a thin bright line at this scale reads as a scratch. */
-        radial-gradient(3.4% 17% at 49.5% 46%, rgba(150, 224, 255, 0.085), transparent 70%),
-        radial-gradient(2.8% 12% at 58.2% 54%, rgba(224, 172, 255, 0.065), transparent 70%),
-        radial-gradient(2.2% 9% at 47.6% 40%, rgba(168, 232, 255, 0.050), transparent 70%),
+        radial-gradient(3.4vw 22vh at 49.5vw 58vh, rgba(150, 224, 255, 0.085), transparent 70%),
+        radial-gradient(2.8vw 15vh at 58.2vw 68vh, rgba(224, 172, 255, 0.065), transparent 70%),
+        radial-gradient(2.2vw 11vh at 47.6vw 51vh, rgba(168, 232, 255, 0.050), transparent 70%),
         /* The dust itself. Large, soft and OPAQUE - the structure is carried by
            what it blocks, not by more glow, which is what keeps the value
            histogram bimodal (one dark mass, one bright spike at the hero)
            instead of quietly adding a second bright region. */
-        radial-gradient(9% 24% at 57% 47%, rgba(3, 2, 9, 0.72), transparent 76%),
-        radial-gradient(7% 17% at 64% 55%, rgba(3, 2, 9, 0.62), transparent 76%),
-        radial-gradient(5.5% 13% at 52% 41%, rgba(3, 2, 9, 0.50), transparent 76%);
+        radial-gradient(9vw 30vh at 57vw 60vh, rgba(3, 2, 9, 0.72), transparent 76%),
+        radial-gradient(7vw 22vh at 64vw 70vh, rgba(3, 2, 9, 0.62), transparent 76%),
+        radial-gradient(5.5vw 16vh at 52vw 52vh, rgba(3, 2, 9, 0.50), transparent 76%);
 }
 
 .neb-grain {
@@ -313,10 +372,16 @@ body {
     background-repeat: repeat;
 }
 
-/* Intensity presets. No attribute = medium. */
-:root[data-nebula="subtle"]  { --neb-i: 0.5; }
-:root[data-nebula="medium"]  { --neb-i: 1; }
-:root[data-nebula="present"] { --neb-i: 1.7; }
+/* Intensity presets. These now set the density AT THE TOP OF THE PAGE; main.js
+   fades the group down to --neb-floor of this as you scroll past the hero, so
+   the effective density lower down is preset x floor. No attribute = present.
+
+   2.5 is the ceiling that matters: at that multiplier every sub-layer's opacity
+   calc clamps to 1, so nothing above it changes anything. That is why the
+   slider tops out there. */
+:root[data-nebula="subtle"]  { --neb-i: 1.2; }
+:root[data-nebula="medium"]  { --neb-i: 1.8; }
+:root[data-nebula="present"] { --neb-i: 2.5; }
 /* `display: none`, not opacity 0 - "off" should cost nothing at all */
 :root[data-nebula="off"] .bg-nebula { display: none; }
 
