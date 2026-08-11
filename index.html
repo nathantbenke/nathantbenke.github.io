@@ -3,1316 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07050e">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf9fd">
 
-    <!-- Primary Meta Tags -->
-    <title>Nathan Thomas-Benke - XR Developer</title>
-
-    <meta name="title" content="Nathan Thomas-Benke - XR Developer">
-    <meta name="description" content="Nathan Thomas-Benke - Passionate about creating immersive and interactive XR experiences that push the 
-    boundaries of virtual and augmented reality. Explore my portfolio to see innovative projects and insights into my professional experiences!">
- <!--   <meta name="keywords" content="Vijay Singh, Web Developer, Frontend Developer, Portfolio, Timeline, Tech Insights"> -->
+    <title>Nathan Thomas-Benke | XR Engineer</title>
+    <meta name="description" content="XR engineer building real-time 3D training systems: Unity, government and aerospace R&D.">
     <meta name="author" content="Nathan Thomas-Benke">
+    <link rel="canonical" href="https://nathantbenke.github.io/">
 
-    <!-- Open Graph Meta Tags / Facebook -->
-    <meta property="og:title" content="Nathan Thomas-Benke - XR Developer">
-    <meta property="og:description" content="Passionate about creating immersive and interactive XR experiences that push the boundaries of virtual and 
-    augmented reality. Explore my portfolio to see innovative projects and insights into my professional experiences!">
-    <meta property="og:image" content="assets/images/banner.webp">
-    <meta property="og:url" content="/">
     <meta property="og:type" content="website">
-
-    <!-- Twitter Card Meta Tags -->
+    <meta property="og:title" content="Nathan Thomas-Benke | XR Engineer">
+    <meta property="og:description" content="XR engineer building real-time 3D training systems: Unity, government and aerospace R&D.">
+    <meta property="og:url" content="https://nathantbenke.github.io/">
+    <meta property="og:image" content="https://nathantbenke.github.io/assets/img/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Nathan Thomas-Benke - XR Developer">
-    <meta name="twitter:description" content="Passionate about creating immersive and interactive XR experiences that push the boundaries of virtual and augmented reality. 
-    Explore my portfolio to see innovative projects and insights into my professional experiences!">
-    <meta name="twitter:image" content="assets/images/banner.webp">
+    <meta name="twitter:title" content="Nathan Thomas-Benke | XR Engineer">
+    <meta name="twitter:description" content="XR engineer building real-time 3D training systems: Unity, government and aerospace R&D.">
+    <meta name="twitter:image" content="https://nathantbenke.github.io/assets/img/og-image.jpg">
 
-    <!-- Favicon -->
-    <link rel="icon" href="assets/images/ntb.png" type="image/x-icon">
+    <link rel="preload" href="assets/fonts/agustina-logo.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="icon" type="image/png" sizes="48x48" href="assets/img/favicon-48.png">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
-    <!-- Google Fonts: Rubik -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik&amp;display=swap">
-
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="assets/css/aos.css">
-    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="assets/css/style.css?v=<?=filemtime('css/style.css')?>">
-    <link rel="stylesheet" href="/NTB_Sites2/CurrentWebsiteAssets/css/uikit.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
-
-    <!-- Preload Important resources -->
-    <link rel="preload" href="assets/css/aos.css" as="style" >
-    <link rel="preload" href="assets/css/owl.carousel.min.css" as="style" >
-    <link rel="preload" href="assets/css/bootstrap.min.css" as="style" />
-    <link rel="preload" href="assets/css/bootstrap-icons.min.css" as="style" />
-    <link rel="preload" href="assets/css/style.css?v=<?=filemtime('css/style.css')?>" as="style" />
-
-    <!-- MS-Clarity Analytics -->
-    <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "ld2h640kif");
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Nathan Thomas-Benke",
+        "jobTitle": "XR Developer",
+        "url": "https://nathantbenke.github.io/",
+        "sameAs": [
+            "https://github.com/nathantbenke",
+            "https://www.linkedin.com/in/nathan-thomas-benke/"
+        ]
+    }
     </script>
 
-    <!-- EmailJS Config-->
-    <script  type="text/javascript" src="assets/js/email.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        emailjs.init("hV4YRMybI7buStbXK");
+    <!-- Theme FOUC guard: set data-theme before first paint.
+         ?theme=light|dark also honored (theme-able links + headless testing). -->
+    <script>
+        try {
+            var q = new URLSearchParams(location.search).get('theme');
+            var t = (q === 'dark' || q === 'light') ? q : localStorage.getItem('theme');
+            if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
     </script>
 
+    <!-- MS Clarity: injected after load so analytics never competes with first paint -->
+    <script type="text/javascript">
+    window.addEventListener('load', function () {
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "ld2h640kif");
+    });
+    </script>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/main.js" defer></script>
 </head>
+<body>
 
-<body data-bs-theme="dark" data-bs-spy="scroll" data-bs-target="#navbar">
+<div class="bg" aria-hidden="true">
+    <div class="bg-atmo"></div>
+    <div class="bg-stars bg-stars-1"></div>
+    <div class="bg-stars bg-stars-2"></div>
+    <div class="bg-stars bg-stars-3"></div>
+</div>
 
-    <!-- Preloader -->
-    <div id="preloader"></div>
-    
-    <!-- Header -->
-    <header id="header">
-        <nav id="navbar" class="navbar navbar-expand-md">
-            <div class="container">
-                <a href="/" class="navbar-brand logo">
-                    <span><</span>
-                    <span class="logo-name">Nathan Thomas-Benke</span>
-                    <span>/></span>
+<a class="skip-link" href="#labs">Skip to content</a>
+
+<header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+        <a class="brand" href="#top" aria-label="Nathan Thomas-Benke, home">
+            <span class="brand-bracket" aria-hidden="true">&lt;</span>
+            <span class="brand-sig">Nathan Thomas-Benke</span>
+            <span class="brand-bracket" aria-hidden="true">/&gt;</span>
+        </a>
+        <div class="nav-links">
+            <a href="#labs">NTB Labs</a>
+            <a href="#work">Work</a>
+            <a href="projects.html">Projects</a>
+            <a href="#experience">Experience</a>
+            <a href="#contact">Contact</a>
+            <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch color theme">
+                <svg class="icon icon-sun" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>
+                <svg class="icon icon-moon" aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+            </button>
+        </div>
+    </nav>
+</header>
+
+<main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" aria-label="Introduction">
+        <div class="hero-inner">
+        <div class="hero-text">
+        <h1 class="hero-name">Nathan <span class="nowrap">Thomas-Benke</span></h1>
+        <p class="hero-positioning" id="ticker-line">I build <span class="ticker" id="ticker">VR training simulators</span></p>
+        <p class="hero-role">XR Developer at ARCS Aviation</p>
+        <ul class="hero-actions">
+            <li><a class="btn btn-primary" href="#contact">Resume on request</a></li>
+            <li>
+                <a class="btn" href="https://github.com/nathantbenke">
+                    <svg class="icon" aria-hidden="true" viewBox="0 0 16 16" width="20" height="20" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+                    GitHub
                 </a>
-                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarMenu">
-                    <div class="offcanvas-header">
-                        <a href="/" class="offcanvas-title navbar-brand logo" id="offcanvasNavbarMenu" data-aos="fade-down" data-aos-delay="600">
-                              <!-- Header LOGO -->
-                            <span></span>
-                            <span class="logo-name">Nathan Thomas-Benke</span>
-                            <span>/></span>
-                        </a>
-                        <button type="button" class="navbar-toggler" data-bs-dismiss="offcanvas" aria-label="Close Navigation Menu"><i class="bi bi-x toggle-icon"></i></button>
-                    </div>
-                    <div class="offcanvas-body">
-                        <ul class="navbar-nav nav-underline justify-content-end flex-grow-1">
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="500" data-bs-dismiss="offcanvas"><a href="#hero" class="nav-link active" aria-current="page">Home</a></li>
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="600" data-bs-dismiss="offcanvas"><a href="#about" class="nav-link">About</a></li>
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="700" data-bs-dismiss="offcanvas" ><a href="#skills" class="nav-link">Skills</a></li>
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="800" data-bs-dismiss="offcanvas"><a href="#tools" class="nav-link">Tools</a></li>
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="800" data-bs-dismiss="offcanvas"><a href="#projects" class="nav-link">Projects</a></li>
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="900" data-bs-dismiss="offcanvas"><a href="#Timeline" class="nav-link">Timeline</a></li>
-                            <li class="nav-item" data-aos="fade-down" data-aos-delay="1000" data-bs-dismiss="offcanvas"><a href="#contact" class="nav-link">Contact</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <button class="btn border-0" id="switchTheme" data-aos="fade-down" data-aos-delay="600"><i class="bi bi-brightness-high-fill"></i></button>
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle Navigation Menu" data-aos="fade-down" data-aos-delay="600"><i class="bi bi-list toggle-icon"></i></button>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Hero -->
-    <section id="hero">
-        <div class="container">     
-            <div class="row about-content">
-                <div class="col-lg-5 order-lg-2">
-                    <div class="hero-portrait">
-                        <div class="pic" data-aos="fade-up" data-aos-delay="600"></div>
-                    </div>
-                </div>
-                <div class="col-lg-7 order-lg-1 hero-content">
-                    <span class="h3" data-aos="fade-up" data-aos-delay="0">Hello, I'm</span>
-                    <h1 class="name" data-aos="fade-up" data-aos-delay="200"><span>Nathan Thomas-Benke</h1>
-                    <button type="button" class="btn btn-sm mt-3 mb-3 btn-showcase"  data-aos="fade-up" data-aos-delay="400"><i class="bi bi-stars"></i> Award-Winning XR Developer</button>
-                    <button type="button" class="btn btn-sm mt-3 mb-3 btn-showcase"  data-aos="fade-up" data-aos-delay="400"><i class="bi bi-stars"></i> Software Engineer</button>
-                    <button type="button" class="btn btn-sm mt-3 mb-3 btn-showcase"  data-aos="fade-up" data-aos-delay="400"><i class="bi bi-stars"></i> Creative Technologist</button>
-<!--                    <button type="button" class="btn btn-sm mt-3 mb-3 btn-showcase"  data-aos="fade-up" data-aos-delay="400"><i class="bi bi-stars"></i> UI/UX Developer</button> 
-                    Technical Artist, Game Developer, Unity Developer-->
-
-                    <h3 class="">
-                            I have experience as a 
-                        <div class="inner-headings">
-                            <span>
-                                XR Developer <br />
-                                Creative Technologist <br />
-                                Software Engineer <br />
-                                Unity Developer <br />
-                                Game Developer <br />
-                                Musician <br />
-                                UX/UI Designer <br />
-                                Technical Artist<br />
-                            </span>
-                            </div>
-                        </h3>
-                        
-
-                    <div class="social-icons pb-2 pt-2 mb-2">
-                        <a href="https://github.com/nathantbenke/" target="_blank" class="github" data-aos="fade-up" data-aos-delay="620"><i class="bi bi-github"></i></a>
-                    <!--<a href="https://twitter.com/____/" target="_blank" class="twitter-x" data-aos="fade-up" data-aos-delay="64 0"><i class="bi bi-twitter-x"></i></a> -->
-                        <a href="https://www.instagram.com/nathantbenke/" target="_blank" class="instagram" data-aos="fade-up" data-aos-delay="660"><i class="bi bi-instagram"></i></a>
-                        <a href="https://www.youtube.com/@nathan-thomas-benke/" target="_blank" class="youtube" data-aos="fade-up" data-aos-delay="680"><i class="bi bi-youtube"></i></a>
-                        <a href="https://www.linkedin.com/in/nathan-thomas-benke/" target="_blank" class="linkedin" data-aos="fade-up" data-aos-delay="690"><i class="bi bi-linkedin"></i></a>
-                    <!-- <a href="https://discord.gg/____" target="_blank" class="discord" data-aos="fade-up" data-aos-delay="690"><i class="bi bi-discord"></i></a>-->
-                    </div>
-                    <div class="d-flex call-to-action">
-                        <a href="#contact" data-aos="fade-up" data-aos-delay="700"><button type="button" class="btn me-4 primary-bg-btn"><i class="bi bi-envelope"></i> Contact Me</button></a>
-                        <a href="#projects" data-aos="fade-up" data-aos-delay="800"><button type="button" class="btn btn-light secondary-bg-btn">View Portfolio <i class="bi bi-arrow-up-right-circle"></i></button></a>
-                    </div>                    
-                </div>
-            </div>
+            </li>
+            <li>
+                <a class="btn" href="https://www.linkedin.com/in/nathan-thomas-benke/">
+                    <svg class="icon" aria-hidden="true" viewBox="0 0 16 16" width="20" height="20" fill="currentColor"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+                    LinkedIn
+                </a>
+            </li>
+        </ul>
+        <div class="hero-about">
+            <p>Hey there, I'm Nathan, an <strong>XR developer</strong> with a <strong>master's in Virtual and Augmented Reality</strong> from Goldsmiths, University of London, and a <strong>bachelor's in Computer Science</strong> from the University of Wisconsin–Madison. That mix gave me a strong technical foundation and a specialization in a field I've wanted to work in for a long time.</p>
+            <p>I build hands-on, <strong>real-time 3D and XR applications in Unity with C#</strong>, shipping across <strong>Meta Quest, HTC VIVE, and Android and iOS tablets</strong>. I've had the chance to work for industry leaders: <strong>digital-twin visualizations at Sandia National Laboratories</strong>, interactive AR content at 3D Systems, and <strong>VR training at ARCS Aviation across DoD and U.S. government contracts</strong>.</p>
+            <p>My master's thesis explored <strong>real-time graphics remapping</strong>, retexturing real-world objects live from RealSense depth streams, and it's now growing into <strong>Lucid</strong>, one of my NTB Labs projects. Other work has been recognized nationally: <strong>BeatBoxVR won the Jury Prize at the Innovate UK Immersive Tech Awards</strong>, and I was a <strong>finalist and speaker at AWE EU</strong> with 4th Frontier, a small XR development group I'm part of.</p>
+            <p>My most recent project is <strong>NTB Labs</strong>, the umbrella for everything I build across disciplines, from developer tools to games to music.</p>
         </div>
-    </section>
-
-    <!-- Things I Love 
-    <section id="things-i-love">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">Interests</span></h6>
-            <h2 class="section-heading text-center">Things I Love</h2>
-            <div class="row justify-content-center pt-3 gy-4">
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" >
-                    <div class="card">
-                        <div class="circle-container">
-                            <div class="circle"><i class="bi bi-droplet-half"></i></div>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-title">Designing</p>
-                            <p class="card-text">I love designing. When I see something that needs improvement, I enjoy making it better visually. I pay attention to every detail, whether it's a graphic or a user interface. My goal is to create designs that catch the eye and inspire others.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" >
-                    <div class="card">
-                        <div class="circle-container">
-                            <div class="circle"><i class="bi bi-code-slash"></i></i></div>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-title">Developing</p>
-                            <p class="card-text">After designing, I dive into development. Coding is where I bring designs to life, turning concepts into digital experiences. Each line of code reflects my vision for functionality and elegance, showcasing my commitment to excellence.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" >
-                    <div class="card">
-                        <div class="circle-container">
-                            <div class="circle"><i class="bi bi-cup-hot"></i></div>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-title">Expanding</p>
-                            <p class="card-text">Expanding beyond creation, I optimize. From templates to full websites, I refine post-development. Leveraging blogging and basic SEO, I enhance visibility and impact online. Each step maximizes reach and effectiveness online.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    </section> -->
-
-
-    <!-- About Me -->
-    <section id="about">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">But who am I?</span></h6>
-            <h2 class="section-heading text-center">About Me</h2>
-            <p class="text-center muted-text mt-3 mb-4">Here's my story :)</p>
-            <div class="row justify-content-center" data-aos="fade-down" data-aos-delay="200">
-                <div class="col-lg-5 about-portrait">
-                    <img src="assets/images/NTB-portrait-3.jpeg" class="img-fluid pic" alt="About Me Portrait">
-                </div>
-                <div class="col-lg-7">
-                    <p class="bio">
-                        Hey there, I’m Nathan, a 24-year-old creative technologist with a passion for building the future of XR. I hold a <span class="underline"> Master of Science (MSc) in Virtual and Augmented Reality</span> from 
-                        <span style="font-weight: bold">Goldsmiths, University of London</span>, and a <span class="underline">Bachelor of Science in Computer Science</span> with a <span class="underline">minor certificate in 4D Digital Art</span> 
-                            from the <span style="font-weight: bold">University of Wisconsin-Madison</span>. My journey so far has been all about blending technical expertise with artistic vision, which even led my team to win at the Innovate UK Immersive Tech Awards.
-                        </br></br>
-                        I’ve also had the opportunity to work with industry leaders like <span class="underline">Sandia National Laboratories</span>, where I contributed the creation of digital twin visualizations in Unity for multidisciplinary models as well as researching methods for streamlining workflows for implementing complex Unity visualizations. At <span class="underline">3D Systems</span>, I dove into prototyping and industrial/medical 3D printing applications, creating interactive AR instruction
-                         tools for healthcare and industrial end users and the support staff. During these internships, 
-                        I honed my ability to collaborate with cross-functional teams of subject matter experts and developers.
-                        </br></br>
-                        I love crafting immersive, cutting-edge XR experiences, blending technical skill with creative flair. When I’m not developing in Unity, I enjoy diving into music composition and production in Ableton. Alternatively, you might find me traveling abroad, trying to find new inspiration from the diverse cultures and experiences I come across. These experiences have helped me find new ways to merge the digital and physical worlds. For my master’s thesis, The Exploration of Real-Time Graphics Remapping, I worked extensively with RealSense depth sensor camera data streams to investigate how real-world objects could be retextured and manipulated in real-time, pushing the boundaries of augmented reality interaction.
-                        </br></br>
-                        I’m always excited to experiment with emerging technologies, stay ahead of tech trends, and bring groundbreaking ideas to life. Eligible to work in the US and I’m ready to start immediately!                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Skills -->
-    <section id="skills">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">What do I know?</span></h6>
-            <h2 class="section-heading text-center">Skills</h2>
-            <p class="text-center muted-text mt-3 mb-4">Here are some of the technologies that are part of my current stack:</p>
-            <div class="row justify-content-center row-cols-2 row-cols-md-3 row-cols-lg-6 mt-4 gy-4 skills-container" data-aos="fade-up" data-aos-delay="200">
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/CSharp.svg" alt="C#">
-                        <p class="skill-name">C#</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/Java.svg" alt="Java">
-                        <p class="skill-name">Java</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/HTML.svg" alt="HTML">
-                        <p class="skill-name">HTML</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/CSS.svg" alt="CSS"/>
-                        <p class="skill-name">CSS</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/JS.svg" alt="JavaScript">
-                        <p class="skill-name">JS</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" style="width: 90px;" src="/assets/images/skills/SQL.svg" alt="SQL">
-                        <p class="skill-name">SQL</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="assets/images/skills/CPlus.svg" alt="C++">
-                        <p class="skill-name">C++</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="assets/images/skills/Swift.svg" alt="Swift">
-                        <p class="skill-name">Swift</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/objective-c-icon.png" alt="Objective-C">
-                        <p class="skill-name">Objective-C</p>
-                    </div>
-                </div>
-
-                <!--
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/C.svg" alt="C">
-                        <p class="skill-name">C</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/Python.svg" alt="Python">
-                        <p class="skill-name">Python</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="skill">
-                        <img class="skill-image" src="/assets/images/skills/MongoDB.svg" alt="MongoDB">
-                        <p class="skill-name">MongoDB</p>
-                    </div>
-                </div>
-                -->
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Tools -->
-    <section id="tools">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">What can I use?</span></h6>
-            <h2 class="section-heading text-center">Tools</h2>
-            <p class="text-center muted-text mt-3 mb-4">Here are some of the tools in my toolkit:</p>
-            <div class="row justify-content-center row-cols-2 row-cols-md-3 row-cols-lg-6 mt-4 gy-4 tools-container" data-aos="fade-down" data-aos-delay="200">
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/Unity.svg" alt="Unity">
-                        <p class="tool-name">Unity</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/Maya.svg" alt="Maya">
-                        <p class="tool-name">Maya</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/vscode.svg" alt="VSCode">
-                        <p class="tool-name">VSCode</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/github.svg" alt="Github">
-                        <p class="tool-name">Github</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/plastic-scm-logo.svg" alt="Plastic SCM">
-                        <p class="tool-name">Plastic SCM </p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/Unreal.png" alt="Unreal">
-                        <p class="tool-name">Unreal Engine</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/Photoshop.svg" alt="Photoshop">
-                        <p class="tool-name">Adobe Photoshop</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/Premiere.png" alt="Premiere">
-                        <p class="tool-name">Adobe Premiere</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/AdobeAfterEffects.svg" alt="After Effects">
-                        <p class="tool-name">Adobe After Effects</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/ableton.png" alt="Ableton">
-                        <p class="tool-name">Ableton Live</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/rhino6v3.png" alt="Rhinoceros 6">
-                        <p class="tool-name">Rhino 6</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/azure-devops.svg" alt="Azure DevOps">
-                        <p class="tool-name">Azure DevOps</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/microsoft-office-suiteV1.svg" alt="Microsoft Suite">
-                        <p class="tool-name">Office Suite</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/GoogleWorkspace.svg" alt="Google Workspace">
-                        <p class="tool-name">Google Workspace </p>
-                    </div>
-                </div>
-                <!--
-                <div class="col">
-                    <div class="tool">
-                        <img class="tool-image" src="/assets/images/tools/Gemini.svg" alt="Gemini">
-                        <p class="tool-name">Gemini</p>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Timelines 
-    <section id="timelines">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">What am Doing?</span></h6>
-            <h2 class="section-heading text-center">Timelines</h2>
-            <div class="row justify-content-center row-cols-2 row-cols-md-3 row-cols-lg-6 skills-container">
-                <div class="col">
-                </div>
-            </div>
-        </div>
-    </section> -->
-            
-
-    <!-- Projects -->
-    <section id="projects">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">What I've done?</span></h6>
-            <h2 class="section-heading text-center">Projects</h2>
-
-
-            <!-- Featured Work Project -->
-            <div class="featured-project text-center mb-5">
-
-                <h3 class="text-center text-4xl font-bold" style="font-family:monospace;">
-                    ARCS Trainer (Featured Work)
-                </h3>
-
-                <p class="text-center muted-text mt-3 mb-4" style="max-width:800px; margin:auto;">
-                    ARCS Trainer is a virtual reality training platform designed to simulate real-world operational scenarios.
-                    I served as a lead developer on the project and directed the showcase video below, including narration and production.
-                </p>
-
-                <div style="max-width:900px; margin:auto;">
-                    <div style="position:relative; padding-bottom:56.25%; height:0;">
-                        <iframe
-                            src="https://www.youtube.com/embed/Px23FdhTlb0"
-                            title="ARCS Trainer Demo"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen
-                            style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:12px;">
-                        </iframe>
-                    </div>
-                </div>
-
-                <p class="text-sm text-gray-400 mb-8">
-                <br>Role: Lead Developer • XR Systems • Unity • Interaction Design • Technical Direction
-                </p>
-
-            </div>
-
-
-
-            <div class="row justify-content-center mt-4 gy-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="card project-card">
-                        <div class="w-full lg:w-1/2">
-                            <div class="flex flex-col h-full p-10 left_sec">
-                                <div class="mb-4 mt-4">
-                                    <h2 class="text-center text-5xl font-bold" style=" font-family:monospace;"> BeatBoxVR (Award Winning) </h2>
-                                    <p class="stacks text-center" >VR | Unity | C# | Music <br></p>
-                                </div>
-                                
-                                <div class="mb-4 mt-4">
-                                    
-                                    <p class="faded-text text-lg text-center" style=" font-family:monospace;">                             
-                                                                                Innovate UK Immersive Tech Awards -- <br>
-                                        Jury Prize Winner 2024 -- Technical Innovation Finalist 2024
-                                        <br><br>
-                                        A VR Drums experience that allows for the user to experience their 
-                                        greatest drumming fantasy! Including 3D environments with realistic audio, haptic feedback, and visual effects. </p>
-                                </div>
-
-                                    <!-- Slideshow 1 (4 slides) -->
-                                    <div class="slideshow-container">
-                                        <div class="mySlides1 fade">
-                                            <div class="numbertext">1 / 4</div>
-                                            <img src="assets/images/projects/BeatBoxVR/BeatBoxVR_StaticLogo.png">
-                                            <div class="caption-text">&nbsp; </div>
-                                        </div>
-                                        <div class="mySlides1 fade">
-                                            <div class="numbertext">2 / 4</div>
-                                            <img src="assets/images/projects/BeatBoxVR/TeamGroupCelebration.jpg">
-                                            <div class="caption-text">BeatBoxVR Team</div>
-                                        </div>
-                                        <div class="mySlides1 fade">
-                                            <div class="numbertext">3 / 4</div>
-                                            <img src="assets/images/projects/BeatBoxVR/InnovateUKFullGoldsmithsTeam.jpg">
-                                            <div class="caption-text">Innovate UK w/ Dev team</div>
-                                        </div>
-                                        <div class="mySlides1 fade">
-                                            <div class="numbertext">4 / 4</div>
-                                            <img src="assets/images/projects/BeatBoxVR/InnovateShowcaseLiveDemo.jpg">
-                                            <div class="caption-text">Innovate UK Showcase</div>
-                                        </div>
-
-                                        <!-- Next/prev buttons for Slideshow 1 -->
-                                        <a class="prev-slide" onclick="plusSlides(-1, 0)">&#10094;</a>  
-                                        <a class="next-slide" onclick="plusSlides(1, 0)">&#10095;</a>
-                                    </div>
-
-                                    <!-- Dots/circles for Slideshow 1 -->
-                                    <div class="slide-dots">
-                                        <span class="dot" onclick="currentSlide(1, 0)"></span>
-                                        <span class="dot" onclick="currentSlide(2, 0)"></span>
-                                        <span class="dot" onclick="currentSlide(3, 0)"></span>
-                                        <span class="dot" onclick="currentSlide(4, 0)"></span>
-                                    </div>
-                                    
-                                    <div class="project-buttons">
-                                        <button a href="https://youtu.be/oBdALCK0mpA" type="button" class="btn btn-sm theme-button theme-text"> 
-                                            <a href="https://youtu.be/oBdALCK0mpA">
-                                                <p style="font-size: 16px;"><i class="fa fa-youtube-play"></i>
-                                                    Video Demo
-                                                </p>
-                                            </a>
-                                        </button>
-                                        <button a href="https://github.com/MilesJMaiden/BeatBoxVR" type="button" class="btn btn-sm theme-button theme-text">
-                                            <a href="https://github.com/MilesJMaiden/BeatBoxVR">
-                                                <p style="font-size: 16px;"><i class="fa fa-github"></i>
-                                                    Project Link
-                                                </p>
-                                            </a>
-                                        </button>
-                                    </div>
-
-
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="card project-card">
-                        <div class="w-full lg:w-1/2">
-                            <div class="flex flex-col h-full p-10 left_sec">
-                                <div class="mb-4 mt-4">
-                                    <h2 class="text-center text-5xl font-bold" style=" font-family:monospace;"> Artillery Rocket Simulator </h2>
-                                    <p class="stacks text-center" >Arduino | Hardware | Unity |  Input Systems | Simulator </p>
-                                </div>
-                                <div class="mb-4 mt-4">
-                                    <p class="text-center text-lg" style=" font-family:monospace;">
-                                        A fully-built artillery and guided-rocket simulator using a 
-                                        Thrustmaster T.16000M and a custom Arduino controller. The Unity-based application was created from scratch and includes
-                                        particle systems, sound effects, and shell flare markers. Watch the demo to learn more: </p>
-                                    </div>
-
-                                <!--
-                                <div class="flex items-center">
-                                    <div class="contact-button animatedcard">
-                                        
-                                        <a href="https://youtu.be/KXMUKRciyz0" style="border-radius: 1em;">
-                                            <p style ="padding: 9px;">
-                                                <i class="fa fa-youtube-play" style ="color:black"></i>
-                                                Video Demo
-                                            </p>
-                                        </a>
-            
-                                        <a href="https://github.com/nathantbenke/Artillery-Rocket-Simulator/" style="border-radius: 1em;">
-                                            <p style ="padding: 9px; "> 
-                                                <i class="fa fa-github" style ="color:black"></i>
-                                                Project Link
-                                            </p>
-                                        </a>
-                                    </div>
-                                </div> -->
-
-                                    <!-- Slideshow 2 (5 slides) -->
-                                    <div class="slideshow-container">
-                                        <div class="mySlides2 fade">
-                                            <div class="numbertext">1 / 5</div>
-                                            <img src="assets/images/projects/RocketArtillerySim/ArtilleryRocketSetup.png">
-                                            <div class="caption-text">External setup with Thrustmaster and custom Arduino controller</div>
-                                        </div>
-                                        <div class="mySlides2 fade">
-                                            <div class="numbertext">2 / 5</div>
-                                            <img src="assets/images/projects/RocketArtillerySim/ArtilleryRocketSimFPOV.png">
-                                            <div class="caption-text">FPOV Rocket Artillery </div>
-                                        </div>
-                                        <div class="mySlides2 fade">
-                                            <div class="numbertext">3 / 5</div>
-                                            <img src="assets/images/projects/RocketArtillerySim/ArtilleryRocketSim3POV.png">
-                                            <div class="caption-text">Custom-modelled Howitzer Artillery</div>
-                                        </div>
-                                        <div class="mySlides2 fade">
-                                            <div class="numbertext">4 / 5</div>
-                                            <img src="assets/images/projects/RocketArtillerySim/ArtilleryRocketSimLiveTargets.png">
-                                            <div class="caption-text">Targets and destructable jets spread across map></div>
-                                        </div>
-                                        <div class="mySlides2 fade">
-                                            <div class="numbertext">5 / 5</div>
-                                            <img src="assets/images/projects/RocketArtillerySim/ArtilleryRocketSimMap.png">
-                                            <div class="caption-text">Full-view of created map</div>
-                                        </div>
-
-                                        <!-- Next/prev buttons for Slideshow 2 -->
-                                        <a class="prev-slide" onclick="plusSlides(-1, 1)">&#10094;</a>
-                                        <a class="next-slide" onclick="plusSlides(1, 1)">&#10095;</a>
-                                    </div>
-
-                                    <!-- Dots/circles for Slideshow 2 -->
-                                    <div class="slide-dots">
-                                        <span class="dot" onclick="currentSlide(1, 1)"></span>
-                                        <span class="dot" onclick="currentSlide(2, 1)"></span>
-                                        <span class="dot" onclick="currentSlide(3, 1)"></span>
-                                        <span class="dot" onclick="currentSlide(4, 1)"></span>
-                                        <span class="dot" onclick="currentSlide(5, 1)"></span>
-                                    </div>
-
-                                    <div class="project-buttons">
-                                        <button a href="https://youtu.be/KXMUKRciyz0" type="button" class="btn btn-sm theme-button theme-text"> 
-                                            <a href="https://youtu.be/KXMUKRciyz0">
-                                                <p style="font-size: 16px;"><i class="fa fa-youtube-play"></i>
-                                                    Video Demo
-                                                </p>
-                                            </a>
-                                        </button>
-                                        <button a href="https://github.com/nathantbenke/Artillery-Rocket-Simulator/" type="button" class="btn btn-sm theme-button theme-text">
-                                            <a href="https://github.com/nathantbenke/Artillery-Rocket-Simulator/">  
-                                                <p style="font-size: 16px;"><i class="fa fa-github"></i>
-                                                    Project Link
-                                                </p>
-                                            </a>
-                                        </button>
-                                    </div>
-
-
-
-                            </div>
-                        </div>
-                    </div>
-
-            </div>
-
-            <div class="row justify-content-center mt-4 gy-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card project-card">
-                    <div class="w-full lg:w-1/2">
-                        <div class="flex flex-col h-full p-10 left_sec">
-                            <div class="mb-4 mt-4">
-                                <h2 class="text-center text-5xl font-bold" style=" font-family:monospace;"> Origin of Humanity </h2>
-                                <p class="stacks text-center" > Unity | Procedural Generation | Simulator </p>
-
-                            </div>
-                            <div class="mb-4 mt-4">
-                                <p class="text-center text-lg" style=" font-family:monospace;">
-                                    Procedurally generate your civilization! <br>
-                                    Interact with the slider to impact the land-to-water ratio. You can hit the regenerate button for 
-                                    different permutations if you find a ratio you like!
-                                </p>
-                            </div>
-                            <div class="row2-adjustment">
-                                <!-- Slideshow 3 (5 slides) -->
-                                <div class = "slideshow-container">
-                                    <!-- Full-width images with number and caption text -->
-                                    <div class="mySlides3 fade">
-                                        <div class="numbertext">1 / 5</div>
-                                        <img src="/assets/images/projects/OriginOfHumanity/OriginOfHumanityThumbnail.png">
-                                        <div class="caption-text">&nbsp;</div>
-                                    </div>
-                                
-                                    <div class="mySlides3 fade">
-                                        <div class="numbertext">2 / 5</div>
-                                        <img src="/assets/images/projects/OriginOfHumanity/CivBuilderPromo1.png">
-                                        <div class="caption-text">&nbsp; </div>
-                                    </div>
-                                
-                                    <div class="mySlides3 fade">
-                                        <div class="numbertext">3 / 5</div>
-                                        <img src="/assets/images/projects/OriginOfHumanity/CivBuilderPromo3.png">
-                                        <div class="caption-text">&nbsp; </div>
-                                    </div>
-                                
-                                    <div class="mySlides3 fade">
-                                        <div class="numbertext"> 4 / 5</div>
-                                        <img src="/assets/images/projects/OriginOfHumanity/CivBuilderPromo4.png">
-                                        <div class="caption-text">&nbsp;</div>
-                                    </div>
-    
-                                    <div class="mySlides3 fade">
-                                        <div class="numbertext"> 5 / 5</div>
-                                        <img src="/assets/images/projects/OriginOfHumanity/CivBuilderPromo5.png">
-                                        <div class="caption-text">&nbsp;</div>
-                                    </div>
-    
-    
-                                <!-- Next and previous buttons -->
-                                <a class="prev-slide" onclick="plusSlides(-1,2)">
-                                    <span class="white-arrow">&#10094;</span>
-                                </a>
-                                <a class="next-slide" onclick="plusSlides(1,2)">
-                                    <span class="white-arrow">&#10095;</span>
-                                </a>
-                            </div>
-                            <br>
-                            
-                            <!-- The dots/circles -->
-                            <div class="slide-dots">
-                                <span class="dot" onclick="currentSlide(1,2)"></span>
-                                <span class="dot" onclick="currentSlide(2,2)"></span>
-                                <span class="dot" onclick="currentSlide(3,2)"></span>
-                                <span class="dot" onclick="currentSlide(4,2)"></span>
-                                <span class="dot" onclick="currentSlide(5,2)"></span>
-                            </div>
-
-                                <div class="project-buttons">
-                                    <button a href="https://www.youtube.com/watch?v=6_3PXCIS3cw" type="button" class="btn btn-sm theme-button theme-text"> 
-                                        <a href="https://www.youtube.com/watch?v=6_3PXCIS3cw">
-                                            <p style="font-size: 16px;"><i class="fa fa-youtube-play"></i>
-                                                Video Demo
-                                            </p>
-                                        </a>
-                                    </button>
-                                    <button a href="https://nathantbenke.itch.io/origin-of-humanity/" type="button" class="btn btn-sm theme-button theme-text">
-                                        <a href="https://nathantbenke.itch.io/origin-of-humanity/">  
-                                            <p style="font-size: 16px;"><i class="fa fa-play"></i>
-                                                Play Now&nbsp&nbsp
-                                            </p>
-                                        </a>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="card project-card">
-                    <div class="w-full lg:w-1/2">
-                        <div class="flex flex-col h-full p-10 left_sec">
-                            <div class="mb-4 mt-4">
-                                <h2 class="text-center text-5xl font-bold" style=" font-family:monospace;"> Augmented Duelist </h2>
-                                <p class="stacks text-center" > AR | Card Game | Lens Studio </p>
-
-                            </div>
-                            <div class="mb-4 mt-4">
-                                <p class="text-center text-lg" style=" font-family:monospace;">
-                                    An AR app run through Snapchat that lets you use custom monster and action cards to 
-                            do battle with another player. Equipped with custom models and animations. </p>
-                        </div>
-                        <div class="row2-adjustment" style="top: 550px;">
-
-                                <div class="slideshow-container">
-                                    <div class="fade">
-                                        <div class="numbertext"> &nbsp;</div>
-                                        <img src="/assets/images/projects/AugmentedDuelistThumbnail.png">
-                                        <div class="caption-text">&nbsp; </div>
-                                    </div>
-                                </div>
-
-                                <div class="slide-dots">                                    
-                                    <span class="dot"></span>
-                                </div>
-
-                                <div class="project-buttons">
-                                    <button a href="https://www.youtube.com/watch?v=6_3PXCIS3cw" type="button" class="btn btn-sm theme-button theme-text"> 
-                                        <a href="https://www.youtube.com/watch?v=6_3PXCIS3cw">
-                                            <p style="font-size: 16px;"><i class="fa fa-youtube-play"></i>
-                                                Video Demo
-                                            </p>
-                                        </a>
-                                    </button>
-                                    <button a href="https://github.com/nathantbenke/AugmentedDuelists" type="button" class="btn btn-sm theme-button theme-text">
-                                        <a href="https://github.com/nathantbenke/AugmentedDuelists">  
-                                            <p style="font-size: 16px;"><i class="fa fa-github"></i>
-                                                Project Link
-                                            </p>
-                                        </a>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <br><br>
-            <div class="center-button">
-                <button a href="./NTB_Site2/projectPortfolio.html" style="background-color: #850dd5;">
-                    <a href="./NTB_Site2/projectPortfolio.html">  
-                        View All (Under Construction)
-                    </a>
-                </button>
-            </div>
-
-                <!-- CarouselV2
-                <div class="carousel-container">
-                    <div class="carousel-component">
-                        <div class="carousel-items">  
-                        </div>
-                    </div>
-                </div>
-
-
-                                        <div class="slideshow-container">
-                                            <div class="mySlides3 fade">
-                                                <div class="numbertext">1 / 5</div>
-                                                <img src="assets/images/projects/OriginOfHumanity/OriginOfHumanityThumbnail.png" style="border-radius: 37px;">
-                                                <div class="muted-text"></div>
-                                            </div>
-                                            <div class="mySlides3 fade">
-                                                <div class="numbertext">2 / 5</div>
-                                                <img src="assets/images/projects/OriginOfHumanity/CivBuilderPromo1.png" style="border-radius: 37px;">
-                                                <div class="muted-text"></div>
-                                            </div>
-                                            <div class="mySlides3 fade">
-                                                <div class="numbertext">3 / 5</div>
-                                                <img src="assets/images/projects/OriginOfHumanity/CivBuilderPromo3.png" style="border-radius: 37px;">
-                                                <div class="muted-text"></div>
-                                            </div>
-                                            <div class="mySlides3 fade">
-                                                <div class="numbertext">4 / 5</div>
-                                                <img src="assets/images/projects/OriginOfHumanity/CivBuilderPromo4.png" style="border-radius: 37px;">
-                                                <div class="muted-text"></div>
-                                            </div>
-                                            <div class="mySlides3 fade">
-                                                <div class="numbertext">5 / 5</div>
-                                                <img src="assets/images/projects/OriginOfHumanity/CivBuilderPromo5.png" style="border-radius: 37px;">
-                                                <div class="muted-text"></div>
-                                            </div>
-
-                                            <!-- Next/prev buttons for Slideshow 3 
-                                            <a class="prev-slide" onclick="plusSlides(-1, 2)">&#10094;</a>
-                                            <a class="next-slide" onclick="plusSlides(1, 2)">&#10095;</a>
-                                        </div>
-
-                                        <!-- Dots/circles for Slideshow 3 
-                                        <div style="text-align:center">
-                                            <span class="dot" onclick="currentSlide(1, 2)"></span>
-                                            <span class="dot" onclick="currentSlide(2, 2)"></span>
-                                            <span class="dot" onclick="currentSlide(3, 2)"></span>
-                                            <span class="dot" onclick="currentSlide(4, 2)"></span>
-                                            <span class="dot" onclick="currentSlide(5, 2)"></span>
-                                        </div>
-            
-                                </div>
-                            </div>
-                        </div>
-                    -->
-                    </div> 
-                </div>
-            </div> 
-            <!-- END OF CAROSEL-->
-                
-
-                                        <!-- Slideshow container -->
-<!--                
-                                            <div class = "slideshow-container">
-                                                <!-- Full-width images with number and caption text 
-
-                
-                
-                                                <!-- Next and previous buttons 
-                                                <a class="prev" onclick="plusSlides(-1,2)">
-                                                    <span class="white-arrow">&#10094;</span>
-                                                </a>
-                                                <a class="next" onclick="plusSlides(1,2)">
-                                                    <span class="white-arrow">&#10095;</span>
-                                                </a>
-                                            </div>
-                                        <br>
-                                        <!-- The dots/circles 
-                                        <div style="text-align:center">
-                                            <span class="dot" onclick="currentSlide(1,2)"></span>
-                                            <span class="dot" onclick="currentSlide(2,2)"></span>
-                                            <span class="dot" onclick="currentSlide(3,2)"></span>
-                                            <span class="dot" onclick="currentSlide(4,2)"></span>
-                                            <span class="dot" onclick="currentSlide(5,2)"></span>
-                                        </div>
-                                    </div>-->
-
-                            <!---->        
-
-
-
-                                <!--
-                                        <div class="col-lg-4 col-md-6">            
-                                            <div class="card project-card">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="col-2">
-                                                            <img src="/assets/images/projects/pfpfinder-icon.png" class="img-fluid icon" alt="PfpFinder Logo">
-                                                        </div>
-                                                        <div class="col-7 p-0">
-                                                            <a href="https://pfpfinder.com/" class="card-title title" target="_blank">PfpFinder</a>
-                                                            <p class="stacks m-0">HTML | CSS | BS | JS + NodeJS</p>
-                                                        </div>
-                                                        <div class="col-3 align-middle">
-                                                            <a href="https://pfpfinder.com/" class="btn btn-sm primary-bg-btn rounded-5" target="_blank">Visit <i class="bi bi-arrow-up-right-circle-fill"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="description-container">
-                                                    <p class="description">Find the best profile pictures and banners for all your social media accounts.</p>
-                                                </div>
-                                                <div class="banner-container">
-                                                    <div class="overlay">
-                                                        <a href="https://pfpfinder.com/" class="btn" target="_blank"><i class="bi bi-arrow-up-right-circle-fill"></i></a>
-                                                    </div>
-                                                    <img src="/assets/images/projects/pfpfinder-banner.webp" class="card-img-top banner" alt="PfpFinder Banner">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-6">
-                                            <div class="card project-card">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="col-2">
-                                                            <img src="/assets/images/projects/bikekart-icon.png" class="img-fluid icon" alt="BikeKart Template Logo">
-                                                        </div>
-                                                        <div class="col-7 p-0">
-                                                            <a href="https://itsvijaysingh.github.io/BikeKart/" class="card-title title" target="_blank">BikeKart</a>
-                                                            <p class="stacks m-0">HTML | CSS</p>
-                                                        </div>
-                                                        <div class="col-3 align-middle">
-                                                            <a href="https://itsvijaysingh.github.io/BikeKart/" class="btn btn-sm primary-bg-btn rounded-5" target="_blank">Visit <i class="bi bi-arrow-up-right-circle-fill"></i></a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="description-container">
-                                                    <p class="description">BikeKart is just another bike store web template with mulitple sections.</p>
-                                                </div>
-                                                <div class="banner-container">
-                                                    <div class="overlay">
-                                                        <a href="https://itsvijaysingh.github.io/BikeKart/" class="btn" target="_blank"><i class="bi bi-arrow-up-right-circle-fill"></i></a>
-                                                    </div>
-                                                    <img src="/assets/images/projects/bikekart-banner.webp" class="card-img-top banner" alt="BikeKart Banner">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-6">
-                                            <div class="card project-card cursor-not-allowed">
-                                                <div class="card-body ">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="col-2">
-                                                            <img src="/assets/images/projects/simplcalc-icon.png" class="img-fluid icon" alt="SimplCalc Icon">
-                                                        </div>
-                                                        <div class="col-7 p-0">
-                                                            <span class="card-title title">SimplCalc</span>
-                                                            <p class="stacks m-0">HTML | CSS | JS</p>
-                                                        </div>
-                                                        <div class="col-3 align-middle">
-                                                            <button class="btn btn-sm in-progress cursor-not-allowed">In Progress</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="description-container">
-                                                    <p class="description">Tired of calculating manually? SimplCalc is best and faster solution.</p>
-                                                </div>
-                                                <div class="banner-container cursor-not-allowed">
-                                                    <div class="overlay">
-                                                        <i class="bi bi-hourglass-split"></i>
-                                                    </div>
-                                                    <img src="/assets/images/projects/simplcalc-banner.webp" class="card-img-top banner" alt="SimplCalc Banner">
-                                                </div>
-                                            </div>
-                                        </div> -->
-    </section>
-
-    <!-- Testimonials 
-    <section id="testimonials">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">What they Think?</span></h6>
-            <h2 class="section-heading text-center">Testimonials</h2>
-            <p class="text-center muted-text mt-3 mb-4">What do my friends and clients say about me.</p>
-            <div class="row mt-4 gy-4" data-aos="fade-down" data-aos-delay="200">
-                <div class="col-md-12">
-                    <div id="testimonial-slider" class="owl-carousel">
-                        <div class="testimonial">
-                            <p class="description">
-                                Your brilliance is truly inspiring. You bring so much positivity and creativity wherever you go. Keep shining brightly! Working with you has been always an incredible experience.
-                            </p>
-                            <div class="pic">
-                                <img src="/assets/images/testimonials/Moinudeen.webp" alt="Moinudeen Pic">
-                            </div>
-                            <div class="detail">
-                                <h4 class="name">Moinudeen</h4>
-                                <small class="role" >Programmer</small>
-                            </div>
-                        </div>
-         
-                        <div class="testimonial">
-                            <p class="description">
-                                Bro, I admire your hard work. Your efforts speak volumes about you. You're amazing! Much love, bro! 🤜🤛
-                            </p>
-                            <div class="pic">
-                                <img src="/assets/images/testimonials/Nadeem.webp" alt="Nadeem Pic">
-                            </div>
-                            <div class="detail">
-                                <h4 class="name">Nadeem</h4>
-                                <small class="role">Friend</small>
-                            </div>
-                        </div>
-
-                       <div class="testimonial">
-                            <p class="description">
-                                Vijay's commitment and hard work shine through in everything he does.
-                            </p>
-                            <div class="pic">
-                                <img src="/assets/images/testimonials/J.svg" alt="Jwala Pratap Pic" class="">
-                            </div>
-                            <div class="detail">
-                                <h4 class="name">Jwala Pratap</h4>
-                                <small class="role">Web Developer</small>
-                            </div>
-                        </div>
-
-                        <div class="testimonial">
-                            <p class="description">
-                                Working with Vijay has been an incredible experience. His dedication in web development truly shine through his work. He has a remarkable ability to turn ideas into reality & crafting websites that exceed expectations.
-                            </p>
-                            <div class="pic">
-                                <img src="/assets/images/testimonials/Rahul.webp" alt="Rahul Pic">
-                            </div>
-                            <div class="detail">
-                                <h4 class="name">Rahul Sharma</h4>
-                                <small class="role">Software Developer</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
-    <!-- Timeline -->
-    <section id="Timeline">
-        <div class="container">
-            <!--<h6 class="text-center"><span class="btn btn-sm theme-button theme-text">Do I Write?</span></h6> -->
-            <h2 class="section-heading text-center">My Professional Timeline</h2>
-            <p class="text-center muted-text mt-3 mb-4">From education to professional achievements, here are some of the highlights of my careers so far.</p>
-            <div class="row justify-content-center gy-4" data-aos="fade-up" data-aos-delay="750">
-                <!-- Add 1 second to timeline:hover::after AND .timeline:hover .timeline-container:nth-child(#) in style.css-->
-    
-            <div class = "timeline ">
-                <div class="timeline-container left-container">
-                    <img src="/assets/images/timeline/university-of-wisconsin-w-seeklogo.png">
-                    <div class="text-box img-fluid">
-                        <h2> University of Wisconsin-Madison</h2>
-                        <small class="muted-text"> September 2019</small>
-                        <p> 
-                            Began Bachelor of Science degree in Computer Science with a minor certificate in Art Studio - 4D Digital Art. With 
-                            this certificate, I learned technical skills for media production and 3D modelling. While programming in a wide range 
-                            of coding languages, I gained strong technical experience and a sharp design sensibility.
-                            </p>
-                        <span class="left-container-arrow"></span>
-                    </div>
-                </div>
-
-                    <div class="timeline-container right-container">
-                        <img src="/assets/images/timeline/QUAD-Graphics.png">
-                        <div class="text-box img-fluid">
-                            <h2> Quad/Graphics</h2>
-                            <small class="muted-text"> June 2021 - August 2021 </small>
-                            <p> <i>Software Development Intern</i> on the Imaging Operation team</br></br> 
-                                In this role, I debugged and developed software applications using a variety of programming languages.
-                                I also had the opportunity to develop using the Agile-Scrum development process on a daily basis!
-                            </p>
-                            <span class="right-container-arrow"></span>
-                        </div>
-                    </div>
-    
-                    <div class="timeline-container right-container">
-                        <img src="/assets/images/timeline/3D_Systems_Logo_square.png">
-                        <div class="text-box">
-                            <h2> 3D Systems</h2>
-                            <small class="muted-text"> June 2022 - August 2022 </small>
-                            <p> <i>Digital Learning Content Developer (AR)</i> on the Global Customer Success team</br></br> 
-                                In this role, I developed maintenance procedures with subject matter experts for a specialized
-                                 3D printer and turned those into an interactive AR instruction tool for healthcare and 
-                                 industrial end users and the support team.
-                            </p>
-                            <span class="right-container-arrow"></span>
-                        </div>
-                    </div>
-
-                    
-                    <div class="timeline-container left-container">
-                        <img src="/assets/images/timeline/university-of-wisconsin-w-seeklogo.png">
-                        <div class="text-box">
-                            <h2> University of Wisconsin-Madison</h2>
-                            <small class="muted-text"> May 2023</small>
-                            <p>Graduated with a 3.76 GPA earning a Bachelor of Science in Computer Science and 
-                                minor certificate in Art Studio-4D Digital Art.  </p>
-                            <span class="left-container-arrow"></span>
-                        </div>
-                    </div>
-
-
-                    <div class="timeline-container right-container">
-                        <img src="/assets/images/timeline/sandiaV1.png">
-                        <div class="text-box">
-                            <h2> Sandia National Laboratories</h2>
-                            <small class="muted-text"> June 2023 - August 2023 </small>
-                            <p> <i>Virtual Technologies and Engineering R&D Intern</i> </br></br> In this role, I contributed to the creation of digital twin 
-                                visualizations in Unity for multidisciplinary models using MATLAB/Simulink.
-                                I also contributed to standardizing resources while researching methods to streamline workflows and improve
-                                 productivity in the Unity development cycle for implementing complex visualizations.
-                            </p>
-                            <span class="right-container-arrow"></span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-container left-container">
-                        <img src="/assets/images/timeline/goldsmithsG.png">
-                        <div class="text-box">
-                            <h2> Goldsmiths, University of London</h2>
-                            <small class="muted-text"> September 2023</small>
-                            <p> 
-                                Began a Master of Science degree in Virtual and Augmented Reality. I explored the core principles of developing XR experiences and games, gaining hands-on experience with various development engines, including Unity, Unreal Engine, and Lens Studio. Through this program, I developed a solid foundation in the technical and creative aspects of XR, which enhanced my skills in prototyping, user experience (UX) design, content creation, problem-solving, and storytelling. </p>
-                            <span class="left-container-arrow"></span>
-                        </div>
-                    </div>
-
-                    <div class="timeline-container right-container">
-                    <img src="/assets/images/timeline/Innovate-UK-2019-square.jpg">
-                        <div class="text-box">
-                            <h2> Innovate UK Immersive Tech Awards</h2>
-                            <small class="muted-text"> May 2024</small>
-                            <p> BeatBoxVR - Jury Award Winner <br>
-                                BeatBoxVR - Technical Innovation Finalist</p>
-                                <span class="right-container-arrow"></span>
-                        </div>
-                    </div>
-
-
-                    <div class="timeline-container left-container">
-                        <img src="/assets/images/timeline/goldsmithsG.png">
-                        <div class="text-box">
-                            <h2> Goldsmiths, University of London</h2>
-                            <small class="muted-text"> September 2024</small>
-                            <p> Graduated with a Master of Science in Virtual and Augmented Reality. Following the research pathway, my master’s thesis utilized coursework in computer graphics and 3D mathematics to explore the use of depth sensor camera data streams for graphically remapping reality in Unity, employing shader computation, visual effects graphs, and object reprojection (Vuforia). The goal was to alter real-world objects in an immersive environment in real time. With further development, this approach has potential applications across numerous industries, including gaming, entertainment, art, and training. <br>The MSc program provided me with a strong foundation in both the technical and creative aspects of XR development, preparing me to work in a diverse range of fields by understanding how immersive technologies can be leveraged to solve real-world challenges, create engaging experiences, and enhance user interaction in various professional contexts. </p>
-                            <span class="left-container-arrow"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-container right-container">
-                        <img src="/assets/images/timeline/AWE.png">
-                        <div class="text-box">
-                            <h2> AWE EU</h2>
-                            <small class="muted-text"> October 2024</small>
-                            <p> I was honored to represent Reality-B / 4th Frontier as a Finalist and speaker at <span style="font-weight: bold">AWE EU 2024 in Vienna</span>, participating in the 
-                                Start-Up Pitch Competition with our product, <span style="font-weight: bold">BeatStudio</span>. Our team presented the platform to an international audience of 
-                                XR professionals, showcasing how BeatStudio leverages immersive technology to revolutionize rhythm education through VR. 
-                                Being selected as a finalist validated the innovation behind our approach and highlighted the potential impact of 
-                                immersive learning tools in the extended reality space</p>
-                            <span class="right-container-arrow"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-container left-container">
-                        <img src="/assets/images/timeline/ARCS_Logo_Colored_outline.png">
-                        <div class="text-box">
-                            <h2> ARCS Aviation</h2>
-                            <small class="muted-text"> November 2024 - Present </small>
-                            <p> <i>XR Developer</i></br></br> In this role, I led the development of immersive VR training simulations for both Meta Quest and HTC VIVE, 
-                                using Unity, OpenXR, and the XR Interaction Toolkit to deliver responsive and engaging experiences. I created a series of interactive 
-                                tools that simulate complex mechanical procedures, helping users gain hands-on proficiency in virtual environments. My work 
-                                included designing a full-scale 3D warehouse environment optimized for performance and realism, and fine-tuning asset management to
-                                 reduce load times across large scenes. I also collaborated closely with project management, organizing team meetings, maintaining
-                                  detailed task-tracking spreadsheets, and helping drive the team toward critical milestones, often under tight, high-pressure deadlines.
-                            </p>
-                            <span class="left-container-arrow"></span>
-                        </div>
-                    </div>
-            
-                </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-                <!--    <div class="col-lg-4 col-md-6">
-              <div class="card article-card">
-                        <div class="banner-container position-relative">
-                            <div class="position-absolute top-0 end-0">
-                                <span class="badge">Gaming</span>
-                            </div>
-                            <img src="https://gamesroid.com/wp-content/uploads/2023/10/How-to-Update-Township.webp" class="card-img-top banner" alt="How to Update Township Game">
-                        </div>                        
-                        <div class="card-body">
-                            <a href="https://gamesroid.com/how-to-update-township-game/"></a><h6 class="card-title">How to Update Township Game – Guide for Every Platform!</h6></a>
-                            <p class="card-text description">Keep your Township updated and experience all the latest features.</p>
-                            <a href="https://gamesroid.com/how-to-update-township-game/" class="text-decoration-none" target="_blank"><span class="read-more">Read More <i class="bi bi-arrow-up-right"></i></span></a>
-                        </div>
-                    </div> 
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card article-card">
-                        <div class="banner-container position-relative">
-                            <div class="position-absolute top-0 end-0">
-                                <span class="badge">Gaming</span>
-                            </div>
-                            <img src="https://gamesroid.com/wp-content/uploads/2023/09/Popular-Mobile-Games.webp" class="card-img-top banner" alt="Most Popular Mobile Games in India">
-                        </div>                        
-                        <div class="card-body">
-                            <a href="https://gamesroid.com/most-popular-mobile-games-in-india/"></a><h6 class="card-title">Most Popular Mobile Games in India- Android & iOS </h6></a>
-                            <p class="card-text description">Find out the top trendiest and most popular mobile games in India!</p>
-                            <a href="https://gamesroid.com/most-popular-mobile-games-in-india/" class="text-decoration-none" target="_blank"><span class="read-more">Read More <i class="bi bi-arrow-up-right"></i></span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card article-card">
-                        <div class="banner-container position-relative">
-                            <div class="position-absolute top-0 end-0">
-                                <span class="badge">Gaming</span>
-                            </div>
-                            <img src="https://gamesroid.com/wp-content/uploads/2024/01/Discord-Banners.webp" class="card-img-top banner" alt="Best Discord Banners and GIFs">
-                        </div>                        
-                        <div class="card-body">
-                            <a href="https://gamesroid.com/best-discord-banners/"></a><h6 class="card-title">100+ Best Discord Banners and GIFs</h6></a>
-                            <p class="card-text description">From anime, to aesthetics, cuteness to coolness, static to animated there's a for you.</p>
-                            <a href="https://gamesroid.com/best-discord-banners/" class="text-decoration-none" target="_blank"><span class="read-more">Read More <i class="bi bi-arrow-up-right"></i></span></a>
-                        </div>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact">
-        <div class="container">
-            <h6 class="text-center"><span class="btn btn-sm theme-button theme-text">What's next!</span></h6>
-            <h2 class="section-heading text-center">Get In Touch</h2>
-            <p class="text-center muted-text mt-3 mb-4">Interested in working together? We should schedule a time to chat. </p>
-            <div class="row justify-content-center" data-aos="fade-down" data-aos-delay="500">
-                <div class="col-lg-8">
-                    <div class="contact-form">
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="fullName" name="name" placeholder="Name *" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <input type="email" class="form-control" id="email_id" name="email" placeholder="Email *" required>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="subject" name="subject"  placeholder="Subject *" required>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <textarea style="resize: none;" class="form-control" id="message" name="message" rows="5" placeholder="Your message *" required></textarea>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <button onclick="SendMail()" class="btn primary-bg-btn mt-2">Send Message <i class="bi bi-arrow-up-right"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer 
-    <footer id="footer">
-        <div class="container">
-            <p class="text-center copyright-text">Made with <span>Bootstrap, HTML, CSS, JS</span> and a dash of <span class="heart-icon"><i class="bi bi-hearts"></i></span> by <span>Vijay</span>.</p>
-        </div>
-    </footer>
-    -->
-    <button class="btn" id="backToTopButton" onclick="scrollToTop()" style="display: none;">
-        <span aria-label="Back to top">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up-square" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm8.5 9.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"/>
-              </svg>
+        <span class="hero-portrait-wrap">
+        <img class="hero-portrait"
+             src="assets/img/portrait-hero-900.webp"
+             srcset="assets/img/portrait-hero-480.webp 480w, assets/img/portrait-hero-900.webp 900w"
+             sizes="(min-width: 78rem) 592px, 88vw"
+             width="900" height="1080"
+             alt="Nathan Thomas-Benke">
         </span>
-    </button>
+        </div>
+    </section>
 
-    <!-- JavaScript -->
-    <script src="assets/js/aos.js" defer></script>
-    <script src="assets/js/jquery-3.7.1.min.js" defer></script>
-    <script src="assets/js/owl.carousel.min.js" defer></script>
-    <script src="assets/js/bootstrap.min.js" defer></script>
-    <script src="assets/js/script.js" defer></script>
-    <script src="assets/js/slideshow.js" defer></script>
-    <script src="/NTB_Sites2/CurrentWebsiteAssets/js/uikit.js" defer></script>
-    <script src="/NTB_Sites2/CurrentWebsiteAssets/js/uikit-icons.js" defer></script>
+    <!-- ============ NTB LABS ============ -->
+    <section id="labs" aria-labelledby="labs-heading">
+        <h2 id="labs-heading" class="labs-heading">
+            <img class="labs-wordmark only-dark" src="assets/img/brand/ntb-labs-wordmark-dark.svg" alt="NTB Labs" width="340" height="41" loading="lazy">
+            <img class="labs-wordmark only-light" src="assets/img/brand/ntb-labs-wordmark-light.svg" alt="NTB Labs" width="340" height="41" loading="lazy">
+        </h2>
+        <p class="labs-statement">NTB Labs is my independent software studio: dev tools, games, and creative work, built in public.</p>
+        <p class="labs-breadth">From browser extensions to native apps to real-time 3D. One studio, many disciplines.</p>
+        <div class="labs-grid">
+
+            <article class="labs-card">
+                <div class="labs-media">
+                    <img class="labs-lockup only-dark" src="assets/img/brand/sift-lockup-dark.svg" alt="" width="4092" height="1325" loading="lazy">
+                    <img class="labs-lockup only-light" src="assets/img/brand/sift-lockup-light.svg" alt="" width="4092" height="1325" loading="lazy">
+                </div>
+                <h3><a class="labs-link" href="https://github.com/NTBLabs">Sift</a></h3><span class="status-chip">Coming soon</span>
+                <p><strong>Browser extension</strong> · Re-ranks Amazon search results by statistical merit, entirely on-device.</p>
+            </article>
+
+            <article class="labs-card">
+                <div class="slideshow labs-slideshow" data-slideshow aria-roledescription="carousel" aria-label="Catan Lab Generator media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/brand/catan-og.webp" alt="Catan Map Generator cover art" width="800" height="420" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/catan/s2.webp" alt="The live generator: a balanced board beside fairness controls" width="800" height="450" loading="lazy">
+                    </div>
+                <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                <div class="ss-dots"></div>
+                </div>
+                <h3><a class="labs-link" href="https://ntblabs.github.io/catan-map-generator/">Catan Lab Generator</a></h3><span class="status-chip status-chip--live">Live</span>
+                <p><strong>Web app</strong> · Strategic map generator for Catan that balances boards by player count and resource fairness.</p>
+            </article>
+
+            <article class="labs-card">
+                <div class="labs-media labs-media--dev">
+                    <span class="labs-discipline">Native Windows app</span>
+                    <span class="labs-mystery" aria-hidden="true">?</span>
+                </div>
+                <h3><a class="labs-link" href="https://github.com/NTBLabs">Confide</a></h3><span class="status-chip">In development</span>
+            </article>
+
+            <article class="labs-card">
+                <div class="labs-media labs-media--dev">
+                    <span class="labs-discipline">Real-time 3D / Unity</span>
+                    <span class="labs-mystery" aria-hidden="true">?</span>
+                </div>
+                <h3><a class="labs-link" href="https://github.com/NTBLabs">Lucid</a></h3><span class="status-chip">In development</span>
+            </article>
+
+        </div>
+        <!-- Single point of change: swap to https://ntblabs.com when live -->
+        <a class="btn labs-visit" href="https://github.com/NTBLabs">Visit NTB Labs →</a>
+    </section>
+
+    <!-- ============ SELECTED WORK ============ -->
+    <section id="work" aria-labelledby="work-heading">
+        <h2 id="work-heading">Selected Work</h2>
+        <div class="work-grid">
+
+            <article class="work-card work-card--featured">
+                <div class="media-facade media-facade--titlecard" data-yt-id="2Fnz8a1PiU4">
+                    <button type="button" class="facade-btn" aria-label="Play ARCS Trainer video">
+                        <picture>
+                            <!-- at >=42rem the featured card turns this facade into a tall
+                                 column; a 16:9 source there gets magnified up to 2.3x -->
+                            <source media="(min-width: 42rem)" srcset="assets/img/posters/arcs-tall.webp" width="900" height="1450">
+                            <img class="facade-poster" src="assets/img/posters/arcs.webp" alt="" width="1600" height="900" loading="lazy">
+                        </picture>
+                        <svg class="play-icon" aria-hidden="true" viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74a8 8 0 0 0-5.63-5.66C55.94.9 34 .9 34 .9s-21.94 0-26.89 1.18A8 8 0 0 0 1.48 7.74 83.6 83.6 0 0 0 .36 24a83.6 83.6 0 0 0 1.12 16.26 8 8 0 0 0 5.63 5.66C12.06 47.1 34 47.1 34 47.1s21.94 0 26.89-1.18a8 8 0 0 0 5.63-5.66A83.6 83.6 0 0 0 67.64 24a83.6 83.6 0 0 0-1.12-16.26z" fill="currentColor"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>
+                    </button>
+                    <button type="button" class="ss-play" hidden aria-label="Play the ARCS Trainer video"><svg aria-hidden="true" viewBox="0 0 10 12" width="10" height="12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Play video</button>
+                </div>
+                <div class="card-meta"><p class="card-context">Professional · ARCS Aviation</p><p class="card-year">2024 – Present</p></div>
+                <h3>ARCS Trainer</h3>
+                <p class="card-role">XR Developer</p>
+                <p class="card-tagline">A VR training platform for complex mechanical procedures.</p>
+                <div class="case-study">
+                    <p class="cs-label">Problem</p>
+                    <p class="cs-body">Hands-on practice on real aviation equipment is expensive, slow to schedule, and high-consequence. Trainees need repetitions that physical hardware can't provide.</p>
+                    <p class="cs-label">Approach</p>
+                    <p class="cs-body">I lead development of VR training simulations on Meta Quest and HTC VIVE: interactive tools that teach complex mechanical procedures through hands-on practice in full-scale virtual environments. I own the interaction layer (OpenXR / XR Interaction Toolkit) and scene performance for large environments.</p>
+                    <p class="cs-label">Early results</p>
+                    <p class="cs-body">In an initial pilot, a small cohort of maintenance workers who supplemented their existing paper procedures with the VR training showed improved performance and responded strongly positively to XR as a training and learning medium.</p>
+                </div>
+                <p class="card-stack">Unity · OpenXR · XR Interaction Toolkit · Meta Quest · HTC VIVE</p>
+            </article>
+
+            <article class="work-card">
+                <div class="slideshow" data-slideshow aria-roledescription="carousel" aria-label="BeatBoxVR media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/slides/beatbox/s1.webp" alt="BeatBoxVR logo over the virtual drum kit" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/beatbox/s2.webp" alt="Live demo at the Innovate UK showcase" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/beatbox/s3.webp" alt="The Goldsmiths team at Innovate UK" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/beatbox/s4.webp" alt="Team celebrating the jury award" width="800" height="450" loading="lazy">
+                        <div class="slide media-facade" data-yt-id="oBdALCK0mpA">
+                    <button type="button" class="facade-btn" aria-label="Play BeatBoxVR video">
+                        <img class="facade-poster" src="assets/img/posters/beatboxvr.webp" alt="" width="800" height="450" loading="lazy">
+                        <svg class="play-icon" aria-hidden="true" viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74a8 8 0 0 0-5.63-5.66C55.94.9 34 .9 34 .9s-21.94 0-26.89 1.18A8 8 0 0 0 1.48 7.74 83.6 83.6 0 0 0 .36 24a83.6 83.6 0 0 0 1.12 16.26 8 8 0 0 0 5.63 5.66C12.06 47.1 34 47.1 34 47.1s21.94 0 26.89-1.18a8 8 0 0 0 5.63-5.66A83.6 83.6 0 0 0 67.64 24a83.6 83.6 0 0 0-1.12-16.26z" fill="currentColor"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>
+                    </button>
+                    </div>
+                    </div>
+                <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                <div class="ss-dots"></div>
+                <button type="button" class="ss-play" hidden aria-label="Play the BeatBoxVR video"><svg aria-hidden="true" viewBox="0 0 10 12" width="10" height="12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Play video</button>
+                </div>
+                <div class="card-meta"><p class="card-context">Award-winning</p><p class="card-year">2024</p></div>
+                <h3>BeatBoxVR</h3>
+                <p class="card-role">Sound Designer · Programmer · 3D/Graphics · UI</p>
+                <p class="card-award">Innovate UK Immersive Tech Awards 2024: Jury Prize Winner, Technical Innovation Finalist</p>
+                <p class="card-tagline">A VR drumming experience with realistic kit audio and haptics.</p>
+                <p class="card-desc">I owned sound design and audio programming, built environment and graphics assets, and designed UI for a VR drumming experience: realistic kit audio, haptic feedback, and play-along and challenge modes, built with a five-person Goldsmiths team.</p>
+                <p class="card-stack">Unity · C# · VR · Ableton Live</p>
+                <p class="card-links"><a href="https://github.com/MilesJMaiden/BeatBoxVR">GitHub</a></p>
+            </article>
+
+            <article class="work-card">
+                <div class="slideshow" data-slideshow aria-roledescription="carousel" aria-label="Artillery Rocket Simulator media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/slides/rocketsim/s1.webp" alt="Thrustmaster HOTAS and custom Arduino controller setup" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/rocketsim/s2.webp" alt="First-person view from the rocket battery" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/rocketsim/s3.webp" alt="Third-person view of the custom howitzer" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/rocketsim/s4.webp" alt="Live targets across the terrain" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/rocketsim/s5.webp" alt="Full view of the simulation map" width="800" height="450" loading="lazy">
+                        <div class="slide media-facade" data-yt-id="KXMUKRciyz0">
+                    <button type="button" class="facade-btn" aria-label="Play Artillery Rocket Simulator video">
+                        <img class="facade-poster" src="assets/img/posters/rocketsim.webp" alt="" width="800" height="450" loading="lazy">
+                        <svg class="play-icon" aria-hidden="true" viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74a8 8 0 0 0-5.63-5.66C55.94.9 34 .9 34 .9s-21.94 0-26.89 1.18A8 8 0 0 0 1.48 7.74 83.6 83.6 0 0 0 .36 24a83.6 83.6 0 0 0 1.12 16.26 8 8 0 0 0 5.63 5.66C12.06 47.1 34 47.1 34 47.1s21.94 0 26.89-1.18a8 8 0 0 0 5.63-5.66A83.6 83.6 0 0 0 67.64 24a83.6 83.6 0 0 0-1.12-16.26z" fill="currentColor"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>
+                    </button>
+                    </div>
+                    </div>
+                <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                <div class="ss-dots"></div>
+                <button type="button" class="ss-play" hidden aria-label="Play the Artillery Rocket Simulator video"><svg aria-hidden="true" viewBox="0 0 10 12" width="10" height="12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Play video</button>
+                </div>
+                <div class="card-meta"><p class="card-year">2023</p></div>
+                <h3>Artillery Rocket Simulator</h3>
+                <p class="card-role">Sole Developer</p>
+                <p class="card-tagline">A hardware-driven artillery and guided-rocket simulator.</p>
+                <p class="card-desc">I built a guided-rocket and howitzer artillery simulator end to end in Unity: ballistics, particle systems, and destructible targets, driven by a Thrustmaster HOTAS and a custom-wired Arduino controller.</p>
+                <p class="card-stack">Unity · Arduino · Custom Input Hardware</p>
+                <p class="card-links"><a href="https://github.com/nathantbenke/Artillery-Rocket-Simulator">GitHub</a></p>
+            </article>
+
+            <article class="work-card">
+                <div class="slideshow" data-slideshow aria-roledescription="carousel" aria-label="Augmented Duelists media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/slides/duelists/s1.webp" alt="Augmented Duelists battleground through Snapchat" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/duelists/s2.webp" alt="Custom monster card design: Bramble" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/duelists/s3.webp" alt="AR battle in progress on a phone" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/duelists/s4.webp" alt="Monster summoned onto the physical play space" width="800" height="450" loading="lazy">
+                        <div class="slide media-facade" data-yt-id="6_3PXCIS3cw">
+                    <button type="button" class="facade-btn" aria-label="Play Augmented Duelists video">
+                        <img class="facade-poster" src="assets/img/posters/duelists.webp" alt="" width="800" height="450" loading="lazy">
+                        <svg class="play-icon" aria-hidden="true" viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74a8 8 0 0 0-5.63-5.66C55.94.9 34 .9 34 .9s-21.94 0-26.89 1.18A8 8 0 0 0 1.48 7.74 83.6 83.6 0 0 0 .36 24a83.6 83.6 0 0 0 1.12 16.26 8 8 0 0 0 5.63 5.66C12.06 47.1 34 47.1 34 47.1s21.94 0 26.89-1.18a8 8 0 0 0 5.63-5.66A83.6 83.6 0 0 0 67.64 24a83.6 83.6 0 0 0-1.12-16.26z" fill="currentColor"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>
+                    </button>
+                    </div>
+                    </div>
+                <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                <div class="ss-dots"></div>
+                <button type="button" class="ss-play" hidden aria-label="Play the Augmented Duelists video"><svg aria-hidden="true" viewBox="0 0 10 12" width="10" height="12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Play video</button>
+                </div>
+                <div class="card-meta"><p class="card-year">2024</p></div>
+                <h3>Augmented Duelists</h3>
+                <p class="card-role">UI Design · Project Management</p>
+                <p class="card-tagline">An AR card battler played through Snapchat.</p>
+                <p class="card-desc">Physical cards come to life through Snapchat: scan a Snapcode to load the battleground, then duel with custom monster and action cards, models, and animations. I designed the UI system and ran project planning for the dev team.</p>
+                <p class="card-stack">Lens Studio · Snapchat AR</p>
+                <p class="card-links"><a href="https://github.com/nathantbenke/AugmentedDuelists">GitHub</a></p>
+            </article>
+
+            <article class="work-card">
+                <div class="slideshow" data-slideshow aria-roledescription="carousel" aria-label="Origin of Humanity media">
+                    <div class="slides">
+                        <img class="slide" src="assets/img/slides/origin/s1.webp" alt="Origin of Humanity cover art" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/origin/s2.webp" alt="Procedurally generated civilization map" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/origin/s3.webp" alt="Terrain permutation with adjusted land-to-water ratio" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/origin/s4.webp" alt="Generated island layout" width="800" height="450" loading="lazy">
+                        <img class="slide" data-src="assets/img/slides/origin/s5.webp" alt="Dense continental generation" width="800" height="450" loading="lazy">
+                        <div class="slide media-facade" data-yt-id="FPN-BfpsZSg">
+                    <button type="button" class="facade-btn" aria-label="Play Origin of Humanity video">
+                        <img class="facade-poster" src="assets/img/posters/origin.webp" alt="" width="800" height="450" loading="lazy">
+                        <svg class="play-icon" aria-hidden="true" viewBox="0 0 68 48" width="68" height="48"><path d="M66.52 7.74a8 8 0 0 0-5.63-5.66C55.94.9 34 .9 34 .9s-21.94 0-26.89 1.18A8 8 0 0 0 1.48 7.74 83.6 83.6 0 0 0 .36 24a83.6 83.6 0 0 0 1.12 16.26 8 8 0 0 0 5.63 5.66C12.06 47.1 34 47.1 34 47.1s21.94 0 26.89-1.18a8 8 0 0 0 5.63-5.66A83.6 83.6 0 0 0 67.64 24a83.6 83.6 0 0 0-1.12-16.26z" fill="currentColor"/><path d="M45 24 27 14v20z" fill="#fff"/></svg>
+                    </button>
+                    </div>
+                    </div>
+                <button type="button" class="ss-nav ss-prev" aria-label="Previous slide">&#8249;</button>
+                <button type="button" class="ss-nav ss-next" aria-label="Next slide">&#8250;</button>
+                <div class="ss-dots"></div>
+                <button type="button" class="ss-play" hidden aria-label="Play the Origin of Humanity video"><svg aria-hidden="true" viewBox="0 0 10 12" width="10" height="12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Play video</button>
+                </div>
+                <div class="card-meta"><p class="card-year">2023</p></div>
+                <h3>Origin of Humanity</h3>
+                <p class="card-role">Sole Developer</p>
+                <p class="card-tagline">A procedural civilization map generator.</p>
+                <p class="card-desc">Tune the land-to-water ratio and regenerate endless terrain permutations. I built the generation pipeline and UI in Unity; playable in the browser.</p>
+                <p class="card-stack">Unity · Procedural Generation</p>
+                <p class="card-links"><a href="https://nathantbenke.itch.io/origin-of-humanity">Play on itch.io</a></p>
+            </article>
+
+        </div>
+    </section>
+
+    <p class="work-more">
+        <a class="btn" href="projects.html">View all projects &#8594;</a>
+    </p>
+
+    <!-- ============ EXPERIENCE ============ -->
+    <section id="experience" aria-labelledby="experience-heading">
+        <h2 id="experience-heading">Experience</h2>
+        <ol class="timeline">
+            <li>
+                <img class="tl-logo" src="assets/img/logos/arcs-white.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Nov 2024 – Present</span>
+                    <strong class="tl-org">ARCS Aviation</strong>
+                    <span class="tl-what">XR Developer. I lead development of VR maintenance-training simulations in Unity (OpenXR, XR Interaction Toolkit) for Meta Quest and HTC VIVE: interactive tools that build hands-on proficiency with complex mechanical procedures, in a full-scale training environment optimized for standalone headsets, with asset-pipeline work that keeps large scenes fast to load. I also directed and produced the ARCS Trainer showcase video, handling scripting, direction, and production.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo tl-logo--invert" src="assets/img/logos/awe.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Oct 2024</span>
+                    <strong class="tl-org">AWE EU, Vienna</strong>
+                    <span class="tl-what">Start-Up Pitch Competition finalist and speaker with 4th Frontier. Presented BeatStudio, a rhythm-education platform grown out of the BeatBoxVR work, to an international audience of XR professionals.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo tl-logo--invert" src="assets/img/logos/goldsmiths.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Sep 2023 – Sep 2024</span>
+                    <strong class="tl-org">Goldsmiths, University of London</strong>
+                    <span class="tl-what">MSc, Virtual and Augmented Reality (research pathway). Built XR experiences and games across multiple engines, with hands-on prototyping, UX design, and content creation. My thesis, <em>Real-Time Graphics Remapping</em>, combined shader computation and object reprojection to retexture real-world objects live from RealSense depth streams.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo" src="assets/img/logos/innovate-uk.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">May 2024</span>
+                    <strong class="tl-org">Innovate UK Immersive Tech Awards</strong>
+                    <span class="tl-what">BeatBoxVR, our five-person Goldsmiths VR drumming experience, won the Jury Prize and was a Technical Innovation finalist: realistic kit audio, haptic feedback, and a play-along system, demoed live at the showcase.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo" src="assets/img/logos/sandia.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Jun–Aug 2023</span>
+                    <strong class="tl-org">Sandia National Laboratories</strong>
+                    <span class="tl-what">Virtual Technologies and Engineering R&amp;D Intern. Contributed digital-twin visualizations in Unity for multidisciplinary MATLAB/Simulink models, and helped standardize resources while researching ways to streamline the Unity development cycle for complex visualizations.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo" src="assets/img/logos/uw-madison.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Sep 2019 – May 2023</span>
+                    <strong class="tl-org">University of Wisconsin–Madison</strong>
+                    <span class="tl-what">BSc, Computer Science, with a certificate in Art Studio (4D Digital Art). Programmed across a wide range of languages while building media-production and 3D-modeling skills, and graduated with a 3.76 GPA.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo" src="assets/img/logos/3d-systems.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Jun–Aug 2022</span>
+                    <strong class="tl-org">3D Systems</strong>
+                    <span class="tl-what">Digital Learning Content Developer (AR) on the Global Customer Success team. Developed maintenance procedures with subject-matter experts for a specialized 3D printer, and turned them into an interactive AR instruction tool for healthcare and industrial end users and the support team.</span>
+                </div>
+            </li>
+            <li>
+                <img class="tl-logo" src="assets/img/logos/quad.webp" alt="" width="40" height="40" loading="lazy">
+                <div class="tl-body">
+                    <span class="tl-when">Jun–Aug 2021</span>
+                    <strong class="tl-org">Quad/Graphics</strong>
+                    <span class="tl-what">Software Development Intern on the Imaging Operations team. Debugged and developed software applications using a variety of programming languages, and worked in a daily Agile-Scrum process.</span>
+                </div>
+            </li>
+        </ol>
+    </section>
+
+    <!-- ============ TOOLCHAIN ============ -->
+    <section id="toolchain" aria-labelledby="toolchain-heading">
+        <h2 id="toolchain-heading">Toolchain</h2>
+        <p class="tc-lede">XR is where it all converges. Audio, visual, 3D, and code are one craft here, and I work across every part of it.</p>
+        <div class="tc-group">
+            <h3>CORE</h3>
+            <ul class="tc-tiles">
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/unity.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Unity</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/csharp.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">C#</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--wide" src="assets/img/icons/openxr.svg" alt="" width="96" height="30" loading="lazy"></span><span class="tc-name">OpenXR</span></li>
+                <li class="tc-tile"><span class="tc-chip"><span class="tc-text">XRI</span></span><span class="tc-name">XR Interaction Toolkit</span></li>
+            </ul>
+        </div>
+        <div class="tc-group">
+            <h3>PLATFORMS & HARDWARE</h3>
+            <ul class="tc-tiles">
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/meta-quest.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Meta Quest</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/htc-vive.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">HTC VIVE</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/apple.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">iPad</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--wordmark" src="assets/img/icons/samsung.svg" alt="" width="84" height="14" loading="lazy"></span><span class="tc-name">Samsung Galaxy Tab</span></li>
+            </ul>
+        </div>
+        <div class="tc-group">
+            <h3>CREATIVE</h3>
+            <ul class="tc-tiles">
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/ableton.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Ableton Live</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/audacity.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Audacity</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--boxed" src="assets/img/icons/photoshop.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Photoshop</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/maya.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Maya</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--boxed" src="assets/img/icons/premiere.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Premiere</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--boxed" src="assets/img/icons/after-effects.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">After Effects</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/vegas.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Vegas Pro</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/blender.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Blender</span></li>
+            </ul>
+        </div>
+        <div class="tc-group">
+            <h3>WORKFLOW</h3>
+            <ul class="tc-tiles">
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/github.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Git / GitHub</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/plastic-scm.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Plastic SCM</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/azure-devops.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Azure DevOps</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/vscode.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">VS Code</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/docker.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Docker</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/claude.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Claude</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/codex.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Codex</span></li>
+            </ul>
+        </div>
+        <div class="tc-group tc-group--lite">
+            <h3>ALSO WORKED WITH</h3>
+            <ul class="tc-tiles">
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/java.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Java</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--boxed" src="assets/img/icons/lens-studio.webp" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Lens Studio</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/python.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Python</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/html.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">HTML / CSS</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/cpp.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">C++</span></li>
+                <li class="tc-tile"><span class="tc-chip"><span class="tc-text">SQL</span></span><span class="tc-name">SQL</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img class="tc-img--boxed" src="assets/img/icons/javascript.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">JavaScript</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/swift.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Swift</span></li>
+                <li class="tc-tile"><span class="tc-chip"><span class="tc-text">Obj-C</span></span><span class="tc-name">Objective-C</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/rhino.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Rhino</span></li>
+                <li class="tc-tile"><span class="tc-chip"><img src="assets/img/icons/figma.svg" alt="" width="64" height="64" loading="lazy"></span><span class="tc-name">Figma</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section id="contact" aria-labelledby="contact-heading">
+        <h2 id="contact-heading">Contact</h2>
+        <p class="contact-lede">Get in touch, or request a copy of my resume. I'll get back to you.</p>
+        <form id="contact-form" novalidate>
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="cf-name">Name</label>
+                    <input id="cf-name" name="name" type="text" autocomplete="name" required>
+                    <p class="field-error" aria-live="polite"></p>
+                </div>
+                <div class="form-field">
+                    <label for="cf-email">Email</label>
+                    <input id="cf-email" name="email" type="email" autocomplete="email" required>
+                    <p class="field-error" aria-live="polite"></p>
+                </div>
+            </div>
+            <div class="form-field">
+                <label for="cf-subject">Subject</label>
+                <input id="cf-subject" name="subject" type="text" required>
+                <p class="field-error" aria-live="polite"></p>
+            </div>
+            <div class="form-field">
+                <label for="cf-message">Message</label>
+                <textarea id="cf-message" name="message" rows="6" minlength="10" required></textarea>
+                <p class="field-error" aria-live="polite"></p>
+            </div>
+            <!-- Honeypot: hidden from humans, tempting to bots -->
+            <div class="hp-field" aria-hidden="true">
+                <label for="cf-company">Company</label>
+                <input id="cf-company" name="company" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-primary">Send message</button>
+            <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <p>© <span id="footer-year">2026</span> Nathan Thomas-Benke</p>
+</footer>
+
 </body>
 </html>

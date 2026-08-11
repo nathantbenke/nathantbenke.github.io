@@ -1,0 +1,13 @@
+# Brand source art — masters never enter the repo.
+# Only cleaned web-export derivatives in assets/img/brand/ are committed.
+/assets/brand-src/
+
+node_modules/
+tools/node_modules/
+tools/package.json
+tools/package-lock.json
+Thumbs.db
+.DS_Store
+
+# Agent harness config, not site content
+.claude/
