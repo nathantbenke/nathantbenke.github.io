@@ -223,9 +223,15 @@
     var nebSubpixel = true;
 
     var nebSpeed = 1;        // live multiplier, driven by the ?neb panel
-    var nebTop = 1;          // drift density at the hero
+    // Moderate, not maximum. At 1.0 the fade had to travel the whole way from
+    // full drift density down to the floor, and a longer range means more of it
+    // to render smoothly. Starting lower shortens the range and is what was
+    // wanted visually anyway. The ?neb "density at hero" slider drives this.
+    var nebTop = 0.7;        // drift density at the hero
     var nebFloor = 0.42;     // drift density once past the falloff
     var nebFalloff = 1400;   // px of scroll the top->floor transition spans
+    var nebFalloffOn = true; // switchable: under drift-static it cannot run at
+                             // all without repainting, so it is off there
 
     // Must match the max-width: 56rem block in style.css that drops the drift
     // layer's will-change. Writing a per-frame transform to an UN-PROMOTED
@@ -253,7 +259,9 @@
     function applyNebulaDensity(f) {
         if (!nebDrift) return;
         var o = nebDriftBase * nebI * f;
-        nebDrift.style.opacity = (o > 1 ? 1 : o).toFixed(3);
+        // 4 decimals, not 3. The rendered fade spans only ~22 luminance levels,
+        // so the value needs finer resolution than the thing it is driving.
+        nebDrift.style.opacity = (o > 1 ? 1 : o).toFixed(4);
     }
 
     // ---------- Large-viewport degrade ----------
@@ -349,13 +357,15 @@
         [nebDrift, document.querySelector('.bg-stars-2'), document.querySelector('.bg-stars-3')]
             .forEach(function (el) { if (el) el.style.transform = ''; });
         buildParallaxLayers();
+        // A static drift cannot carry a scroll-linked fade without repainting,
+        // so it gets one fixed density partway down the falloff range.
+        if (nebDegrade['drift-static']) applyNebulaDensity(nebTop + (nebFloor - nebTop) * 0.55);
         applyParallax();
     }
 
     buildParallaxLayers();
 
     var parallaxTicking = false;
-    var lastNebOpacity = -1;
 
     function applyParallax() {
         var y = window.scrollY;
@@ -390,20 +400,28 @@
 
         // Density falloff: dense at the hero, thinner once you are past it.
         //
-        // ONE opacity write, on the one promoted layer, and only when the
-        // value has actually moved - so most scroll frames write nothing here.
-        // Opacity on a composited layer re-composites, it does not
-        // re-rasterise. It is emphatically NOT --neb-i on :root: a custom
-        // property there would invalidate style for the whole document every
-        // frame, which is the exact mechanism behind the original jank.
-        if (nebDrift && !nebStatic) {
+        // WRITTEN EVERY FRAME, with no dead-band. There used to be a
+        // "only write when it moved by 0.004" guard here, sold as most frames
+        // writing nothing. It was a quantiser: measured, the fade rendered as
+        // ~59 discrete jumps with 81 of 140 sampled steps showing no change at
+        // all and single jumps of up to 2 luminance levels. On a promoted layer
+        // an opacity write is a compositor property - it re-composites, it does
+        // not re-rasterise - so there was never anything to save.
+        //
+        // It is emphatically NOT --neb-i on :root: a custom property there
+        // would invalidate style for the whole document every frame, which is
+        // the mechanism behind the original jank.
+        //
+        // GATED ON THE DRIFT BEING PROMOTED. Under drift-static the layer is
+        // folded into the background layer, and animating an unpromoted layer's
+        // opacity repaints it: measured 390 RasterTasks across the falloff
+        // against 2 when promoted. So when the drift is static it holds one
+        // constant density instead (set in applyDegrade), which is also why
+        // the 4K profile trades the falloff away rather than paying for it.
+        if (nebFalloffOn && nebDrift && !nebStatic && !nebDegrade['drift-static']) {
             var t = Math.min(1, y / nebFalloff);
             t = t * t * (3 - 2 * t);   // smoothstep, so the floor is not a step
-            var o = nebTop + (nebFloor - nebTop) * t;
-            if (o < lastNebOpacity - 0.004 || o > lastNebOpacity + 0.004) {
-                lastNebOpacity = o;
-                applyNebulaDensity(o);
-            }
+            applyNebulaDensity(nebTop + (nebFloor - nebTop) * t);
         }
         parallaxTicking = false;
     }
@@ -431,22 +449,26 @@
     window.__nebula = {
         state: function () {
             return { speed: nebSpeed, top: nebTop, floor: nebFloor,
-                     falloff: nebFalloff, subpixel: nebSubpixel };
+                     falloff: nebFalloff, subpixel: nebSubpixel,
+                     falloffOn: nebFalloffOn,
+                     falloffRuns: nebFalloffOn && !nebStatic && !nebDegrade['drift-static'] };
         },
         set: function (k, v) {
             if (k === 'speed') nebSpeed = v;
             else if (k === 'subpixel') nebSubpixel = !!v;
+            else if (k === 'falloffOn') {
+                nebFalloffOn = !!v;
+                if (!nebFalloffOn) applyNebulaDensity(nebTop);
+            }
             else if (k === 'top') nebTop = v;
             else if (k === 'floor') nebFloor = v;
             else if (k === 'falloff') nebFalloff = v;
-            lastNebOpacity = -1;   // force the next write through the threshold
             applyParallax();
         },
         // the panel edits --neb-i on :root; density is computed from a cached
         // copy, so it has to be told when that changed
         refresh: function () {
             readIntensity();
-            lastNebOpacity = -1;
             applyParallax();
         },
 

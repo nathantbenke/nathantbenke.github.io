@@ -318,6 +318,13 @@ body {
        steps unless something breaks them up. Raised until the level count
        actually moves, and no further - past ~0.05 it starts reading as film
        grain rather than as dither. */
+    /* NOT raised further to fight the falloff's temporal stepping - that was
+       tried at 0.042 and measured identical (26.9% max pixel change per step
+       against 26.0%). Grain is a SEPARATE layer, so it is composited and
+       rounded to integers after the gradient underneath has already been
+       quantised; an integer offset shifts every pixel equally and cannot
+       decorrelate threshold crossings. Dither only works here for the spatial
+       contours, which is what this value is tuned for. */
     opacity: calc(0.030 * var(--neb-i));
     background-image: var(--neb-tile-grain);
     background-size: 336px 336px;

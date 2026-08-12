@@ -183,6 +183,23 @@
         motionWrap.appendChild(row);
     })();
 
+    (function () {
+        var row = document.createElement('label');
+        row.title = 'the scroll fade cannot run under drift-static without repainting, so it is off there';
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin:2px 0 8px;cursor:pointer;font-size:11px;color:#c4bfd9';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !window.__nebula || window.__nebula.state().falloffOn !== false;
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.set('falloffOn', cb.checked);
+            paintCost();
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode('scroll density falloff'));
+        motionWrap.appendChild(row);
+    })();
+
     addSlider('density at hero', 'top', 0.2, 1, 0.02, function (v) { return v.toFixed(2); });
     addSlider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
     addSlider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
@@ -311,7 +328,9 @@
             ' @ dpr ' + c.dpr + ' = <strong>' + c.mp.toFixed(1) + ' MP</strong><br>' +
             'blended surfaces: <strong>' + c.surfaces.length + '</strong>' +
             (c.surfaces.length ? ' (' + c.surfaces.join(', ') + ')' : '') + '<br>' +
-            'blended per frame: <strong>' + c.blendedMp.toFixed(1) + ' MP</strong> - lower is smoother';
+            'blended per frame: <strong>' + c.blendedMp.toFixed(1) + ' MP</strong> - lower is smoother<br>' +
+            'scroll falloff: <strong>' + (window.__nebula.state().falloffRuns ? 'running' :
+                'OFF (needs a promoted drift)') + '</strong>';
     }
 
 
