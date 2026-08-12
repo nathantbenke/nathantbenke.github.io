@@ -75,7 +75,15 @@
                     timeline.style.setProperty('--tl-progress', String(maxRevealed / items.length));
                 }
             });
-        }, { threshold: 0.35, rootMargin: '0px 0px -10% 0px' });
+        }, {
+            // Was threshold 0.35 with a NEGATIVE bottom margin, which required
+            // an entry to be a third visible and 10% up from the bottom before
+            // it would even start - the latest possible trigger. Same fix as
+            // the section observer: fire early, off-screen, so the animation is
+            // over before the entry is looked at.
+            threshold: 0,
+            rootMargin: '400px 0px 400px 0px'
+        });
 
         items.forEach(function (li) { observer.observe(li); });
     }
@@ -180,40 +188,47 @@
     // layers (compositor-only). Never a custom property on :root, because that
     // invalidates style for the whole document every frame (the round-3 jank).
     //
-    // v1.1.1: the nebula is FOUR PLANES, not one sheet. v1.1.0 translated it
-    // rigidly at -0.008 and it read as a burn mark on the glass - and sliding a
-    // rigid sheet faster would only have produced a faster burn mark, because a
-    // sheet has no interior. What reads as volume is DIFFERENTIAL travel: the
-    // near dust sweeping past while the far colour mass barely moves. Every
-    // nebula plane stays slower than the slowest star layer (-0.025), so the
-    // nebula still sits behind the starfield instead of racing through it.
-    // [selector, parallax rate, base opacity]. The base opacity MUST match the
-    // `opacity: calc(<base> * var(--neb-i))` in style.css: the CSS value is what
-    // renders before this script runs (and if it never runs), and this one takes
-    // over once the scroll falloff starts multiplying into it.
-    var NEB_PLANES = [
-        ['.neb-field', -0.011, 0.5],   // deepest: the colour mass barely drifts
-        ['.neb-grain', -0.013, 0.028],
-        ['.neb-veil',  -0.017, 0.42],
-        ['.neb-cols',  -0.023, 0.55]   // nearest: the dust columns lead the motion
-    ];
+    // v1.1.3: the nebula is ONE moving layer over a static base, not four
+    // stacked planes. Four full-bleed promoted planes each cost a large
+    // semi-transparent BLEND every frame, and blend cost scales with viewport
+    // area - fine at 1280x900, punishing at 4K. Raster counts never saw it
+    // because the layers genuinely did not re-rasterise; a real 4K did.
+    //
+    // Depth survives the cut: a static plane at infinity plus one drifting
+    // plane is still parallax, and the three star layers above add three more
+    // rates. .neb-base and .neb-grain are deliberately absent from this list -
+    // they never move, so they stay unpromoted and fold into the background
+    // layer instead of adding surfaces.
+    //
+    // [selector, rate, base opacity]. The base opacity MUST match the
+    // `opacity: calc(<base> * var(--neb-i))` in style.css: the CSS value is
+    // what renders before this script runs (and if it never does), and this
+    // takes over once the scroll falloff multiplies into it.
+    var NEB_DRIFT = ['.neb-drift', -0.023, 0.36];
+
+    // Star tile heights, used as the parallax MODULUS. The tiles repeat, so a
+    // layer offset by exactly one tile is pixel-identical to one offset by
+    // zero - which means the translate can wrap forever and the layer never
+    // needs to be taller than the viewport. That is what replaces the dead
+    // `.bg-stars { inset: -140px 0 0 0 }` rule (see style.css): the old fix
+    // would have needed ~1000px of extra height on .bg-stars-3, and layer area
+    // is exactly what we are trying not to spend. Keep in sync with the
+    // background-size values in style.css.
+    var STAR_TILE = { '.bg-stars-1': 700, '.bg-stars-2': 460, '.bg-stars-3': 900 };
 
     var nebSpeed = 1;        // live multiplier, driven by the ?neb panel
-    var nebTop = 1;          // group opacity at the hero
-    var nebFloor = 0.42;     // group opacity once past the falloff
+    var nebTop = 1;          // drift density at the hero
+    var nebFloor = 0.42;     // drift density once past the falloff
     var nebFalloff = 1400;   // px of scroll the top->floor transition spans
 
-    // Must match the max-width: 56rem block in style.css that drops the planes'
-    // will-change. Writing a per-frame transform to an UN-PROMOTED layer makes
-    // it repaint every frame - strictly worse than no parallax - so the CSS and
-    // this query have to agree. If you move one, move the other.
+    // Must match the max-width: 56rem block in style.css that drops the drift
+    // layer's will-change. Writing a per-frame transform to an UN-PROMOTED
+    // layer makes it repaint every frame - strictly worse than no parallax -
+    // so the CSS and this query have to agree. If you move one, move the other.
     var nebStatic = window.matchMedia('(max-width: 56rem)').matches;
 
-    // The planes are needed as a group for the density falloff whether or not
-    // they are parallaxed, so they are collected separately from the scroll list.
-    var nebPlanes = NEB_PLANES.map(function (p) {
-        return { el: document.querySelector(p[0]), speed: p[1], base: p[2] };
-    }).filter(function (p) { return p.el; });
+    var nebDrift = document.querySelector(NEB_DRIFT[0]);
+    var nebDriftBase = NEB_DRIFT[2];
 
     // --neb-i is read here, not per frame: a getComputedStyle call inside the
     // scroll handler would force style resolution every frame, which is the
@@ -225,21 +240,25 @@
     }
     readIntensity();
 
+    // Only the drifting layer's density is scroll-coupled. The base is static
+    // and UNPROMOTED on purpose, so writing its opacity per scroll would
+    // repaint a full-bleed gradient+noise surface - the single most expensive
+    // thing available here. It holds one constant density instead.
     function applyNebulaDensity(f) {
-        for (var i = 0; i < nebPlanes.length; i++) {
-            var p = nebPlanes[i];
-            var o = p.base * nebI * f;
-            p.el.style.opacity = (o > 1 ? 1 : o).toFixed(3);
-        }
+        if (!nebDrift) return;
+        var o = nebDriftBase * nebI * f;
+        nebDrift.style.opacity = (o > 1 ? 1 : o).toFixed(3);
     }
 
-    var parallaxLayers = (nebStatic ? [] : nebPlanes.map(function (p) {
-        return { el: p.el, speed: p.speed, neb: true };
-    })).concat([
-        { el: document.querySelector('.bg-stars-1'), speed: -0.025 },
-        { el: document.querySelector('.bg-stars-2'), speed: -0.055 },
-        { el: document.querySelector('.bg-stars-3'), speed: -0.11 }
-    ]).filter(function (l) { return l.el; });
+    var parallaxLayers = (nebStatic || !nebDrift ? [] : [
+        { el: nebDrift, speed: NEB_DRIFT[1], neb: true }
+    ]).concat(['.bg-stars-1', '.bg-stars-2', '.bg-stars-3'].map(function (sel, i) {
+        return {
+            el: document.querySelector(sel),
+            speed: [-0.025, -0.055, -0.11][i],
+            wrap: STAR_TILE[sel]
+        };
+    })).filter(function (l) { return l.el; });
 
     var parallaxTicking = false;
     var lastNebOpacity = -1;
@@ -251,21 +270,26 @@
             // resamples the layer's texture, and on the tiled grain layer that
             // resampling is what makes its tile boundaries visible as faint
             // vertical lines. Whole pixels sample 1:1.
+            // Rounded to whole pixels, not toFixed(1): a fractional translate
+            // resamples the layer's texture, and on the tiled layers that
+            // resampling is what makes tile boundaries show as faint lines.
             var v = Math.round(y * l.speed * (l.neb ? nebSpeed : 1));
+            // Star layers wrap within one tile, so they never translate out
+            // from under the viewport however long the page gets. % keeps the
+            // sign in JS, which is what we want - these speeds are negative.
+            if (l.wrap) v = v % l.wrap;
             l.el.style.transform = 'translate3d(0,' + v + 'px,0)';
         });
 
         // Density falloff: dense at the hero, thinner once you are past it.
         //
-        // This is ONE opacity write on an already-promoted group, and only when
-        // the value has actually moved - so the vast majority of scroll frames
-        // write nothing here at all. Opacity on a composited layer is a
-        // compositor property: it re-composites, it does not re-rasterise
-        // (verified against a paint trace, not assumed). It is emphatically NOT
-        // --neb-i on :root - a custom property there would invalidate style for
-        // the entire document on every frame, which is the exact mechanism
-        // behind the original jank.
-        if (nebPlanes.length && !nebStatic) {
+        // ONE opacity write, on the one promoted layer, and only when the
+        // value has actually moved - so most scroll frames write nothing here.
+        // Opacity on a composited layer re-composites, it does not
+        // re-rasterise. It is emphatically NOT --neb-i on :root: a custom
+        // property there would invalidate style for the whole document every
+        // frame, which is the exact mechanism behind the original jank.
+        if (nebDrift && !nebStatic) {
             var t = Math.min(1, y / nebFalloff);
             t = t * t * (3 - 2 * t);   // smoothstep, so the floor is not a step
             var o = nebTop + (nebFloor - nebTop) * t;
@@ -286,7 +310,7 @@
         applyParallax();   // also covers a reload part-way down the page
     }
 
-    if (nebPlanes.length && (nebStatic || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) {
+    if (nebDrift && (nebStatic || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) {
         // Reduced motion, or a small viewport: nothing scroll-coupled. The
         // nebula still renders - it is depth, not motion - at one fixed density
         // partway between the hero value and the floor.
@@ -477,11 +501,39 @@
                 entry.target.classList.add('in-view');
                 sectionObserver.unobserve(entry.target);
             });
-        }, { threshold: 0.08 });
+        }, {
+            // rootMargin, not threshold, is what stops the "block of nothing,
+            // then it appears" pop. threshold: 0.08 with no margin meant a
+            // section only started revealing once it was ALREADY on screen, so
+            // on a fast scroll you arrived before the transition did. An 800px
+            // top/bottom margin fires the reveal roughly a screen early, so the
+            // content has finished animating by the time you actually reach it.
+            // threshold drops to 0 for the same reason: any intersection at all
+            // is enough, we do not want to wait for 8% of a tall section.
+            threshold: 0,
+            rootMargin: '800px 0px 800px 0px'
+        });
         document.querySelectorAll('main > section:not(.hero)').forEach(function (s) {
             sectionObserver.observe(s);
         });
     }
+
+    // ---------- Lazy images: deliberately NOT given a head start ----------
+    // The reveal animations were only half of the "block of nothing, then it
+    // appears" problem. Measured at 2560x1440, jumping to mid-page: 3 of the 6
+    // images in the viewport still had no pixels, and the page ships 68
+    // `loading="lazy"` images.
+    //
+    // The obvious fix - an IntersectionObserver with a big rootMargin flipping
+    // them to `eager` early - was tried here and MADE IT WORSE. On a fast
+    // scroll over a throttled link it started dozens of fetches at once, they
+    // competed for bandwidth, and none of them finished: 7 of 7 visible images
+    // blank, against 5 of 7 with the browser left alone. Chrome's own lazy
+    // heuristic loads fewer images but gets them done, which is the behaviour
+    // that actually matters here.
+    //
+    // Left to the browser on purpose. If this needs revisiting, the lead has to
+    // be given to a SMALL number of images near the viewport, not all 68.
 
     // ---------- Sticky-header offset ----------
     // Publishes the header's real height so scroll-margin-top can clear it. The

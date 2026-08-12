@@ -21,7 +21,7 @@
         ['off', 'Off', 'baseline - nebula removed entirely'],
         ['subtle', 'Barely there', '--neb-i 1.2 at the hero'],
         ['medium', 'Medium', '--neb-i 1.8 at the hero'],
-        ['present', 'Dense hero', '--neb-i 2.5 - every sub-layer at full opacity']
+        ['present', 'Dense hero', '--neb-i 2.5 - densest; base ~0.95, drift ~0.90']
     ];
 
     function current() {
@@ -43,7 +43,7 @@
     var title = document.createElement('div');
     title.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px';
     title.innerHTML = '<strong style="letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:#c4bfd9">' +
-        'Nebula v1.1</strong>';
+        'Nebula v1.1.3</strong>';
 
     var hide = document.createElement('button');
     hide.type = 'button';
@@ -176,14 +176,14 @@
     layersWrap.appendChild(document.createTextNode('solo a sub-layer:'));
     var soloRow = document.createElement('div');
     soloRow.style.cssText = 'display:flex;gap:5px;margin-top:6px';
-    [['field', 'field'], ['veil', 'veil'], ['cols', 'dust'], ['grain', 'grain'], ['', 'all']].forEach(function (s) {
+    [['base', 'base'], ['grain', 'grain'], ['drift', 'drift'], ['', 'all']].forEach(function (s) {
         var b = document.createElement('button');
         b.type = 'button';
         b.textContent = s[1];
         b.style.cssText = 'flex:1;padding:4px 0;font:inherit;font-size:10px;cursor:pointer;' +
             'border:1px solid #362a55;border-radius:6px;background:transparent;color:#c4bfd9';
         b.addEventListener('click', function () {
-            ['field', 'veil', 'cols', 'grain'].forEach(function (name) {
+            ['base', 'grain', 'drift'].forEach(function (name) {
                 var el = document.querySelector('.neb-' + name);
                 if (el) el.style.display = (!s[0] || s[0] === name) ? '' : 'none';
             });
@@ -192,6 +192,20 @@
     });
     layersWrap.appendChild(soloRow);
     panel.appendChild(layersWrap);
+
+    var layerInfo = document.createElement('div');
+    layerInfo.style.cssText = 'margin-top:8px;font-size:10px;color:#8d87a8;line-height:1.4';
+    (function () {
+        var promoted = [];
+        ['.neb-base', '.neb-grain', '.neb-drift', '.bg-stars-1', '.bg-stars-2', '.bg-stars-3']
+            .forEach(function (sel) {
+                var el = document.querySelector(sel);
+                if (el && getComputedStyle(el).willChange !== 'auto') promoted.push(sel.slice(1));
+            });
+        layerInfo.textContent = 'promoted (blended per frame): ' + promoted.length +
+            ' - ' + promoted.join(', ');
+    })();
+    panel.appendChild(layerInfo);
 
     var hint = document.createElement('div');
     hint.style.cssText = 'margin-top:9px;font-size:10px;color:#8d87a8;line-height:1.4';
