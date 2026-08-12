@@ -59,16 +59,22 @@
     --neb-i: 2.5;
 
     /* dust: black, alpha driven by the noise (patchy, ~50% coverage) */
-    --neb-tile-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='d' filterUnits='userSpaceOnUse' x='0' y='0' width='256' height='256' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23d)'/%3E%3C/svg%3E");
+    --neb-tile-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='d' filterUnits='userSpaceOnUse' x='0' y='0' width='512' height='512' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.014' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23d)'/%3E%3C/svg%3E");
     /* emission: fixed violet-blue, alpha driven by the noise (different seed,
        so the filaments never land on top of the dust and cancel out) */
-    --neb-tile-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='e' filterUnits='userSpaceOnUse' x='0' y='0' width='256' height='256' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.028' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 1 1 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23e)'/%3E%3C/svg%3E");
+    --neb-tile-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='e' filterUnits='userSpaceOnUse' x='0' y='0' width='512' height='512' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0095' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 1 1 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23e)'/%3E%3C/svg%3E");
     /* fine grain: tiled 1:1. Doubles as dithering - five stacked near-black
        gradients band badly on 8-bit panels, and this is what kills it. */
     --neb-tile-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='336' height='336'%3E%3Cfilter id='g' filterUnits='userSpaceOnUse' x='0' y='0' width='336' height='336' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='336' height='336' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E");
     /* keeps the turbulence inside the cloud region instead of veiling the
        whole viewport (which would just read as a dirty screen) */
-    --neb-mask: radial-gradient(68vw 74vh at 64vw 61vh, #000 10%, rgba(0, 0, 0, 0.45) 50%, transparent 78%);
+    /* Extra stops, and a longer tail. The old three-stop ramp reached
+       transparent at 78% and that boundary was visible as a circular arc once
+       the contouring made shallow ramps legible. More stops spread the same
+       alpha change over more of the radius, so no single step is wide. */
+    --neb-mask: radial-gradient(72vw 78vh at 64vw 61vh,
+        #000 12%, rgba(0, 0, 0, 0.72) 38%, rgba(0, 0, 0, 0.42) 58%,
+        rgba(0, 0, 0, 0.16) 76%, transparent 94%);
 
     /* star tiles: small (far), small (mid, reused at other scale), bright w/ glow */
     --star-alpha: 0.55;
@@ -286,7 +292,13 @@ body {
         radial-gradient(54vw 53vh at 63vw 51vh, rgba(120, 86, 212, 0.088), transparent 74%),
         radial-gradient(50vw 48vh at 86vw 20vh, rgba(58, 168, 206, 0.064), transparent 72%),
         radial-gradient(54vw 53vh at 14vw 91vh, rgba(66, 112, 196, 0.048), transparent 74%);
-    background-size: 190vw 190vh, 240vw 240vh, auto, auto, auto, auto, auto;
+    /* UPSCALE RATIO IS THE ARTIFACT. A 256px tile stretched to 190vw is ~14x on
+       a 1920 screen, so every 1-level step in the source becomes a ~14px band -
+       which is what printed the topographic contour rings through the cloud.
+       The tiles are now 512px and stretched less, taking the ratio to ~5.6x and
+       ~6.2x, and their baseFrequency was rescaled to keep the on-screen feature
+       size the same. If you change either number, change the other. */
+    background-size: 150vw 150vh, 165vw 165vh, auto, auto, auto, auto, auto;
     background-position: 18% 22%, 58% 40%, 0 0, 0 0, 0 0, 0 0, 0 0;
     background-repeat: no-repeat;
     /* Wide and gentle - a vignette, not a keyhole. It holds the turbulence away
@@ -300,7 +312,13 @@ body {
 /* Separate element purely so grain stays tunable apart from the base. Static
    and unpromoted, so it costs no additional surface. */
 .neb-grain {
-    opacity: calc(0.016 * var(--neb-i));
+    /* This is the dither, and it was too weak to be one: measured, the base
+       spans ~37 grey levels across the whole viewport and adding grain moved
+       that from 38 to 39. Shallow ramps at this amplitude quantise into visible
+       steps unless something breaks them up. Raised until the level count
+       actually moves, and no further - past ~0.05 it starts reading as film
+       grain rather than as dither. */
+    opacity: calc(0.030 * var(--neb-i));
     background-image: var(--neb-tile-grain);
     background-size: 336px 336px;
     background-repeat: repeat;
@@ -310,7 +328,7 @@ body {
 .neb-drift {
     opacity: calc(0.36 * var(--neb-i));
     background-image: var(--neb-tile-glow);
-    background-size: 210vw 210vh;
+    background-size: 145vw 145vh;   /* same upscale-ratio rule as .neb-base */
     background-position: 34% 62%;
     background-repeat: no-repeat;
     -webkit-mask-image: var(--neb-mask);
@@ -372,7 +390,7 @@ body {
    clip-path rather than a smaller box, deliberately: the art inside is placed
    in vw/vh from the ELEMENT's origin, so moving the origin would slide the
    whole composition sideways. Cropping leaves the coordinate system alone. */
-:root[data-degrade~="drift-narrow"] .neb-drift {
+:root[data-degrade~="drift-cropped"] .neb-drift {
     -webkit-clip-path: inset(6vh 0 0 14vw);
     clip-path: inset(6vh 0 0 14vw);
 }

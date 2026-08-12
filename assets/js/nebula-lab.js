@@ -214,7 +214,7 @@
 
     var DEGRADES = [
         ['drift-static', 'drift -> static', 'removes a full-bleed blended surface; costs the nebula parallax only'],
-        ['drift-narrow', 'drift -> cropped', 'keeps motion, crops where the mask is already transparent (~20% less area)'],
+        ['drift-cropped', 'drift -> cropped', 'keeps motion, crops where the mask is already transparent (~20% less area)'],
         ['stars-2', 'stars 3 -> 2', 'drops the bright star layer'],
         ['stars-1', 'stars 3 -> 1', 'drops the mid and bright star layers']
     ];

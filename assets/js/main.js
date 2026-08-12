@@ -265,7 +265,7 @@
     //                 .neb-grain. Removes a full-bleed blended surface
     //                 outright - the biggest single win. Costs the nebula's
     //                 parallax motion; density and composition are untouched.
-    //   drift-narrow  keeps the motion, crops the layer with clip-path where
+    //   drift-cropped  keeps the motion, crops the layer with clip-path where
     //                 --neb-mask has already faded it to transparent, so the
     //                 blended area shrinks with no visible change. clip-path,
     //                 not a smaller box, because the art is positioned in
@@ -277,7 +277,18 @@
     // AUTO is off by default. Nothing is degraded until a combination has been
     // tested on real hardware; ?neb drives it in the meantime. To bake a choice
     // in, put the tokens in NEB_AUTO_DEGRADE and set NEB_AUTO_MP.
-    var NEB_AUTO_DEGRADE = [];   // e.g. ['drift-static'] once chosen
+    // BAKED IN, from testing on a 4K panel. Dropping the bright star layer was
+    // the single biggest improvement there; drift-static removes the nebula's
+    // only blended surface. At 6 device-megapixels this catches 4K and
+    // 1440p@DPR2 and leaves 1080p and 1440p@DPR1 at full richness - full drift
+    // motion, all three star layers.
+    //
+    // drift-cropped is kept because it was part of the tested combination, but
+    // note it earns nothing once drift-static is on: a static drift is no
+    // longer a separate blended surface, so cropping it saves no blend. It is
+    // harmless (0.14% of pixels, all where the mask is already transparent) and
+    // it would start mattering again if drift-static were ever removed.
+    var NEB_AUTO_DEGRADE = ['drift-static', 'drift-cropped', 'stars-1'];
     var NEB_AUTO_MP = 6;         // device megapixels at or above which it applies
 
     function deviceMegapixels() {
@@ -460,10 +471,10 @@
                 var w = Math.max(0, Math.min(r.right, innerWidth) - Math.max(r.left, 0));
                 var h = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0));
                 // getBoundingClientRect does NOT account for clip-path, so the
-                // crop has to be applied by hand or drift-narrow would report
+                // crop has to be applied by hand or drift-cropped would report
                 // no saving at all. Keep these fractions in step with the
                 // `clip-path: inset(6vh 0 0 14vw)` rule in style.css.
-                if (sel === '.neb-drift' && nebDegrade['drift-narrow']) {
+                if (sel === '.neb-drift' && nebDegrade['drift-cropped']) {
                     w *= 0.86;
                     h *= 0.94;
                 }
