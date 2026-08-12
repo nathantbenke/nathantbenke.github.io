@@ -1,0 +1,348 @@
+// v1.1 nebula lab: live intensity picker. EXPERIMENT-ONLY.
+//
+// Loaded on demand by main.js when ?neb is in the URL, so this file is never
+// fetched by a normal visitor. Delete this file + the loader block in main.js
+// to remove the lab entirely; the nebula itself does not depend on it.
+//
+// Everything is inline-styled on purpose - the lab must not add a single rule
+// to style.css, so there is nothing to unpick later.
+//
+// Perf note: dragging the slider writes --neb-i to :root, which invalidates
+// style for the whole document on every input event. That is exactly the thing
+// the scroll parallax is careful NOT to do. It is fine here because it happens
+// while you are dragging, not while you are scrolling, and because this code
+// does not ship. Profile with the PRESET buttons (no inline var), never mid-drag.
+(function () {
+    'use strict';
+
+    var root = document.documentElement;
+    // These set density AT THE HERO; main.js fades to "density below" past it.
+    var PRESETS = [
+        ['off', 'Off', 'baseline - nebula removed entirely'],
+        ['subtle', 'Barely there', '--neb-i 1.2 at the hero'],
+        ['medium', 'Medium', '--neb-i 1.8 at the hero'],
+        ['present', 'Dense hero', '--neb-i 2.5 - densest; base ~0.95, drift ~0.90']
+    ];
+
+    function current() {
+        return root.getAttribute('data-nebula') || 'medium';
+    }
+
+    var panel = document.createElement('div');
+    panel.setAttribute('data-nebula-lab', '');
+    panel.style.cssText = [
+        'position:fixed', 'right:16px', 'bottom:16px', 'z-index:9999',
+        'width:268px', 'padding:14px 16px 12px',
+        // the panel grew past a short viewport once the motion controls landed
+        'max-height:calc(100vh - 32px)', 'overflow-y:auto',
+        'font:13px/1.45 system-ui,sans-serif', 'color:#eae7f2',
+        'background:rgba(10,8,20,.94)', 'border:1px solid #362a55',
+        'border-radius:12px', 'box-shadow:0 12px 40px rgba(0,0,0,.6)'
+    ].join(';');
+
+    var title = document.createElement('div');
+    title.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px';
+    title.innerHTML = '<strong style="letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:#c4bfd9">' +
+        'Nebula v1.1.7</strong>';
+
+    var hide = document.createElement('button');
+    hide.type = 'button';
+    hide.textContent = 'hide';
+    hide.style.cssText = 'background:none;border:0;color:#c4bfd9;cursor:pointer;font:inherit;font-size:11px;padding:2px 4px';
+    title.appendChild(hide);
+    panel.appendChild(title);
+
+    var buttons = [];
+
+    function paintActive() {
+        var c = current();
+        var freeform = root.style.getPropertyValue('--neb-i') !== '';
+        buttons.forEach(function (b) {
+            var on = !freeform && b.dataset.preset === c;
+            b.style.borderColor = on ? '#a78bfa' : '#362a55';
+            b.style.background = on ? 'rgba(167,139,250,.16)' : 'transparent';
+            b.style.color = on ? '#eae7f2' : '#c4bfd9';
+        });
+    }
+
+    PRESETS.forEach(function (p) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.dataset.preset = p[0];
+        b.title = p[2];
+        b.textContent = p[1];
+        b.style.cssText = [
+            'display:block', 'width:100%', 'margin-bottom:6px', 'padding:7px 10px',
+            'text-align:left', 'font:inherit', 'cursor:pointer',
+            'border:1px solid #362a55', 'border-radius:8px', 'background:transparent', 'color:#c4bfd9'
+        ].join(';');
+        b.addEventListener('click', function () {
+            // clearing the inline var is what hands control back to the preset
+            root.style.removeProperty('--neb-i');
+            root.setAttribute('data-nebula', p[0]);
+            try { localStorage.setItem('nebula', p[0]); } catch (e) {}
+            if (window.__nebula) window.__nebula.refresh();
+            syncReadout();
+            paintActive();
+        });
+        buttons.push(b);
+        panel.appendChild(b);
+    });
+
+    var readout = document.createElement('label');
+    readout.style.cssText = 'display:block;margin:10px 0 4px;font-size:11px;color:#c4bfd9';
+    panel.appendChild(readout);
+
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = '0';
+    slider.max = '2.5';
+    slider.step = '0.05';
+    slider.style.cssText = 'width:100%;accent-color:#a78bfa';
+    panel.appendChild(slider);
+
+    function effective() {
+        var inline = root.style.getPropertyValue('--neb-i');
+        if (inline) return parseFloat(inline);
+        return parseFloat(getComputedStyle(root).getPropertyValue('--neb-i')) || 0;
+    }
+
+    function syncReadout() {
+        var v = effective();
+        slider.value = String(v);
+        readout.textContent = 'fine tune  --neb-i: ' + v.toFixed(2) +
+            (root.style.getPropertyValue('--neb-i') ? '  (custom)' : '  (preset)');
+    }
+
+    slider.addEventListener('input', function () {
+        root.setAttribute('data-nebula', 'medium');
+        root.style.setProperty('--neb-i', slider.value);
+        if (window.__nebula) window.__nebula.refresh();
+        syncReadout();
+        paintActive();
+    });
+
+    // ---- motion + falloff controls (v1.1.1) ----
+    // These drive plain JS numbers in main.js's rAF, NOT CSS custom properties.
+    // A --var write on :root would invalidate style for the whole document on
+    // every frame, which is the original jank; these touch nothing until the
+    // next scroll frame reads them.
+    var motionWrap = document.createElement('div');
+    motionWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55';
+    panel.appendChild(motionWrap);
+
+    // NOT named `slider`: that collides with the --neb-i input element declared
+    // above. A function declaration and a var of the same name share one
+    // binding, the element assignment wins, and calling it throws TypeError.
+    function addSlider(label, key, min, max, step, fmt) {
+        var lab = document.createElement('label');
+        lab.style.cssText = 'display:block;margin-bottom:2px;font-size:11px;color:#c4bfd9';
+        var input = document.createElement('input');
+        input.type = 'range';
+        input.min = String(min); input.max = String(max); input.step = String(step);
+        input.style.cssText = 'width:100%;accent-color:#a78bfa;margin-bottom:6px';
+
+        var api = window.__nebula;
+        var start = api ? api.state()[key] : min;
+        input.value = String(start);
+
+        function paint(v) { lab.textContent = label + ': ' + fmt(v); }
+        paint(start);
+        input.addEventListener('input', function () {
+            var v = parseFloat(input.value);
+            paint(v);
+            if (window.__nebula) window.__nebula.set(key, v);
+        });
+        motionWrap.appendChild(lab);
+        motionWrap.appendChild(input);
+        return input;
+    }
+
+    // The cap is not cosmetic: the layers carry 320px of bottom slack, and the
+    // fastest plane at 1.5x travels ~307px over a 10k page. Past that the layer
+    // would scroll out from under the bottom of the viewport. The slack came
+    // down from 520px because it is dead area on EVERY plane and blend cost
+    // scales with layer area - see the note in style.css.
+    addSlider('parallax rate', 'speed', 0, 1.5, 0.05, function (v) {
+        var travel = Math.round(0.023 * v * Math.max(0, document.documentElement.scrollHeight - innerHeight));
+        return v.toFixed(2) + 'x  (near plane travels ' + travel + 'px)';
+    });
+    (function () {
+        var row = document.createElement('label');
+        row.title = 'off = whole-pixel steps (one step per ~43px of scroll); on = exact tracking';
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin:2px 0 8px;cursor:pointer;font-size:11px;color:#c4bfd9';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !window.__nebula || window.__nebula.state().subpixel !== false;
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.set('subpixel', cb.checked);
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode('sub-pixel drift tracking'));
+        motionWrap.appendChild(row);
+    })();
+
+    (function () {
+        var row = document.createElement('label');
+        row.title = 'the scroll fade cannot run under drift-static without repainting, so it is off there';
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin:2px 0 8px;cursor:pointer;font-size:11px;color:#c4bfd9';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !window.__nebula || window.__nebula.state().falloffOn !== false;
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.set('falloffOn', cb.checked);
+            paintCost();
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode('scroll density falloff'));
+        motionWrap.appendChild(row);
+    })();
+
+    addSlider('density at hero', 'top', 0.2, 1, 0.02, function (v) { return v.toFixed(2); });
+    addSlider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
+    addSlider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
+
+    // ---- per-layer visibility, including the star layers ----
+    // Toggling here also removes the layer from main.js's parallax list, so a
+    // hidden layer stops receiving per-frame transforms instead of being
+    // animated invisibly.
+    var layersWrap = document.createElement('div');
+    layersWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
+    layersWrap.appendChild(document.createTextNode('layers (uncheck to A/B a surface):'));
+    panel.appendChild(layersWrap);
+
+    var LAYERS = [
+        ['.neb-base', 'nebula base', 'static, folds into the background layer - free'],
+        ['.neb-grain', 'nebula grain', 'static, folds in - free'],
+        ['.neb-drift', 'nebula drift', 'PROMOTED - blended every frame'],
+        ['.bg-stars-1', 'stars 1 (far)', 'PROMOTED - blended every frame'],
+        ['.bg-stars-2', 'stars 2 (mid)', 'PROMOTED - blended every frame'],
+        ['.bg-stars-3', 'stars 3 (bright)', 'PROMOTED - heaviest star tile']
+    ];
+
+    LAYERS.forEach(function (L) {
+        var row = document.createElement('label');
+        row.title = L[2];
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !window.__nebula || window.__nebula.layerVisible(L[0]);
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.setLayer(L[0], cb.checked);
+            paintCost();
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode(L[1]));
+        layersWrap.appendChild(row);
+    });
+
+    // ---- one-click candidates ----
+    // Setting four switches by hand between every A/B is how you end up
+    // comparing two things you did not mean to compare.
+    var candWrap = document.createElement('div');
+    candWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
+    candWrap.appendChild(document.createTextNode('candidates (2 star layers protected):'));
+    panel.appendChild(candWrap);
+
+    var CANDIDATES = [
+        ['A: static nebula + 2 stars', ['drift-static', 'stars-2']],
+        ['B: MOVING nebula + 2 stars', ['stars-2']],
+        ['B-tight: moving, cropped hard', ['drift-tight', 'stars-2']],
+        ['full richness (3 stars, moving)', []]
+    ];
+
+    CANDIDATES.forEach(function (C) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = C[0];
+        btn.style.cssText = 'display:block;width:100%;margin-top:5px;padding:6px 9px;text-align:left;' +
+            'font:inherit;font-size:11px;cursor:pointer;border:1px solid #362a55;border-radius:7px;' +
+            'background:transparent;color:#c4bfd9';
+        btn.addEventListener('click', function () {
+            if (!window.__nebula) return;
+            ['drift-static', 'drift-cropped', 'drift-tight', 'stars-2', 'stars-1']
+                .forEach(function (t) { window.__nebula.setDegrade(t, false); });
+            C[1].forEach(function (t) { window.__nebula.setDegrade(t, true); });
+            var on = window.__nebula.degrade();
+            Object.keys(degBoxes).forEach(function (k) { degBoxes[k].checked = on.indexOf(k) > -1; });
+            paintCost();
+        });
+        candWrap.appendChild(btn);
+    });
+
+    // ---- large-viewport degrade ----
+    var degWrap = document.createElement('div');
+    degWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
+    degWrap.appendChild(document.createTextNode('large-viewport degrade:'));
+    panel.appendChild(degWrap);
+
+    var DEGRADES = [
+        ['drift-static', 'drift -> static', 'removes a full-bleed blended surface; costs the nebula parallax only'],
+        ['drift-cropped', 'drift -> cropped', 'keeps motion, crops where the mask is already transparent (~20% less area)'],
+        ['drift-tight', 'drift -> tight crop', 'harder crop, roughly half the area - the only way a MOVING drift fits beside 2 stars at 4K'],
+        ['stars-2', 'stars 3 -> 2', 'drops the bright star layer'],
+        ['stars-1', 'stars 3 -> 1', 'drops the mid and bright star layers']
+    ];
+    var degBoxes = {};
+
+    DEGRADES.forEach(function (D) {
+        var row = document.createElement('label');
+        row.title = D[2];
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.checked = !!(window.__nebula && window.__nebula.degrade().indexOf(D[0]) > -1);
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.setDegrade(D[0], cb.checked);
+            // stars-1 supersedes stars-2 in the engine; mirror that here
+            if (window.__nebula) {
+                var on = window.__nebula.degrade();
+                Object.keys(degBoxes).forEach(function (k) { degBoxes[k].checked = on.indexOf(k) > -1; });
+            }
+            paintCost();
+        });
+        degBoxes[D[0]] = cb;
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode(D[1]));
+        degWrap.appendChild(row);
+    });
+
+
+    // Live cost meter. Surface COUNT alone is misleading - what the compositor
+    // pays is area x surfaces, so this reports blended megapixels per frame for
+    // the current combination. Compare this number between combinations.
+    var layerInfo = document.createElement('div');
+    layerInfo.style.cssText = 'margin-top:10px;padding-top:9px;border-top:1px solid #362a55;' +
+        'font-size:10px;color:#8d87a8;line-height:1.5';
+    panel.appendChild(layerInfo);
+
+    function paintCost() {
+        if (!window.__nebula || !window.__nebula.cost) return;
+        var c = window.__nebula.cost();
+        layerInfo.innerHTML =
+            'screen: ' + Math.round(innerWidth) + 'x' + Math.round(innerHeight) +
+            ' @ dpr ' + c.dpr + ' = <strong>' + c.mp.toFixed(1) + ' MP</strong><br>' +
+            'blended surfaces: <strong>' + c.surfaces.length + '</strong>' +
+            (c.surfaces.length ? ' (' + c.surfaces.join(', ') + ')' : '') + '<br>' +
+            'blended per frame: <strong>' + c.blendedMp.toFixed(1) + ' MP</strong> - lower is smoother<br>' +
+            'scroll falloff: <strong>' + (window.__nebula.state().falloffRuns ? 'running' :
+                'OFF (needs a promoted drift)') + '</strong>';
+    }
+
+
+    var hint = document.createElement('div');
+    hint.style.cssText = 'margin-top:9px;font-size:10px;color:#8d87a8;line-height:1.4';
+    hint.textContent = 'Pick persists across pages. Drop ?neb from the URL to hide this panel; the pick stays.';
+    panel.appendChild(hint);
+
+    hide.addEventListener('click', function () { panel.remove(); });
+
+    document.body.appendChild(panel);
+    syncReadout();
+    paintActive();
+    paintCost();
+})();

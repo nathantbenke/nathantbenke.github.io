@@ -43,24 +43,22 @@
     </script>
 
     <!-- Theme FOUC guard: set data-theme before first paint.
-         ?theme=light|dark also honored (theme-able links + headless testing). -->
+         ?theme=light|dark also honored (theme-able links + headless testing).
+         v1.1 resolves the nebula intensity in the same place and for the same
+         reason: applying it from deferred JS would let a frame paint at the
+         wrong intensity first. ?nebula=off|subtle|medium|present. -->
     <script>
         try {
-            var q = new URLSearchParams(location.search).get('theme');
+            var p = new URLSearchParams(location.search);
+            var q = p.get('theme');
             var t = (q === 'dark' || q === 'light') ? q : localStorage.getItem('theme');
             if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
-        } catch (e) {}
-    </script>
 
-    <!-- MS Clarity: injected after load so analytics never competes with first paint -->
-    <script type="text/javascript">
-    window.addEventListener('load', function () {
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "ld2h640kif");
-    });
+            var NEB = /^(off|subtle|medium|present)$/;
+            var nq = p.get('nebula');
+            var n = NEB.test(nq || '') ? nq : localStorage.getItem('nebula');
+            if (NEB.test(n || '')) document.documentElement.setAttribute('data-nebula', n);
+        } catch (e) {}
     </script>
 
     <link rel="stylesheet" href="assets/css/style.css">
@@ -70,6 +68,11 @@
 
 <div class="bg" aria-hidden="true">
     <div class="bg-atmo"></div>
+    <div class="bg-nebula">
+        <div class="neb-base"></div>
+        <div class="neb-grain"></div>
+        <div class="neb-drift"><div class="neb-drift-art"></div></div>
+    </div>
     <div class="bg-stars bg-stars-1"></div>
     <div class="bg-stars bg-stars-2"></div>
     <div class="bg-stars bg-stars-3"></div>

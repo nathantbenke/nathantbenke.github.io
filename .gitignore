@@ -2,6 +2,9 @@
 # Only cleaned web-export derivatives in assets/img/brand/ are committed.
 /assets/brand-src/
 
+# Screenshot / trace output from the nebula rigs. Regenerate, never commit.
+tools/shots/
+
 node_modules/
 tools/node_modules/
 tools/package.json

@@ -47,6 +47,35 @@
         radial-gradient(900px 640px at 88% 20%, rgba(40, 78, 214, 0.055), transparent 60%),
         linear-gradient(168deg, #090716 0%, #06050f 45%, #030208 100%);
 
+    /* ---- v1.1 nebula: atmospheric depth behind the starfield (DARK ONLY) ----
+       One master multiplier drives every sub-layer's opacity, so intensity is a
+       single number to tune. Presets live in [data-nebula] below; 1 = medium.
+
+       The tiles are SVG feTurbulence rendered ONCE into a background image.
+       That is deliberate: it is how this layer gets soft, cloud-like structure
+       without `filter: blur()`, which would be a live per-frame GPU pass. The
+       tiles are small and upscaled hard by background-size - the bilinear
+       upscale IS the blur, baked in at rasterize time and never recomputed. */
+    --neb-i: 2.5;
+
+    /* dust: black, alpha driven by the noise (patchy, ~50% coverage) */
+    --neb-tile-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='d' filterUnits='userSpaceOnUse' x='0' y='0' width='512' height='512' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.014' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23d)'/%3E%3C/svg%3E");
+    /* emission: fixed violet-blue, alpha driven by the noise (different seed,
+       so the filaments never land on top of the dust and cancel out) */
+    --neb-tile-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Cfilter id='e' filterUnits='userSpaceOnUse' x='0' y='0' width='512' height='512' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0095' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 1 1 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23e)'/%3E%3C/svg%3E");
+    /* fine grain: tiled 1:1. Doubles as dithering - five stacked near-black
+       gradients band badly on 8-bit panels, and this is what kills it. */
+    --neb-tile-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='336' height='336'%3E%3Cfilter id='g' filterUnits='userSpaceOnUse' x='0' y='0' width='336' height='336' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='336' height='336' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E");
+    /* keeps the turbulence inside the cloud region instead of veiling the
+       whole viewport (which would just read as a dirty screen) */
+    /* Extra stops, and a longer tail. The old three-stop ramp reached
+       transparent at 78% and that boundary was visible as a circular arc once
+       the contouring made shallow ramps legible. More stops spread the same
+       alpha change over more of the radius, so no single step is wide. */
+    --neb-mask: radial-gradient(72vw 78vh at 64vw 61vh,
+        #000 12%, rgba(0, 0, 0, 0.72) 38%, rgba(0, 0, 0, 0.42) 58%,
+        rgba(0, 0, 0, 0.16) 76%, transparent 94%);
+
     /* star tiles: small (far), small (mid, reused at other scale), bright w/ glow */
     --star-alpha: 0.55;
     --star-tile: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='700'%20height='700'%3E%3Cg%20fill='%23ffffff'%3E%3Ccircle%20cx='23'%20cy='45'%20r='.9'%20opacity='.8'/%3E%3Ccircle%20cx='88'%20cy='132'%20r='.6'%20opacity='.5'/%3E%3Ccircle%20cx='160'%20cy='60'%20r='1.1'%20opacity='.9'/%3E%3Ccircle%20cx='240'%20cy='190'%20r='.7'%20opacity='.4'/%3E%3Ccircle%20cx='310'%20cy='90'%20r='.5'%20opacity='.6'/%3E%3Ccircle%20cx='395'%20cy='160'%20r='1'%20opacity='.7'/%3E%3Ccircle%20cx='470'%20cy='40'%20r='.6'%20opacity='.5'/%3E%3Ccircle%20cx='540'%20cy='120'%20r='.8'%20opacity='.85'/%3E%3Ccircle%20cx='620'%20cy='200'%20r='.5'%20opacity='.4'/%3E%3Ccircle%20cx='70'%20cy='290'%20r='.7'%20opacity='.6'/%3E%3Ccircle%20cx='180'%20cy='340'%20r='1.2'%20opacity='.9'/%3E%3Ccircle%20cx='300'%20cy='300'%20r='.5'%20opacity='.35'/%3E%3Ccircle%20cx='430'%20cy='330'%20r='.8'%20opacity='.6'/%3E%3Ccircle%20cx='560'%20cy='290'%20r='.6'%20opacity='.5'/%3E%3Ccircle%20cx='650'%20cy='360'%20r='1'%20opacity='.8'/%3E%3Ccircle%20cx='40'%20cy='430'%20r='.6'%20opacity='.5'/%3E%3Ccircle%20cx='150'%20cy='480'%20r='.8'%20opacity='.7'/%3E%3Ccircle%20cx='280'%20cy='450'%20r='.5'%20opacity='.4'/%3E%3Ccircle%20cx='390'%20cy='500'%20r='1.1'%20opacity='.85'/%3E%3Ccircle%20cx='520'%20cy='470'%20r='.6'%20opacity='.5'/%3E%3Ccircle%20cx='630'%20cy='520'%20r='.7'%20opacity='.6'/%3E%3Ccircle%20cx='90'%20cy='580'%20r='1'%20opacity='.8'/%3E%3Ccircle%20cx='220'%20cy='620'%20r='.6'%20opacity='.45'/%3E%3Ccircle%20cx='350'%20cy='660'%20r='.8'%20opacity='.7'/%3E%3Ccircle%20cx='480'%20cy='610'%20r='.5'%20opacity='.4'/%3E%3Ccircle%20cx='600'%20cy='650'%20r='.9'%20opacity='.75'/%3E%3C/g%3E%3C/svg%3E");
@@ -178,11 +207,270 @@ body {
     background-size: cover;
 }
 
+/* ---------- v1.1 nebula: a VOLUME behind everything ----------
+
+   TWO ELEMENTS THAT COST ONE EXTRA COMPOSITED SURFACE.
+
+   v1.1.2 stacked four full-bleed promoted planes. Each is a large
+   semi-transparent surface the GPU must BLEND every frame, and blend cost
+   scales with viewport area - at 4K/DPR2 that is ~206 megapixels of blending
+   per frame before the starfield is even counted. Raster counts are blind to
+   this (the layers genuinely do not re-rasterise), which is exactly why the
+   headless harness cleared the nebula and a real 4K did not.
+
+   So density is now BAKED INTO FEWER, DENSER LAYERS instead of stacked as thin
+   ones:
+
+     .neb-base   static. Emission field + both turbulence passes, one element,
+                 one background stack. NOT promoted and NOT transformed, so it
+                 rasterises into the same layer as .bg-atmo and adds ZERO new
+                 surfaces to blend.
+     .neb-grain  static and unpromoted, adjacent to .neb-base, so it folds into
+                 that same layer. A separate element only so grain stays tunable
+                 independently of the base.
+     .neb-drift  the ONE moving layer. Promoted, transform-parallax, carries the
+                 near wisps and the dust columns. The only surface the nebula
+                 adds to the per-frame blend.
+
+   Depth still reads because a static plane at infinity plus one drifting plane
+   IS parallax, and the three star layers above supply three more rates on top.
+
+   No live filter anywhere: softness is gradients plus upscaled pre-rendered
+   turbulence (see the tile tokens above). */
+
+/* `.bg > .bg-nebula`, not `.bg-nebula`: the shared `.bg, .bg > div { inset: 0 }`
+   rule above is (0,1,1) and silently outranks a bare class selector. */
+.bg > .bg-nebula { inset: 0 0 -320px 0; }
+
+.bg-nebula > div {
+    position: absolute;
+    inset: 0;
+}
+
+/* Only the drifting plane is promoted. The other two are deliberately left
+   un-promoted so the compositor folds them into the existing background layer
+   instead of handing us two more full-bleed surfaces to blend every frame. */
+.neb-drift { will-change: transform; }
+
+/* Small viewports: no parallax, so nothing needs promoting. main.js makes the
+   same decision for the transform writes - a per-frame transform on an
+   un-promoted layer repaints every frame, which is worse than no parallax at
+   all. If you move one, move the other. */
+@media (max-width: 56rem) {
+    .bg > .bg-nebula { inset: 0; }
+    .neb-drift { will-change: auto; }
+}
+
+/* ART IS SIZED IN vh, NOT %.
+   These boxes are viewport-height PLUS parallax slack, so percentages would
+   re-place every gradient whenever the slack changed and the composition would
+   drift down the screen. vh is measured against the viewport and the boxes are
+   top-aligned to it, so the art stays put whatever the slack is. */
+
+/* The dense static base: colour mass and both turbulence passes in one stack.
+   background-image is painted top-first, so the dust tile sits over the glow
+   tile - dust occludes emission, which is the right way round.
+
+   NO REPEAT on the tiles. Tiling them was the v1.1.1 vertical seam: a 256px
+   source blown up to viewport scale does not sample across the boundary between
+   two copies, so each copy's edge pixels clamp and the discontinuity is
+   magnified into a hard straight line (measured at 10.1x the mean horizontal
+   derivative, exactly where the tile edge landed). One oversized copy has no
+   interior boundary to show, and vw/vh sizing means no viewport outruns it. */
+.neb-base {
+    opacity: calc(0.38 * var(--neb-i));
+    background-image:
+        var(--neb-tile-dust),
+        var(--neb-tile-glow),
+        /* A whisper of a hot core, just right of the main dust column so the
+           column has something to silhouette against. Tiny and warm: it should
+           read as "something is lit back there", never as a second luminous
+           event competing with the hero. */
+        radial-gradient(closest-side at 68vw 56vh,
+            rgba(255, 206, 158, 0.048), rgba(240, 171, 252, 0.026) 46%, transparent 72%),
+        radial-gradient(30vw 30vh at 68vw 56vh, rgba(206, 104, 190, 0.070), transparent 72%),
+        radial-gradient(54vw 53vh at 63vw 51vh, rgba(120, 86, 212, 0.088), transparent 74%),
+        radial-gradient(50vw 48vh at 86vw 20vh, rgba(58, 168, 206, 0.064), transparent 72%),
+        radial-gradient(54vw 53vh at 14vw 91vh, rgba(66, 112, 196, 0.048), transparent 74%);
+    /* UPSCALE RATIO IS THE ARTIFACT. A 256px tile stretched to 190vw is ~14x on
+       a 1920 screen, so every 1-level step in the source becomes a ~14px band -
+       which is what printed the topographic contour rings through the cloud.
+       The tiles are now 512px and stretched less, taking the ratio to ~5.6x and
+       ~6.2x, and their baseFrequency was rescaled to keep the on-screen feature
+       size the same. If you change either number, change the other. */
+    background-size: 150vw 150vh, 165vw 165vh, auto, auto, auto, auto, auto;
+    background-position: 18% 22%, 58% 40%, 0 0, 0 0, 0 0, 0 0, 0 0;
+    background-repeat: no-repeat;
+    /* Wide and gentle - a vignette, not a keyhole. It holds the turbulence away
+       from the far edges (unmasked noise across a whole 4K viewport just reads
+       as a dirty screen) without cropping the colour mass, which now lives in
+       this same element and therefore shares the mask. */
+    -webkit-mask-image: var(--neb-mask);
+    mask-image: var(--neb-mask);
+}
+
+/* Separate element purely so grain stays tunable apart from the base. Static
+   and unpromoted, so it costs no additional surface. */
+.neb-grain {
+    /* This is the dither, and it was too weak to be one: measured, the base
+       spans ~37 grey levels across the whole viewport and adding grain moved
+       that from 38 to 39. Shallow ramps at this amplitude quantise into visible
+       steps unless something breaks them up. Raised until the level count
+       actually moves, and no further - past ~0.05 it starts reading as film
+       grain rather than as dither. */
+    /* NOT raised further to fight the falloff's temporal stepping - that was
+       tried at 0.042 and measured identical (26.9% max pixel change per step
+       against 26.0%). Grain is a SEPARATE layer, so it is composited and
+       rounded to integers after the gradient underneath has already been
+       quantised; an integer offset shifts every pixel equally and cannot
+       decorrelate threshold crossings. Dither only works here for the spatial
+       contours, which is what this value is tuned for. */
+    opacity: calc(0.030 * var(--neb-i));
+    background-image: var(--neb-tile-grain);
+    background-size: 336px 336px;
+    background-repeat: repeat;
+}
+
+/* The one moving layer: near wisps here, dust columns in its rotated child. */
+.neb-drift {
+    opacity: calc(0.36 * var(--neb-i));
+    background-image: var(--neb-tile-glow);
+    background-size: 145vw 145vh;   /* same upscale-ratio rule as .neb-base */
+    background-position: 34% 62%;
+    background-repeat: no-repeat;
+    -webkit-mask-image: var(--neb-mask);
+    mask-image: var(--neb-mask);
+}
+
+/* JS owns .neb-drift's transform for the parallax and would wipe a static
+   rotate written to the same property - hence the inner box holding it. */
+.neb-drift-art {
+    position: absolute;
+    inset: 0;
+    /* rotate: CSS cannot tilt an individual gradient, so the group tilts.
+       scale: at 11deg a 1:1 box exposes bare corners, and it buys the columns
+       real size - they are the "vast structure" half of the scale contrast.
+       transform-origin is pinned to the viewport centre, not the box centre,
+       because the box is taller than the viewport by the parallax slack. */
+    transform: rotate(11deg) scale(1.5);
+    transform-origin: 50% 50vh;
+    background-repeat: no-repeat;
+    background-image:
+        /* Rim light on the lit flank of each column, offset so it runs ALONG
+           the silhouette rather than washing over it. Wide and soft: a thin
+           bright line at this scale reads as a scratch. */
+        radial-gradient(3.4vw 22vh at 49.5vw 58vh, rgba(150, 224, 255, 0.115), transparent 70%),
+        radial-gradient(2.8vw 15vh at 58.2vw 68vh, rgba(224, 172, 255, 0.090), transparent 70%),
+        radial-gradient(2.2vw 11vh at 47.6vw 51vh, rgba(168, 232, 255, 0.070), transparent 70%),
+        /* The dust itself. Large, soft and OPAQUE - the structure is carried by
+           what it BLOCKS, not by more glow, which is what keeps the value
+           histogram bimodal (one dark mass, one bright spike at the hero)
+           rather than quietly adding a second bright region. */
+        radial-gradient(9vw 30vh at 57vw 60vh, rgba(3, 2, 9, 0.80), transparent 76%),
+        radial-gradient(7vw 22vh at 64vw 70vh, rgba(3, 2, 9, 0.70), transparent 76%),
+        radial-gradient(5.5vw 16vh at 52vw 52vh, rgba(3, 2, 9, 0.58), transparent 76%);
+}
+
+/* ---------- Large-viewport degrade ----------
+   Driven by data-degrade on :root (main.js). Each token removes real per-frame
+   blend work; none of them changes the composition or the density.
+
+   Blend cost is per DESTINATION PIXEL per frame, which is why the only levers
+   here are "remove a surface" and "shrink the area a surface covers".
+   Deliberately absent: slowing the drift. A layer costs exactly the same to
+   blend whether it travels 200px or 2px, so that would buy nothing. */
+
+/* Fold the drift layer in with .neb-base and .neb-grain: no promotion, no
+   transform, no separate surface. The nebula then costs zero extra blends -
+   which is why soloing base/grain already measured as near-free. What it
+   costs is the nebula's own parallax; the art is identical. */
+:root[data-degrade~="drift-static"] .neb-drift {
+    will-change: auto;
+    transform: none !important;
+}
+
+/* Keep the motion, blend fewer pixels. --neb-mask is a radial centred at
+   64vw 61vh with a 68vw/74vh radius that reaches full transparency at 78%, so
+   the far left and the top strip of this layer are already contributing
+   nothing. Cropping them is invisible and takes roughly a fifth of the area.
+
+   clip-path rather than a smaller box, deliberately: the art inside is placed
+   in vw/vh from the ELEMENT's origin, so moving the origin would slide the
+   whole composition sideways. Cropping leaves the coordinate system alone. */
+:root[data-degrade~="drift-cropped"] .neb-drift {
+    -webkit-clip-path: inset(6vh 0 0 14vw);
+    clip-path: inset(6vh 0 0 14vw);
+}
+
+/* A harder crop than drift-cropped, for the case where the nebula must KEEP
+   its motion on a big screen. Two star layers already cost 16.6 MP/frame at 4K
+   and that floor cannot be moved, so the only way a moving drift fits alongside
+   them is to make the drift itself much smaller. This crops to roughly the box
+   the dust columns and rim lights actually occupy after their rotate/scale
+   (leftmost content lands near 44vw, topmost near 43vh), which is about half
+   the area of the full-bleed layer. More visible than drift-cropped - it does
+   reach into where the mask is still faintly non-zero - so it is offered, not
+   defaulted. */
+:root[data-degrade~="drift-tight"] .neb-drift {
+    -webkit-clip-path: inset(22vh 4vw 4vh 26vw);
+    clip-path: inset(22vh 4vw 4vh 26vw);
+}
+
+/* Star layers are 3 of the 4 blended surfaces at full richness. -3 is the
+   bright/glow tile and the most expensive per pixel, so it goes first. */
+:root[data-degrade~="stars-2"] .bg-stars-3 { display: none; }
+:root[data-degrade~="stars-1"] .bg-stars-2,
+:root[data-degrade~="stars-1"] .bg-stars-3 { display: none; }
+
+/* Intensity presets: density AT THE TOP OF THE PAGE. main.js fades the drifting
+   plane to --neb-floor of this past the hero. No attribute = present. */
+:root[data-nebula="subtle"]  { --neb-i: 1.2; }
+:root[data-nebula="medium"]  { --neb-i: 1.8; }
+:root[data-nebula="present"] { --neb-i: 2.5; }
+/* `display: none`, not opacity 0 - "off" should cost nothing at all */
+:root[data-nebula="off"] .bg-nebula { display: none; }
+
+/* DARK ONLY. Light mode stays clean and flavourless, as specified. */
+:root[data-theme="light"] .bg-nebula { display: none; }
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) .bg-nebula { display: none; }
+}
+
+
+/* THE DEAD `inset: -140px 0 0 0` IS GONE, AND NOT REPLACED WITH A BIGGER ONE.
+
+   That rule never applied: `.bg, .bg > div { inset: 0 }` above is (0,1,1) and
+   outranks a bare class selector, so every star layer has always computed to
+   exactly viewport height. The visible consequence was that the layers
+   translated out from under the viewport on a long page - at the bottom of the
+   home page .bg-stars-3 sat entirely ABOVE it, so the deep scroll had no bright
+   stars at all.
+
+   The obvious fix - give each layer enough bottom slack to cover its travel -
+   would cost .bg-stars-3 nearly 1000px of extra height, and layer AREA is
+   precisely what makes these full-bleed surfaces expensive to blend at 4K.
+
+   So main.js wraps each layer's translate MODULO its own tile size instead.
+   The tiles repeat, so a layer offset by exactly one tile is pixel-identical to
+   one offset by zero: the parallax runs forever and the wrap is invisible.
+
+   That bounds the slack at ONE TILE instead of the whole travel. It does not
+   remove it - measured: with zero slack, .bg-stars-1 still left a 222px strip
+   bare at the page bottom, because its travel (222px) never reaches its 700px
+   tile and so the modulo never engages. Coverage needs height >= viewport +
+   offset, and the offset can be anything up to one tile. Hence one tile each.
+
+   The win is that this is now CONSTANT rather than growing with the page: the
+   naive fix needed 978px on .bg-stars-3 today and more every time the page gets
+   longer. Each layer's slack below MUST equal its background-size, and both
+   must match main.js's STAR_TILE. Three places, one number. */
 .bg-stars {
-    inset: -140px 0 0 0;
     opacity: var(--star-alpha);
     will-change: transform;
 }
+.bg > .bg-stars-1 { inset: 0 0 -700px 0; }
+.bg > .bg-stars-2 { inset: 0 0 -460px 0; }
+.bg > .bg-stars-3 { inset: 0 0 -900px 0; }
 .bg-stars-1 { background: var(--star-tile); background-size: 700px 700px; }
 .bg-stars-2 { background: var(--star-tile); background-size: 460px 460px; background-position: 130px 250px; opacity: calc(var(--star-alpha) * 0.8); }
 .bg-stars-3 { background: var(--star-bright); background-size: 900px 900px; background-position: 60px 40px; opacity: 0.9; }
@@ -1557,7 +1845,11 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
         transform: translateY(14px);
         transition: opacity var(--enter-duration) var(--ease-out),
                     transform var(--enter-duration) var(--ease-out);
-        transition-delay: calc(var(--stagger, 0) * 80ms);
+        /* 80ms x 5 steps put the last card 400ms behind the first, and on top
+           of the 280ms transition that is 680ms before it finished - long
+           enough to scroll past a card while it was still blank. 45ms capped at
+           3 steps keeps the sense of sequence at 135ms worst case. */
+        transition-delay: calc(var(--stagger, 0) * 45ms);
     }
     html.js-sections section.in-view .work-card,
     html.js-sections section.in-view .labs-card,
@@ -1570,8 +1862,8 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
     .work-card:nth-child(2), .labs-card:nth-child(2), .tc-group:nth-of-type(2) { --stagger: 1; }
     .work-card:nth-child(3), .labs-card:nth-child(3), .tc-group:nth-of-type(3) { --stagger: 2; }
     .work-card:nth-child(4), .labs-card:nth-child(4), .tc-group:nth-of-type(4) { --stagger: 3; }
-    .work-card:nth-child(5), .tc-group:nth-of-type(5) { --stagger: 4; }
-    .work-card:nth-child(6) { --stagger: 5; }
+    .work-card:nth-child(5), .tc-group:nth-of-type(5) { --stagger: 3; }
+    .work-card:nth-child(6) { --stagger: 3; }
 }
 
 @media (prefers-reduced-motion: reduce) {

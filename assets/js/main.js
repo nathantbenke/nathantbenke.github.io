@@ -75,7 +75,15 @@
                     timeline.style.setProperty('--tl-progress', String(maxRevealed / items.length));
                 }
             });
-        }, { threshold: 0.35, rootMargin: '0px 0px -10% 0px' });
+        }, {
+            // Was threshold 0.35 with a NEGATIVE bottom margin, which required
+            // an entry to be a third visible and 10% up from the bottom before
+            // it would even start - the latest possible trigger. Same fix as
+            // the section observer: fire early, off-screen, so the animation is
+            // over before the entry is looked at.
+            threshold: 0,
+            rootMargin: '400px 0px 400px 0px'
+        });
 
         items.forEach(function (li) { observer.observe(li); });
     }
@@ -175,34 +183,369 @@
         });
     }
 
-    // ---------- Starfield scroll parallax ----------
-    // Perf-critical: transforms are written DIRECTLY to the three fixed star
+    // ---------- Background scroll parallax ----------
+    // Perf-critical: transforms are written DIRECTLY to the fixed background
     // layers (compositor-only). Never a custom property on :root, because that
     // invalidates style for the whole document every frame (the round-3 jank).
-    var starLayers = [
-        { el: document.querySelector('.bg-stars-1'), speed: -0.025 },
-        { el: document.querySelector('.bg-stars-2'), speed: -0.055 },
-        { el: document.querySelector('.bg-stars-3'), speed: -0.11 }
-    ].filter(function (l) { return l.el; });
+    //
+    // v1.1.3: the nebula is ONE moving layer over a static base, not four
+    // stacked planes. Four full-bleed promoted planes each cost a large
+    // semi-transparent BLEND every frame, and blend cost scales with viewport
+    // area - fine at 1280x900, punishing at 4K. Raster counts never saw it
+    // because the layers genuinely did not re-rasterise; a real 4K did.
+    //
+    // Depth survives the cut: a static plane at infinity plus one drifting
+    // plane is still parallax, and the three star layers above add three more
+    // rates. .neb-base and .neb-grain are deliberately absent from this list -
+    // they never move, so they stay unpromoted and fold into the background
+    // layer instead of adding surfaces.
+    //
+    // [selector, rate, base opacity]. The base opacity MUST match the
+    // `opacity: calc(<base> * var(--neb-i))` in style.css: the CSS value is
+    // what renders before this script runs (and if it never does), and this
+    // takes over once the scroll falloff multiplies into it.
+    var NEB_DRIFT = ['.neb-drift', -0.023, 0.36];
 
-    if (starLayers.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-        var parallaxTicking = false;
-        var applyParallax = function () {
-            var y = window.scrollY;
-            starLayers.forEach(function (l) {
-                l.el.style.transform = 'translate3d(0,' + (y * l.speed).toFixed(1) + 'px,0)';
-            });
-            parallaxTicking = false;
-        };
+    // Star tile heights, used as the parallax MODULUS. The tiles repeat, so a
+    // layer offset by exactly one tile is pixel-identical to one offset by
+    // zero - which means the translate can wrap forever and the layer never
+    // needs to be taller than the viewport. That is what replaces the dead
+    // `.bg-stars { inset: -140px 0 0 0 }` rule (see style.css): the old fix
+    // would have needed ~1000px of extra height on .bg-stars-3, and layer area
+    // is exactly what we are trying not to spend. Keep in sync with the
+    // background-size values in style.css.
+    var STAR_TILE = { '.bg-stars-1': 700, '.bg-stars-2': 460, '.bg-stars-3': 900 };
+
+    // Sub-pixel tracking for the drift layer. On by default: the parallax has
+    // never been eased (it reads window.scrollY directly inside the rAF), so
+    // whole-pixel rounding was the only thing standing between it and exact
+    // tracking. Toggleable because it is a feel judgement, not a measurement.
+    var nebSubpixel = true;
+
+    var nebSpeed = 1;        // live multiplier, driven by the ?neb panel
+    // Moderate, not maximum. At 1.0 the fade had to travel the whole way from
+    // full drift density down to the floor, and a longer range means more of it
+    // to render smoothly. Starting lower shortens the range and is what was
+    // wanted visually anyway. The ?neb "density at hero" slider drives this.
+    var nebTop = 0.7;        // drift density at the hero
+    var nebFloor = 0.42;     // drift density once past the falloff
+    var nebFalloff = 1400;   // px of scroll the top->floor transition spans
+    var nebFalloffOn = true; // switchable: under drift-static it cannot run at
+                             // all without repainting, so it is off there
+
+    // Must match the max-width: 56rem block in style.css that drops the drift
+    // layer's will-change. Writing a per-frame transform to an UN-PROMOTED
+    // layer makes it repaint every frame - strictly worse than no parallax -
+    // so the CSS and this query have to agree. If you move one, move the other.
+    var nebStatic = window.matchMedia('(max-width: 56rem)').matches;
+
+    var nebDrift = document.querySelector(NEB_DRIFT[0]);
+    var nebDriftBase = NEB_DRIFT[2];
+
+    // --neb-i is read here, not per frame: a getComputedStyle call inside the
+    // scroll handler would force style resolution every frame, which is the
+    // class of mistake this whole layer exists to avoid.
+    var nebI = 1;
+    function readIntensity() {
+        var v = parseFloat(getComputedStyle(root).getPropertyValue('--neb-i'));
+        nebI = isNaN(v) ? 1 : v;
+    }
+    readIntensity();
+
+    // Only the drifting layer's density is scroll-coupled. The base is static
+    // and UNPROMOTED on purpose, so writing its opacity per scroll would
+    // repaint a full-bleed gradient+noise surface - the single most expensive
+    // thing available here. It holds one constant density instead.
+    function applyNebulaDensity(f) {
+        if (!nebDrift) return;
+        var o = nebDriftBase * nebI * f;
+        // 4 decimals, not 3. The rendered fade spans only ~22 luminance levels,
+        // so the value needs finer resolution than the thing it is driving.
+        nebDrift.style.opacity = (o > 1 ? 1 : o).toFixed(4);
+    }
+
+    // ---------- Large-viewport degrade ----------
+    // Blend cost is per DESTINATION PIXEL per frame, so it scales with viewport
+    // area and with how many semi-transparent surfaces are stacked. 1080p and
+    // 1440p are comfortable; a 4K panel is 4x the pixels of 1080p and is not.
+    //
+    // Only two things actually reduce it: remove a blended surface, or shrink
+    // the area one covers. Note what is NOT on this list - slowing the drift.
+    // A layer costs the same to blend whether it moves 200px or 2px, so
+    // "slow it down" would be a placebo; it is deliberately not offered.
+    //
+    //   drift-static  the drift layer stops moving, drops will-change, and
+    //                 folds into the background layer with .neb-base and
+    //                 .neb-grain. Removes a full-bleed blended surface
+    //                 outright - the biggest single win. Costs the nebula's
+    //                 parallax motion; density and composition are untouched.
+    //   drift-cropped  keeps the motion, crops the layer with clip-path where
+    //                 --neb-mask has already faded it to transparent, so the
+    //                 blended area shrinks with no visible change. clip-path,
+    //                 not a smaller box, because the art is positioned in
+    //                 vw/vh from the element's own origin - moving that origin
+    //                 would slide the whole composition sideways.
+    //   stars-2       drops .bg-stars-3 (the bright/glow tile). One surface.
+    //   stars-1       drops .bg-stars-2 and -3. Two surfaces.
+    //
+    // AUTO is off by default. Nothing is degraded until a combination has been
+    // tested on real hardware; ?neb drives it in the meantime. To bake a choice
+    // in, put the tokens in NEB_AUTO_DEGRADE and set NEB_AUTO_MP.
+    // BAKED IN, from testing on a 4K panel. Dropping the bright star layer was
+    // the single biggest improvement there; drift-static removes the nebula's
+    // only blended surface. At 6 device-megapixels this catches 4K and
+    // 1440p@DPR2 and leaves 1080p and 1440p@DPR1 at full richness - full drift
+    // motion, all three star layers.
+    //
+    // drift-cropped is kept because it was part of the tested combination, but
+    // note it earns nothing once drift-static is on: a static drift is no
+    // longer a separate blended surface, so cropping it saves no blend. It is
+    // harmless (0.14% of pixels, all where the mask is already transparent) and
+    // it would start mattering again if drift-static were ever removed.
+    // Two star layers are now a hard requirement - they carry the look further
+    // than the nebula's own drift does - so the degrade protects them and gives
+    // up the nebula's motion instead. This is candidate A; candidate B (moving
+    // drift + 2 stars) is one click away in the ?neb panel.
+    var NEB_AUTO_DEGRADE = ['drift-static', 'stars-2'];
+    var NEB_AUTO_MP = 6;         // device megapixels at or above which it applies
+
+    function deviceMegapixels() {
+        var dpr = window.devicePixelRatio || 1;
+        return (window.innerWidth * window.innerHeight * dpr * dpr) / 1e6;
+    }
+
+    var nebDegrade = {};
+    if (NEB_AUTO_DEGRADE.length && deviceMegapixels() >= NEB_AUTO_MP) {
+        NEB_AUTO_DEGRADE.forEach(function (t) { nebDegrade[t] = true; });
+    }
+
+    var STAR_SPEED = { '.bg-stars-1': -0.025, '.bg-stars-2': -0.055, '.bg-stars-3': -0.11 };
+
+    function degradeTokens() {
+        return Object.keys(nebDegrade).filter(function (k) { return nebDegrade[k]; });
+    }
+
+    function starDropped(sel) {
+        if (nebDegrade['stars-1'] && (sel === '.bg-stars-2' || sel === '.bg-stars-3')) return true;
+        if (nebDegrade['stars-2'] && sel === '.bg-stars-3') return true;
+        return false;
+    }
+
+    // A hidden or un-promoted layer must leave this list. Writing a per-frame
+    // transform to an element that is display:none is wasted work, and writing
+    // one to an element that is NOT promoted makes it repaint every frame -
+    // strictly worse than having no parallax on it at all.
+    var parallaxLayers = [];
+    function buildParallaxLayers() {
+        parallaxLayers = [];
+        var driftOn = nebDrift && !nebStatic && !nebDegrade['drift-static'] &&
+            getComputedStyle(nebDrift).display !== 'none';
+        if (driftOn) parallaxLayers.push({ el: nebDrift, speed: NEB_DRIFT[1], neb: true });
+
+        ['.bg-stars-1', '.bg-stars-2', '.bg-stars-3'].forEach(function (sel) {
+            var el = document.querySelector(sel);
+            if (!el || starDropped(sel)) return;
+            if (getComputedStyle(el).display === 'none') return;
+            parallaxLayers.push({ el: el, speed: STAR_SPEED[sel], wrap: STAR_TILE[sel] });
+        });
+    }
+
+    function applyDegrade() {
+        root.setAttribute('data-degrade', degradeTokens().join(' '));
+        // a layer leaving the list keeps whatever transform it last had, which
+        // would freeze it somewhere arbitrary - reset before rebuilding
+        [nebDrift, document.querySelector('.bg-stars-2'), document.querySelector('.bg-stars-3')]
+            .forEach(function (el) { if (el) el.style.transform = ''; });
+        buildParallaxLayers();
+        // A static drift cannot carry a scroll-linked fade without repainting,
+        // so it gets one fixed density partway down the falloff range.
+        if (nebDegrade['drift-static']) applyNebulaDensity(nebTop + (nebFloor - nebTop) * 0.55);
+        applyParallax();
+    }
+
+    buildParallaxLayers();
+
+    var parallaxTicking = false;
+
+    function applyParallax() {
+        var y = window.scrollY;
+        parallaxLayers.forEach(function (l) {
+            // Rounded to whole pixels, not toFixed(1). A fractional translate
+            // resamples the layer's texture, and on the tiled grain layer that
+            // resampling is what makes its tile boundaries visible as faint
+            // vertical lines. Whole pixels sample 1:1.
+            var v = y * l.speed * (l.neb ? nebSpeed : 1);
+            if (l.wrap) {
+                // STAR LAYERS: whole pixels. Their tiles repeat, and a
+                // fractional translate resamples a repeating texture - which is
+                // what used to make tile boundaries show as faint lines. It also
+                // softens the star dots, which are 1px features.
+                // Wrapping within one tile means they never translate out from
+                // under the viewport however long the page gets; % keeps the
+                // sign in JS, which is what we want, these speeds are negative.
+                v = Math.round(v) % l.wrap;
+            } else if (nebSubpixel) {
+                // DRIFT: sub-pixel. Rounding quantises it to whole-pixel steps -
+                // at -0.023 that is one step per ~43px of scroll, which reads as
+                // the layer sticking and then catching up rather than tracking.
+                // Nothing here repeats (the glow tile is no-repeat), so there is
+                // no seam to resample into view, and the content is a soft
+                // gradient that loses nothing to interpolation.
+                v = Math.round(v * 100) / 100;
+            } else {
+                v = Math.round(v);
+            }
+            l.el.style.transform = 'translate3d(0,' + v + 'px,0)';
+        });
+
+        // Density falloff: dense at the hero, thinner once you are past it.
+        //
+        // WRITTEN EVERY FRAME, with no dead-band. There used to be a
+        // "only write when it moved by 0.004" guard here, sold as most frames
+        // writing nothing. It was a quantiser: measured, the fade rendered as
+        // ~59 discrete jumps with 81 of 140 sampled steps showing no change at
+        // all and single jumps of up to 2 luminance levels. On a promoted layer
+        // an opacity write is a compositor property - it re-composites, it does
+        // not re-rasterise - so there was never anything to save.
+        //
+        // It is emphatically NOT --neb-i on :root: a custom property there
+        // would invalidate style for the whole document every frame, which is
+        // the mechanism behind the original jank.
+        //
+        // GATED ON THE DRIFT BEING PROMOTED. Under drift-static the layer is
+        // folded into the background layer, and animating an unpromoted layer's
+        // opacity repaints it: measured 390 RasterTasks across the falloff
+        // against 2 when promoted. So when the drift is static it holds one
+        // constant density instead (set in applyDegrade), which is also why
+        // the 4K profile trades the falloff away rather than paying for it.
+        if (nebFalloffOn && nebDrift && !nebStatic && !nebDegrade['drift-static']) {
+            var t = Math.min(1, y / nebFalloff);
+            t = t * t * (3 - 2 * t);   // smoothstep, so the floor is not a step
+            applyNebulaDensity(nebTop + (nebFloor - nebTop) * t);
+        }
+        parallaxTicking = false;
+    }
+
+    if (degradeTokens().length) applyDegrade();
+
+    if (parallaxLayers.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
         window.addEventListener('scroll', function () {
             if (parallaxTicking) return;
             parallaxTicking = true;
             requestAnimationFrame(applyParallax);
         }, { passive: true });
+        applyParallax();   // also covers a reload part-way down the page
     }
+
+    if (nebDrift && (nebStatic || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) {
+        // Reduced motion, or a small viewport: nothing scroll-coupled. The
+        // nebula still renders - it is depth, not motion - at one fixed density
+        // partway between the hero value and the floor.
+        applyNebulaDensity(nebFloor + (1 - nebFloor) * 0.5);
+    }
+
+    // Tuning hooks for the ?neb panel. Defined unconditionally so the panel can
+    // drive a page that has parallax disabled; no-ops harmlessly if it is.
+    window.__nebula = {
+        state: function () {
+            return { speed: nebSpeed, top: nebTop, floor: nebFloor,
+                     falloff: nebFalloff, subpixel: nebSubpixel,
+                     falloffOn: nebFalloffOn,
+                     falloffRuns: nebFalloffOn && !nebStatic && !nebDegrade['drift-static'] };
+        },
+        set: function (k, v) {
+            if (k === 'speed') nebSpeed = v;
+            else if (k === 'subpixel') nebSubpixel = !!v;
+            else if (k === 'falloffOn') {
+                nebFalloffOn = !!v;
+                if (!nebFalloffOn) applyNebulaDensity(nebTop);
+            }
+            else if (k === 'top') nebTop = v;
+            else if (k === 'floor') nebFloor = v;
+            else if (k === 'falloff') nebFalloff = v;
+            applyParallax();
+        },
+        // the panel edits --neb-i on :root; density is computed from a cached
+        // copy, so it has to be told when that changed
+        refresh: function () {
+            readIntensity();
+            applyParallax();
+        },
+
+        // ---- layer + degrade controls, driven by the ?neb panel ----
+        // Both go through buildParallaxLayers() so a layer that is hidden or
+        // de-promoted also stops receiving per-frame transforms.
+        layers: ['.neb-base', '.neb-grain', '.neb-drift',
+                 '.bg-stars-1', '.bg-stars-2', '.bg-stars-3'],
+
+        setLayer: function (sel, visible) {
+            var el = document.querySelector(sel);
+            if (!el) return;
+            el.style.display = visible ? '' : 'none';
+            applyDegrade();
+        },
+
+        layerVisible: function (sel) {
+            var el = document.querySelector(sel);
+            return !!el && getComputedStyle(el).display !== 'none';
+        },
+
+        degrade: function () { return degradeTokens(); },
+
+        setDegrade: function (token, on) {
+            nebDegrade[token] = !!on;
+            // stars-1 supersedes stars-2; holding both would be ambiguous
+            if (token === 'stars-1' && on) nebDegrade['stars-2'] = false;
+            if (token === 'stars-2' && on) nebDegrade['stars-1'] = false;
+            applyDegrade();
+        },
+
+        // What the compositor is actually being asked to blend each frame.
+        // Area x surface count is the quantity that matters, so the panel
+        // reports it directly rather than making you infer it from a count.
+        cost: function () {
+            var dpr = window.devicePixelRatio || 1;
+            var out = { dpr: dpr, mp: deviceMegapixels(), surfaces: [], blendedMp: 0 };
+            ['.neb-drift', '.bg-stars-1', '.bg-stars-2', '.bg-stars-3'].forEach(function (sel) {
+                var el = document.querySelector(sel);
+                if (!el) return;
+                var cs = getComputedStyle(el);
+                if (cs.display === 'none' || cs.willChange === 'auto') return;
+                if (sel === '.neb-drift' && nebDegrade['drift-static']) return;
+                if (starDropped(sel)) return;
+                var r = el.getBoundingClientRect();
+                // only the part on screen is blended
+                var w = Math.max(0, Math.min(r.right, innerWidth) - Math.max(r.left, 0));
+                var h = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0));
+                // getBoundingClientRect does NOT account for clip-path, so the
+                // crop has to be applied by hand or drift-cropped would report
+                // no saving at all. Keep these fractions in step with the
+                // `clip-path: inset(6vh 0 0 14vw)` rule in style.css.
+                if (sel === '.neb-drift' && nebDegrade['drift-tight']) {
+                    w *= 0.70;   // inset(22vh 4vw 4vh 26vw)
+                    h *= 0.74;
+                } else if (sel === '.neb-drift' && nebDegrade['drift-cropped']) {
+                    w *= 0.86;   // inset(6vh 0 0 14vw)
+                    h *= 0.94;
+                }
+                out.surfaces.push(sel.slice(1));
+                out.blendedMp += (w * dpr * h * dpr) / 1e6;
+            });
+            return out;
+        }
+    };
 
     // ---------- "I build …" ticker ----------
     // Type-in, hold, fade, next. Pauses on hover. Reduced-motion: static.
+    //
+    // ALSO pauses when the hero is off screen. It retypes a character every
+    // 34ms, and every textContent write is a layout + paint of that line - work
+    // that used to continue forever, including while scrolling four sections
+    // below it where nobody can see the result. Traced over a 9000px light-mode
+    // scroll with analytics blocked, stopping it removed all 138 Layout events
+    // (21.2ms) and cut Paint from 216 events to 144. Small, but it is pure
+    // waste and it is theme-independent, which is exactly the category of cost
+    // being hunted here.
     var tickerEl = document.getElementById('ticker');
     var tickerLine = document.getElementById('ticker-line');
     if (tickerEl && tickerLine && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
@@ -214,13 +557,29 @@
         ];
         var tickerIndex = 0;
         var tickerPaused = false;
+        var tickerVisible = true;
         tickerLine.addEventListener('mouseenter', function () { tickerPaused = true; });
         tickerLine.addEventListener('mouseleave', function () { tickerPaused = false; });
 
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                tickerVisible = entries[0].isIntersecting;
+            }, { rootMargin: '200px 0px 200px 0px' }).observe(tickerLine);
+        }
+
         function typeIn(text, done) {
             var i = 0;
+            // Off screen: write the finished string once and stop, rather than
+            // spending a layout per character on an animation nobody is
+            // watching. One write, not text.length of them.
+            if (!tickerVisible) {
+                tickerEl.textContent = text;
+                done();
+                return;
+            }
             tickerEl.textContent = '';
             (function step() {
+                if (!tickerVisible) { tickerEl.textContent = text; done(); return; }
                 if (i <= text.length) {
                     tickerEl.textContent = text.slice(0, i);
                     i++;
@@ -232,7 +591,9 @@
         }
 
         function nextTick() {
-            if (tickerPaused) { setTimeout(nextTick, 500); return; }
+            // A 500ms poll while hidden touches no DOM and costs nothing
+            // measurable; it just means the ticker resumes promptly on return.
+            if (tickerPaused || !tickerVisible) { setTimeout(nextTick, 500); return; }
             tickerEl.classList.add('is-fading');
             setTimeout(function () {
                 tickerIndex = (tickerIndex + 1) % TICKER_ITEMS.length;
@@ -362,11 +723,43 @@
                 entry.target.classList.add('in-view');
                 sectionObserver.unobserve(entry.target);
             });
-        }, { threshold: 0.08 });
+        }, {
+            // rootMargin, not threshold, is what stops the "block of nothing,
+            // then it appears" pop. threshold: 0.08 with no margin meant a
+            // section only started revealing once it was ALREADY on screen, so
+            // on a fast scroll you arrived before the transition did. An 800px
+            // top/bottom margin fires the reveal roughly a screen early, so the
+            // content has finished animating by the time you actually reach it.
+            // threshold drops to 0 for the same reason: any intersection at all
+            // is enough, we do not want to wait for 8% of a tall section.
+            threshold: 0,
+            rootMargin: '800px 0px 800px 0px'
+        });
         document.querySelectorAll('main > section:not(.hero)').forEach(function (s) {
             sectionObserver.observe(s);
         });
     }
+
+    // ---------- Lazy images: left to the browser, on evidence ----------
+    // Lazy loading is a real second source of the "block of nothing, then it
+    // appears" feeling - measured at 2560x1440, 3 of the 6 images in the
+    // viewport still had no pixels after a fast jump to mid-page. Two fixes
+    // were built and measured, and NEITHER is here, because neither helped:
+    //
+    //   1. Flip every `loading="lazy"` image to `eager` on a wide rootMargin.
+    //      Actively WORSE: on a fast scroll over a throttled link it started
+    //      dozens of fetches at once, they fought for bandwidth and none
+    //      finished - 7 of 7 visible images blank against 5 of 7 untouched.
+    //   2. A narrow lead: same idea but a 900px margin and at most 3 promoted
+    //      at a time, so it cannot stampede. At a realistic flick speed
+    //      (5 gestures, 2500px/s, 5Mbps) it was IDENTICAL to doing nothing -
+    //      2 of 7 blank either way, 4 reps, zero variance.
+    //
+    // Chrome's own lazy heuristic already handles a realistic scroll here, and
+    // the only regime where it struggles (a ~9000px/s flick) outruns any
+    // prefetch anyway - both variants measured 7 of 7 blank there. So this is
+    // deliberately unhandled code, not an oversight. If it is revisited, the
+    // thing to change is image WEIGHT or dimensions, not fetch scheduling.
 
     // ---------- Sticky-header offset ----------
     // Publishes the header's real height so scroll-margin-top can clear it. The
@@ -386,4 +779,14 @@
     // ---------- Footer year ----------
     var year = document.getElementById('footer-year');
     if (year) year.textContent = String(new Date().getFullYear());
+
+    // ---------- v1.1 nebula lab (experiment branch only) ----------
+    // The tuning panel is fetched ONLY when ?neb is in the URL, so a normal
+    // visitor never pays a byte for it. The preset it writes is read back by
+    // the pre-paint guard in <head>, so a pick survives navigation.
+    if (/[?&]neb(&|=|$)/.test(location.search)) {
+        var lab = document.createElement('script');
+        lab.src = 'assets/js/nebula-lab.js';
+        document.body.appendChild(lab);
+    }
 })();

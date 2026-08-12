@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>nebula tile test</title>
+<style>
+  body { background:#07050e; color:#c4bfd9; font:13px system-ui; margin:0; padding:16px; }
+  h2 { font-size:12px; letter-spacing:.05em; text-transform:uppercase; margin:18px 0 6px; }
+  .swatch { height:200px; border:1px solid #362a55; }
+  /* A: current grain - default filter region */
+  .a { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E"); background-size:140px 140px; }
+  /* B: explicit userSpaceOnUse filter region pinned to the tile */
+  .b { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g' filterUnits='userSpaceOnUse' x='0' y='0' width='140' height='140' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E"); background-size:140px 140px; }
+  /* C: same as B but no opacity attr, alpha carried by the matrix instead */
+  .c { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g' filterUnits='userSpaceOnUse' x='0' y='0' width='140' height='140' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 .55 0 0 0 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E"); background-size:140px 140px; }
+  /* D: dust tile, explicit region */
+  .d { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='d' filterUnits='userSpaceOnUse' x='0' y='0' width='256' height='256' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23d)'/%3E%3C/svg%3E"); background-size:1180px 1180px; background-color:#3a2f55; }
+  /* E: glow tile, explicit region */
+  .e { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='e' filterUnits='userSpaceOnUse' x='0' y='0' width='256' height='256' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.028' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 1 1 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23e)'/%3E%3C/svg%3E"); background-size:1420px 1420px; }
+</style></head><body>
+<h2>A - grain, default filter region (current)</h2><div class="swatch a"></div>
+<h2>B - grain, explicit userSpaceOnUse region</h2><div class="swatch b"></div>
+<h2>C - grain, alpha via colour matrix</h2><div class="swatch c"></div>
+<h2>D - dust tile over a lifted plate (should be patchy black)</h2><div class="swatch d"></div>
+<h2>E - glow tile (should be violet filaments)</h2><div class="swatch e"></div>
+</body></html>
