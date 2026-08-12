@@ -250,15 +250,88 @@
         nebDrift.style.opacity = (o > 1 ? 1 : o).toFixed(3);
     }
 
-    var parallaxLayers = (nebStatic || !nebDrift ? [] : [
-        { el: nebDrift, speed: NEB_DRIFT[1], neb: true }
-    ]).concat(['.bg-stars-1', '.bg-stars-2', '.bg-stars-3'].map(function (sel, i) {
-        return {
-            el: document.querySelector(sel),
-            speed: [-0.025, -0.055, -0.11][i],
-            wrap: STAR_TILE[sel]
-        };
-    })).filter(function (l) { return l.el; });
+    // ---------- Large-viewport degrade ----------
+    // Blend cost is per DESTINATION PIXEL per frame, so it scales with viewport
+    // area and with how many semi-transparent surfaces are stacked. 1080p and
+    // 1440p are comfortable; a 4K panel is 4x the pixels of 1080p and is not.
+    //
+    // Only two things actually reduce it: remove a blended surface, or shrink
+    // the area one covers. Note what is NOT on this list - slowing the drift.
+    // A layer costs the same to blend whether it moves 200px or 2px, so
+    // "slow it down" would be a placebo; it is deliberately not offered.
+    //
+    //   drift-static  the drift layer stops moving, drops will-change, and
+    //                 folds into the background layer with .neb-base and
+    //                 .neb-grain. Removes a full-bleed blended surface
+    //                 outright - the biggest single win. Costs the nebula's
+    //                 parallax motion; density and composition are untouched.
+    //   drift-narrow  keeps the motion, crops the layer with clip-path where
+    //                 --neb-mask has already faded it to transparent, so the
+    //                 blended area shrinks with no visible change. clip-path,
+    //                 not a smaller box, because the art is positioned in
+    //                 vw/vh from the element's own origin - moving that origin
+    //                 would slide the whole composition sideways.
+    //   stars-2       drops .bg-stars-3 (the bright/glow tile). One surface.
+    //   stars-1       drops .bg-stars-2 and -3. Two surfaces.
+    //
+    // AUTO is off by default. Nothing is degraded until a combination has been
+    // tested on real hardware; ?neb drives it in the meantime. To bake a choice
+    // in, put the tokens in NEB_AUTO_DEGRADE and set NEB_AUTO_MP.
+    var NEB_AUTO_DEGRADE = [];   // e.g. ['drift-static'] once chosen
+    var NEB_AUTO_MP = 6;         // device megapixels at or above which it applies
+
+    function deviceMegapixels() {
+        var dpr = window.devicePixelRatio || 1;
+        return (window.innerWidth * window.innerHeight * dpr * dpr) / 1e6;
+    }
+
+    var nebDegrade = {};
+    if (NEB_AUTO_DEGRADE.length && deviceMegapixels() >= NEB_AUTO_MP) {
+        NEB_AUTO_DEGRADE.forEach(function (t) { nebDegrade[t] = true; });
+    }
+
+    var STAR_SPEED = { '.bg-stars-1': -0.025, '.bg-stars-2': -0.055, '.bg-stars-3': -0.11 };
+
+    function degradeTokens() {
+        return Object.keys(nebDegrade).filter(function (k) { return nebDegrade[k]; });
+    }
+
+    function starDropped(sel) {
+        if (nebDegrade['stars-1'] && (sel === '.bg-stars-2' || sel === '.bg-stars-3')) return true;
+        if (nebDegrade['stars-2'] && sel === '.bg-stars-3') return true;
+        return false;
+    }
+
+    // A hidden or un-promoted layer must leave this list. Writing a per-frame
+    // transform to an element that is display:none is wasted work, and writing
+    // one to an element that is NOT promoted makes it repaint every frame -
+    // strictly worse than having no parallax on it at all.
+    var parallaxLayers = [];
+    function buildParallaxLayers() {
+        parallaxLayers = [];
+        var driftOn = nebDrift && !nebStatic && !nebDegrade['drift-static'] &&
+            getComputedStyle(nebDrift).display !== 'none';
+        if (driftOn) parallaxLayers.push({ el: nebDrift, speed: NEB_DRIFT[1], neb: true });
+
+        ['.bg-stars-1', '.bg-stars-2', '.bg-stars-3'].forEach(function (sel) {
+            var el = document.querySelector(sel);
+            if (!el || starDropped(sel)) return;
+            if (getComputedStyle(el).display === 'none') return;
+            parallaxLayers.push({ el: el, speed: STAR_SPEED[sel], wrap: STAR_TILE[sel] });
+        });
+    }
+
+    function applyDegrade() {
+        root.setAttribute('data-degrade', degradeTokens().join(' '));
+        // a layer leaving the list keeps whatever transform it last had, which
+        // would freeze it somewhere arbitrary - reset before rebuilding
+        [nebDrift, document.querySelector('.bg-stars-2'), document.querySelector('.bg-stars-3')]
+            .forEach(function (el) { if (el) el.style.transform = ''; });
+        buildParallaxLayers();
+        applyParallax();
+    }
+
+    buildParallaxLayers();
 
     var parallaxTicking = false;
     var lastNebOpacity = -1;
@@ -301,6 +374,8 @@
         parallaxTicking = false;
     }
 
+    if (degradeTokens().length) applyDegrade();
+
     if (parallaxLayers.length && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
         window.addEventListener('scroll', function () {
             if (parallaxTicking) return;
@@ -337,6 +412,65 @@
             readIntensity();
             lastNebOpacity = -1;
             applyParallax();
+        },
+
+        // ---- layer + degrade controls, driven by the ?neb panel ----
+        // Both go through buildParallaxLayers() so a layer that is hidden or
+        // de-promoted also stops receiving per-frame transforms.
+        layers: ['.neb-base', '.neb-grain', '.neb-drift',
+                 '.bg-stars-1', '.bg-stars-2', '.bg-stars-3'],
+
+        setLayer: function (sel, visible) {
+            var el = document.querySelector(sel);
+            if (!el) return;
+            el.style.display = visible ? '' : 'none';
+            applyDegrade();
+        },
+
+        layerVisible: function (sel) {
+            var el = document.querySelector(sel);
+            return !!el && getComputedStyle(el).display !== 'none';
+        },
+
+        degrade: function () { return degradeTokens(); },
+
+        setDegrade: function (token, on) {
+            nebDegrade[token] = !!on;
+            // stars-1 supersedes stars-2; holding both would be ambiguous
+            if (token === 'stars-1' && on) nebDegrade['stars-2'] = false;
+            if (token === 'stars-2' && on) nebDegrade['stars-1'] = false;
+            applyDegrade();
+        },
+
+        // What the compositor is actually being asked to blend each frame.
+        // Area x surface count is the quantity that matters, so the panel
+        // reports it directly rather than making you infer it from a count.
+        cost: function () {
+            var dpr = window.devicePixelRatio || 1;
+            var out = { dpr: dpr, mp: deviceMegapixels(), surfaces: [], blendedMp: 0 };
+            ['.neb-drift', '.bg-stars-1', '.bg-stars-2', '.bg-stars-3'].forEach(function (sel) {
+                var el = document.querySelector(sel);
+                if (!el) return;
+                var cs = getComputedStyle(el);
+                if (cs.display === 'none' || cs.willChange === 'auto') return;
+                if (sel === '.neb-drift' && nebDegrade['drift-static']) return;
+                if (starDropped(sel)) return;
+                var r = el.getBoundingClientRect();
+                // only the part on screen is blended
+                var w = Math.max(0, Math.min(r.right, innerWidth) - Math.max(r.left, 0));
+                var h = Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0));
+                // getBoundingClientRect does NOT account for clip-path, so the
+                // crop has to be applied by hand or drift-narrow would report
+                // no saving at all. Keep these fractions in step with the
+                // `clip-path: inset(6vh 0 0 14vw)` rule in style.css.
+                if (sel === '.neb-drift' && nebDegrade['drift-narrow']) {
+                    w *= 0.86;
+                    h *= 0.94;
+                }
+                out.surfaces.push(sel.slice(1));
+                out.blendedMp += (w * dpr * h * dpr) / 1e6;
+            });
+            return out;
         }
     };
 

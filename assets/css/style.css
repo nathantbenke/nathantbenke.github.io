@@ -346,6 +346,43 @@ body {
         radial-gradient(5.5vw 16vh at 52vw 52vh, rgba(3, 2, 9, 0.58), transparent 76%);
 }
 
+/* ---------- Large-viewport degrade ----------
+   Driven by data-degrade on :root (main.js). Each token removes real per-frame
+   blend work; none of them changes the composition or the density.
+
+   Blend cost is per DESTINATION PIXEL per frame, which is why the only levers
+   here are "remove a surface" and "shrink the area a surface covers".
+   Deliberately absent: slowing the drift. A layer costs exactly the same to
+   blend whether it travels 200px or 2px, so that would buy nothing. */
+
+/* Fold the drift layer in with .neb-base and .neb-grain: no promotion, no
+   transform, no separate surface. The nebula then costs zero extra blends -
+   which is why soloing base/grain already measured as near-free. What it
+   costs is the nebula's own parallax; the art is identical. */
+:root[data-degrade~="drift-static"] .neb-drift {
+    will-change: auto;
+    transform: none !important;
+}
+
+/* Keep the motion, blend fewer pixels. --neb-mask is a radial centred at
+   64vw 61vh with a 68vw/74vh radius that reaches full transparency at 78%, so
+   the far left and the top strip of this layer are already contributing
+   nothing. Cropping them is invisible and takes roughly a fifth of the area.
+
+   clip-path rather than a smaller box, deliberately: the art inside is placed
+   in vw/vh from the ELEMENT's origin, so moving the origin would slide the
+   whole composition sideways. Cropping leaves the coordinate system alone. */
+:root[data-degrade~="drift-narrow"] .neb-drift {
+    -webkit-clip-path: inset(6vh 0 0 14vw);
+    clip-path: inset(6vh 0 0 14vw);
+}
+
+/* Star layers are 3 of the 4 blended surfaces at full richness. -3 is the
+   bright/glow tile and the most expensive per pixel, so it goes first. */
+:root[data-degrade~="stars-2"] .bg-stars-3 { display: none; }
+:root[data-degrade~="stars-1"] .bg-stars-2,
+:root[data-degrade~="stars-1"] .bg-stars-3 { display: none; }
+
 /* Intensity presets: density AT THE TOP OF THE PAGE. main.js fades the drifting
    plane to --neb-floor of this past the hero. No attribute = present. */
 :root[data-nebula="subtle"]  { --neb-i: 1.2; }

@@ -43,7 +43,7 @@
     var title = document.createElement('div');
     title.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px';
     title.innerHTML = '<strong style="letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:#c4bfd9">' +
-        'Nebula v1.1.3</strong>';
+        'Nebula v1.1.5</strong>';
 
     var hide = document.createElement('button');
     hide.type = 'button';
@@ -171,41 +171,98 @@
     addSlider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
     addSlider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
 
+    // ---- per-layer visibility, including the star layers ----
+    // Toggling here also removes the layer from main.js's parallax list, so a
+    // hidden layer stops receiving per-frame transforms instead of being
+    // animated invisibly.
     var layersWrap = document.createElement('div');
     layersWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
-    layersWrap.appendChild(document.createTextNode('solo a sub-layer:'));
-    var soloRow = document.createElement('div');
-    soloRow.style.cssText = 'display:flex;gap:5px;margin-top:6px';
-    [['base', 'base'], ['grain', 'grain'], ['drift', 'drift'], ['', 'all']].forEach(function (s) {
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = s[1];
-        b.style.cssText = 'flex:1;padding:4px 0;font:inherit;font-size:10px;cursor:pointer;' +
-            'border:1px solid #362a55;border-radius:6px;background:transparent;color:#c4bfd9';
-        b.addEventListener('click', function () {
-            ['base', 'grain', 'drift'].forEach(function (name) {
-                var el = document.querySelector('.neb-' + name);
-                if (el) el.style.display = (!s[0] || s[0] === name) ? '' : 'none';
-            });
-        });
-        soloRow.appendChild(b);
-    });
-    layersWrap.appendChild(soloRow);
+    layersWrap.appendChild(document.createTextNode('layers (uncheck to A/B a surface):'));
     panel.appendChild(layersWrap);
 
+    var LAYERS = [
+        ['.neb-base', 'nebula base', 'static, folds into the background layer - free'],
+        ['.neb-grain', 'nebula grain', 'static, folds in - free'],
+        ['.neb-drift', 'nebula drift', 'PROMOTED - blended every frame'],
+        ['.bg-stars-1', 'stars 1 (far)', 'PROMOTED - blended every frame'],
+        ['.bg-stars-2', 'stars 2 (mid)', 'PROMOTED - blended every frame'],
+        ['.bg-stars-3', 'stars 3 (bright)', 'PROMOTED - heaviest star tile']
+    ];
+
+    LAYERS.forEach(function (L) {
+        var row = document.createElement('label');
+        row.title = L[2];
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !window.__nebula || window.__nebula.layerVisible(L[0]);
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.setLayer(L[0], cb.checked);
+            paintCost();
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode(L[1]));
+        layersWrap.appendChild(row);
+    });
+
+    // ---- large-viewport degrade ----
+    var degWrap = document.createElement('div');
+    degWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
+    degWrap.appendChild(document.createTextNode('large-viewport degrade:'));
+    panel.appendChild(degWrap);
+
+    var DEGRADES = [
+        ['drift-static', 'drift -> static', 'removes a full-bleed blended surface; costs the nebula parallax only'],
+        ['drift-narrow', 'drift -> cropped', 'keeps motion, crops where the mask is already transparent (~20% less area)'],
+        ['stars-2', 'stars 3 -> 2', 'drops the bright star layer'],
+        ['stars-1', 'stars 3 -> 1', 'drops the mid and bright star layers']
+    ];
+    var degBoxes = {};
+
+    DEGRADES.forEach(function (D) {
+        var row = document.createElement('label');
+        row.title = D[2];
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:5px;cursor:pointer';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.checked = !!(window.__nebula && window.__nebula.degrade().indexOf(D[0]) > -1);
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.setDegrade(D[0], cb.checked);
+            // stars-1 supersedes stars-2 in the engine; mirror that here
+            if (window.__nebula) {
+                var on = window.__nebula.degrade();
+                Object.keys(degBoxes).forEach(function (k) { degBoxes[k].checked = on.indexOf(k) > -1; });
+            }
+            paintCost();
+        });
+        degBoxes[D[0]] = cb;
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode(D[1]));
+        degWrap.appendChild(row);
+    });
+
+
+    // Live cost meter. Surface COUNT alone is misleading - what the compositor
+    // pays is area x surfaces, so this reports blended megapixels per frame for
+    // the current combination. Compare this number between combinations.
     var layerInfo = document.createElement('div');
-    layerInfo.style.cssText = 'margin-top:8px;font-size:10px;color:#8d87a8;line-height:1.4';
-    (function () {
-        var promoted = [];
-        ['.neb-base', '.neb-grain', '.neb-drift', '.bg-stars-1', '.bg-stars-2', '.bg-stars-3']
-            .forEach(function (sel) {
-                var el = document.querySelector(sel);
-                if (el && getComputedStyle(el).willChange !== 'auto') promoted.push(sel.slice(1));
-            });
-        layerInfo.textContent = 'promoted (blended per frame): ' + promoted.length +
-            ' - ' + promoted.join(', ');
-    })();
+    layerInfo.style.cssText = 'margin-top:10px;padding-top:9px;border-top:1px solid #362a55;' +
+        'font-size:10px;color:#8d87a8;line-height:1.5';
     panel.appendChild(layerInfo);
+
+    function paintCost() {
+        if (!window.__nebula || !window.__nebula.cost) return;
+        var c = window.__nebula.cost();
+        layerInfo.innerHTML =
+            'screen: ' + Math.round(innerWidth) + 'x' + Math.round(innerHeight) +
+            ' @ dpr ' + c.dpr + ' = <strong>' + c.mp.toFixed(1) + ' MP</strong><br>' +
+            'blended surfaces: <strong>' + c.surfaces.length + '</strong>' +
+            (c.surfaces.length ? ' (' + c.surfaces.join(', ') + ')' : '') + '<br>' +
+            'blended per frame: <strong>' + c.blendedMp.toFixed(1) + ' MP</strong> - lower is smoother';
+    }
+
 
     var hint = document.createElement('div');
     hint.style.cssText = 'margin-top:9px;font-size:10px;color:#8d87a8;line-height:1.4';
@@ -217,4 +274,5 @@
     document.body.appendChild(panel);
     syncReadout();
     paintActive();
+    paintCost();
 })();
