@@ -342,6 +342,15 @@
 
     // ---------- "I build …" ticker ----------
     // Type-in, hold, fade, next. Pauses on hover. Reduced-motion: static.
+    //
+    // ALSO pauses when the hero is off screen. It retypes a character every
+    // 34ms, and every textContent write is a layout + paint of that line - work
+    // that used to continue forever, including while scrolling four sections
+    // below it where nobody can see the result. Traced over a 9000px light-mode
+    // scroll with analytics blocked, stopping it removed all 138 Layout events
+    // (21.2ms) and cut Paint from 216 events to 144. Small, but it is pure
+    // waste and it is theme-independent, which is exactly the category of cost
+    // being hunted here.
     var tickerEl = document.getElementById('ticker');
     var tickerLine = document.getElementById('ticker-line');
     if (tickerEl && tickerLine && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
@@ -353,13 +362,29 @@
         ];
         var tickerIndex = 0;
         var tickerPaused = false;
+        var tickerVisible = true;
         tickerLine.addEventListener('mouseenter', function () { tickerPaused = true; });
         tickerLine.addEventListener('mouseleave', function () { tickerPaused = false; });
 
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                tickerVisible = entries[0].isIntersecting;
+            }, { rootMargin: '200px 0px 200px 0px' }).observe(tickerLine);
+        }
+
         function typeIn(text, done) {
             var i = 0;
+            // Off screen: write the finished string once and stop, rather than
+            // spending a layout per character on an animation nobody is
+            // watching. One write, not text.length of them.
+            if (!tickerVisible) {
+                tickerEl.textContent = text;
+                done();
+                return;
+            }
             tickerEl.textContent = '';
             (function step() {
+                if (!tickerVisible) { tickerEl.textContent = text; done(); return; }
                 if (i <= text.length) {
                     tickerEl.textContent = text.slice(0, i);
                     i++;
@@ -371,7 +396,9 @@
         }
 
         function nextTick() {
-            if (tickerPaused) { setTimeout(nextTick, 500); return; }
+            // A 500ms poll while hidden touches no DOM and costs nothing
+            // measurable; it just means the ticker resumes promptly on return.
+            if (tickerPaused || !tickerVisible) { setTimeout(nextTick, 500); return; }
             tickerEl.classList.add('is-fading');
             setTimeout(function () {
                 tickerIndex = (tickerIndex + 1) % TICKER_ITEMS.length;
@@ -518,22 +545,26 @@
         });
     }
 
-    // ---------- Lazy images: deliberately NOT given a head start ----------
-    // The reveal animations were only half of the "block of nothing, then it
-    // appears" problem. Measured at 2560x1440, jumping to mid-page: 3 of the 6
-    // images in the viewport still had no pixels, and the page ships 68
-    // `loading="lazy"` images.
+    // ---------- Lazy images: left to the browser, on evidence ----------
+    // Lazy loading is a real second source of the "block of nothing, then it
+    // appears" feeling - measured at 2560x1440, 3 of the 6 images in the
+    // viewport still had no pixels after a fast jump to mid-page. Two fixes
+    // were built and measured, and NEITHER is here, because neither helped:
     //
-    // The obvious fix - an IntersectionObserver with a big rootMargin flipping
-    // them to `eager` early - was tried here and MADE IT WORSE. On a fast
-    // scroll over a throttled link it started dozens of fetches at once, they
-    // competed for bandwidth, and none of them finished: 7 of 7 visible images
-    // blank, against 5 of 7 with the browser left alone. Chrome's own lazy
-    // heuristic loads fewer images but gets them done, which is the behaviour
-    // that actually matters here.
+    //   1. Flip every `loading="lazy"` image to `eager` on a wide rootMargin.
+    //      Actively WORSE: on a fast scroll over a throttled link it started
+    //      dozens of fetches at once, they fought for bandwidth and none
+    //      finished - 7 of 7 visible images blank against 5 of 7 untouched.
+    //   2. A narrow lead: same idea but a 900px margin and at most 3 promoted
+    //      at a time, so it cannot stampede. At a realistic flick speed
+    //      (5 gestures, 2500px/s, 5Mbps) it was IDENTICAL to doing nothing -
+    //      2 of 7 blank either way, 4 reps, zero variance.
     //
-    // Left to the browser on purpose. If this needs revisiting, the lead has to
-    // be given to a SMALL number of images near the viewport, not all 68.
+    // Chrome's own lazy heuristic already handles a realistic scroll here, and
+    // the only regime where it struggles (a ~9000px/s flick) outruns any
+    // prefetch anyway - both variants measured 7 of 7 blank there. So this is
+    // deliberately unhandled code, not an oversight. If it is revisited, the
+    // thing to change is image WEIGHT or dimensions, not fetch scheduling.
 
     // ---------- Sticky-header offset ----------
     // Publishes the header's real height so scroll-margin-top can clear it. The
