@@ -35,7 +35,14 @@ await page.evaluate(() => {
     document.querySelectorAll('body > *:not(.bg)').forEach(el => { el.style.visibility = 'hidden'; });
     document.querySelectorAll('.bg-stars').forEach(el => { el.style.display = 'none'; });
     // hold density flat so the ramp cannot be mistaken for movement
-    if (window.__nebula) { window.__nebula.set('top', 1); window.__nebula.set('floor', 1); }
+    // refresh() first: density is computed from a CACHED copy of --neb-i, so
+    // setting the property without telling the engine leaves the planes at the
+    // old intensity.
+    if (window.__nebula) {
+        window.__nebula.refresh();
+        window.__nebula.set('top', 1);
+        window.__nebula.set('floor', 1);
+    }
 });
 
 const stops = [0, 3000, 6000, 8894];

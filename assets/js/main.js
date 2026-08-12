@@ -187,14 +187,17 @@
     // near dust sweeping past while the far colour mass barely moves. Every
     // nebula plane stays slower than the slowest star layer (-0.025), so the
     // nebula still sits behind the starfield instead of racing through it.
+    // [selector, parallax rate, base opacity]. The base opacity MUST match the
+    // `opacity: calc(<base> * var(--neb-i))` in style.css: the CSS value is what
+    // renders before this script runs (and if it never runs), and this one takes
+    // over once the scroll falloff starts multiplying into it.
     var NEB_PLANES = [
-        ['.neb-field', -0.011],   // deepest: the colour mass barely drifts
-        ['.neb-grain', -0.013],
-        ['.neb-veil',  -0.017],
-        ['.neb-cols',  -0.023]    // nearest: the dust columns lead the motion
+        ['.neb-field', -0.011, 0.5],   // deepest: the colour mass barely drifts
+        ['.neb-grain', -0.013, 0.028],
+        ['.neb-veil',  -0.017, 0.42],
+        ['.neb-cols',  -0.023, 0.55]   // nearest: the dust columns lead the motion
     ];
 
-    var nebGroup = document.querySelector('.bg-nebula');
     var nebSpeed = 1;        // live multiplier, driven by the ?neb panel
     var nebTop = 1;          // group opacity at the hero
     var nebFloor = 0.42;     // group opacity once past the falloff
@@ -206,8 +209,32 @@
     // this query have to agree. If you move one, move the other.
     var nebStatic = window.matchMedia('(max-width: 56rem)').matches;
 
-    var parallaxLayers = (nebStatic ? [] : NEB_PLANES.map(function (p) {
-        return { el: document.querySelector(p[0]), speed: p[1], neb: true };
+    // The planes are needed as a group for the density falloff whether or not
+    // they are parallaxed, so they are collected separately from the scroll list.
+    var nebPlanes = NEB_PLANES.map(function (p) {
+        return { el: document.querySelector(p[0]), speed: p[1], base: p[2] };
+    }).filter(function (p) { return p.el; });
+
+    // --neb-i is read here, not per frame: a getComputedStyle call inside the
+    // scroll handler would force style resolution every frame, which is the
+    // class of mistake this whole layer exists to avoid.
+    var nebI = 1;
+    function readIntensity() {
+        var v = parseFloat(getComputedStyle(root).getPropertyValue('--neb-i'));
+        nebI = isNaN(v) ? 1 : v;
+    }
+    readIntensity();
+
+    function applyNebulaDensity(f) {
+        for (var i = 0; i < nebPlanes.length; i++) {
+            var p = nebPlanes[i];
+            var o = p.base * nebI * f;
+            p.el.style.opacity = (o > 1 ? 1 : o).toFixed(3);
+        }
+    }
+
+    var parallaxLayers = (nebStatic ? [] : nebPlanes.map(function (p) {
+        return { el: p.el, speed: p.speed, neb: true };
     })).concat([
         { el: document.querySelector('.bg-stars-1'), speed: -0.025 },
         { el: document.querySelector('.bg-stars-2'), speed: -0.055 },
@@ -220,8 +247,12 @@
     function applyParallax() {
         var y = window.scrollY;
         parallaxLayers.forEach(function (l) {
-            var v = y * l.speed * (l.neb ? nebSpeed : 1);
-            l.el.style.transform = 'translate3d(0,' + v.toFixed(1) + 'px,0)';
+            // Rounded to whole pixels, not toFixed(1). A fractional translate
+            // resamples the layer's texture, and on the tiled grain layer that
+            // resampling is what makes its tile boundaries visible as faint
+            // vertical lines. Whole pixels sample 1:1.
+            var v = Math.round(y * l.speed * (l.neb ? nebSpeed : 1));
+            l.el.style.transform = 'translate3d(0,' + v + 'px,0)';
         });
 
         // Density falloff: dense at the hero, thinner once you are past it.
@@ -234,13 +265,13 @@
         // --neb-i on :root - a custom property there would invalidate style for
         // the entire document on every frame, which is the exact mechanism
         // behind the original jank.
-        if (nebGroup && !nebStatic) {
+        if (nebPlanes.length && !nebStatic) {
             var t = Math.min(1, y / nebFalloff);
             t = t * t * (3 - 2 * t);   // smoothstep, so the floor is not a step
             var o = nebTop + (nebFloor - nebTop) * t;
             if (o < lastNebOpacity - 0.004 || o > lastNebOpacity + 0.004) {
                 lastNebOpacity = o;
-                nebGroup.style.opacity = o.toFixed(3);
+                applyNebulaDensity(o);
             }
         }
         parallaxTicking = false;
@@ -255,11 +286,11 @@
         applyParallax();   // also covers a reload part-way down the page
     }
 
-    if (nebGroup && (nebStatic || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) {
+    if (nebPlanes.length && (nebStatic || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches)) {
         // Reduced motion, or a small viewport: nothing scroll-coupled. The
         // nebula still renders - it is depth, not motion - at one fixed density
         // partway between the hero value and the floor.
-        nebGroup.style.opacity = String(nebFloor + (1 - nebFloor) * 0.5);
+        applyNebulaDensity(nebFloor + (1 - nebFloor) * 0.5);
     }
 
     // Tuning hooks for the ?neb panel. Defined unconditionally so the panel can
@@ -274,6 +305,13 @@
             else if (k === 'floor') nebFloor = v;
             else if (k === 'falloff') nebFalloff = v;
             lastNebOpacity = -1;   // force the next write through the threshold
+            applyParallax();
+        },
+        // the panel edits --neb-i on :root; density is computed from a cached
+        // copy, so it has to be told when that changed
+        refresh: function () {
+            readIntensity();
+            lastNebOpacity = -1;
             applyParallax();
         }
     };

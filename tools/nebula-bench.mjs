@@ -17,23 +17,26 @@
 import puppeteer from 'puppeteer-core';
 
 const REPS = Number(process.argv[2] || 13);
+const W = Number(process.argv[3] || 1280);
+const H = Number(process.argv[4] || 900);
 
 const VARIANTS = {
     'before (no nebula)': { url: '?nebula=off', mutate: () => {} },
-    'v1.1.0 (1 static plane)': {
-        // what the previous build did: one rigid layer, no density falloff
+    'v1.1.2 (4 planes moving)': { url: '?nebula=present', mutate: () => {} },
+    'v1.1.2 @ 1.5x rate': {
+        url: '?nebula=present',
+        mutate: () => { if (window.__nebula) window.__nebula.set('speed', 1.5); },
+    },
+    'ctl: v1.1.1 group surface': {
+        // the extra render surface v1.1.2 removed - positive control for the
+        // fill-rate regression, which raster counts cannot see
         url: '?nebula=present',
         mutate: () => {
-            if (window.__nebula) window.__nebula.set('speed', 0);
             const g = document.querySelector('.bg-nebula');
-            g.style.opacity = '1';
-            Object.defineProperty(g.style, 'opacity', { set() {}, get: () => '1' });
+            g.style.willChange = 'opacity';
+            g.style.opacity = '0.6';
+            g.style.bottom = '-520px';
         },
-    },
-    'v1.1.1 (4 planes moving)': { url: '?nebula=present', mutate: () => {} },
-    'v1.1.1 @ 2x rate': {
-        url: '?nebula=present',
-        mutate: () => { if (window.__nebula) window.__nebula.set('speed', 2); },
     },
     'ctl-no-will-change': {
         url: '?nebula=present',
@@ -49,13 +52,13 @@ const VARIANTS = {
 const browser = await puppeteer.launch({
     executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     headless: 'new',
-    args: ['--no-sandbox', '--window-size=1280,900'],
+    args: ['--no-sandbox', `--window-size=${W},${H}`],
 });
 
 // ---------- A. compositor evidence ----------
 {
     const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 900 });
+    await page.setViewport({ width: W, height: H });
     const cdp = await page.createCDPSession();
     await cdp.send('Emulation.setEmulatedMedia', {
         features: [{ name: 'prefers-color-scheme', value: 'dark' },
@@ -71,7 +74,7 @@ const browser = await puppeteer.launch({
     const before = snapshots[snapshots.length - 1] || [];
 
     // scroll the whole page, then look at what repainted
-    await cdp.send('Input.synthesizeScrollGesture', { x: 640, y: 450, xDistance: 0, yDistance: -6000, speed: 2500 });
+    await cdp.send('Input.synthesizeScrollGesture', { x: Math.round(W/2), y: Math.round(H/2), xDistance: 0, yDistance: -6000, speed: 2500 });
     await new Promise(r => setTimeout(r, 800));
     const after = snapshots[snapshots.length - 1] || [];
 
@@ -107,7 +110,7 @@ Object.keys(VARIANTS).forEach(k => { acc[k] = []; });
 for (let rep = 0; rep < REPS; rep++) {
     for (const [name, cfg] of Object.entries(VARIANTS)) {
         const page = await browser.newPage();
-        await page.setViewport({ width: 1280, height: 900 });
+        await page.setViewport({ width: W, height: H });
         const cdp = await page.createCDPSession();
         await cdp.send('Emulation.setEmulatedMedia', {
             features: [{ name: 'prefers-color-scheme', value: 'dark' },
@@ -122,9 +125,9 @@ for (let rep = 0; rep < REPS; rep++) {
             let last = performance.now();
             (function loop(t) { window.__f.push(t - last); last = t; requestAnimationFrame(loop); })(last);
         });
-        await cdp.send('Input.synthesizeScrollGesture', { x: 640, y: 450, xDistance: 0, yDistance: -6000, speed: 2500 });
+        await cdp.send('Input.synthesizeScrollGesture', { x: Math.round(W/2), y: Math.round(H/2), xDistance: 0, yDistance: -6000, speed: 2500 });
         await new Promise(r => setTimeout(r, 250));
-        await cdp.send('Input.synthesizeScrollGesture', { x: 640, y: 450, xDistance: 0, yDistance: 6000, speed: 2500 });
+        await cdp.send('Input.synthesizeScrollGesture', { x: Math.round(W/2), y: Math.round(H/2), xDistance: 0, yDistance: 6000, speed: 2500 });
         await new Promise(r => setTimeout(r, 250));
 
         const f = await page.evaluate(() => window.__f.slice(5));

@@ -59,13 +59,13 @@
     --neb-i: 2.5;
 
     /* dust: black, alpha driven by the noise (patchy, ~50% coverage) */
-    --neb-tile-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='d' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23d)'/%3E%3C/svg%3E");
+    --neb-tile-dust: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='d' filterUnits='userSpaceOnUse' x='0' y='0' width='256' height='256' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='4' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23d)'/%3E%3C/svg%3E");
     /* emission: fixed violet-blue, alpha driven by the noise (different seed,
        so the filaments never land on top of the dust and cancel out) */
-    --neb-tile-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='e' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.028' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 1 1 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23e)'/%3E%3C/svg%3E");
+    --neb-tile-glow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='e' filterUnits='userSpaceOnUse' x='0' y='0' width='256' height='256' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.028' numOctaves='4' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 1 1 0 0 0 -.55'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23e)'/%3E%3C/svg%3E");
     /* fine grain: tiled 1:1. Doubles as dithering - five stacked near-black
        gradients band badly on 8-bit panels, and this is what kills it. */
-    --neb-tile-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E");
+    --neb-tile-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='336' height='336'%3E%3Cfilter id='g' filterUnits='userSpaceOnUse' x='0' y='0' width='336' height='336' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='336' height='336' filter='url(%23g)' opacity='.55'/%3E%3C/svg%3E");
     /* keeps the turbulence inside the cloud region instead of veiling the
        whole viewport (which would just read as a dirty screen) */
     --neb-mask: radial-gradient(68vw 74vh at 64vw 61vh, #000 10%, rgba(0, 0, 0, 0.45) 50%, transparent 78%);
@@ -241,11 +241,21 @@ body {
    rule above is (0,1,1) and silently outranks a bare class selector. That is
    also why `.bg-stars { inset: -140px 0 0 0 }` has never actually applied -
    measured, not assumed: every star layer computes to exactly viewport height. */
+/* NO will-change AND NO opacity ON THE GROUP.
+   Putting the scroll falloff here forced an extra render surface: all four
+   planes had to composite into it before it could be alpha-blended, making
+   five full-bleed surfaces to blend every frame instead of four. That is
+   invisible at 1280x900 and expensive at 4K, because blend cost scales with
+   viewport AREA - measured at 2560x1440, p99 went 7.2ms -> 13.9ms with the
+   group surface present, and back to 7.2ms without it. main.js now applies the
+   falloff to each plane's own opacity instead, which costs four writes instead
+   of one on the frames where it changes, and zero extra surfaces always.
+
+   Slack is 320px, down from 520px. It is dead area carried on EVERY plane, so
+   at 2560x1440 the old value made each layer 36% taller than the viewport for
+   no visible benefit. 320px covers the near plane at the panel's 1.5x cap. */
 .bg > .bg-nebula {
-    inset: 0 0 -520px 0;
-    /* The group no longer moves - its children do. What animates here is
-       opacity (the scroll density falloff), so that is what it declares. */
-    will-change: opacity;
+    inset: 0 0 -320px 0;
 }
 
 /* Geometry only. background-repeat deliberately does NOT live here: a
@@ -313,12 +323,21 @@ body {
 /* Turbulence veil: what stops the field from reading as five smooth blobs.
    Small tiles blown up ~5x, so the sampling is soft and cloud-like - the
    bilinear upscale is doing the job a blur filter would, for free and once. */
+/* NO REPEAT. Tiling these was the vertical seam: a 256px source blown up to
+   1180/1420px does not sample across the boundary between two copies, so each
+   copy's edge pixels get clamped and the discontinuity is magnified ~4.6x into
+   a hard straight line. Measured before the fix: 10.1x the mean horizontal
+   derivative at x=1432 on a 1440px viewport, which is exactly where the 1420px
+   glow tile's edge lands at background-position 62%.
+   One oversized copy per tile has no interior boundary to show. The sizes are
+   in vw/vh so a wide viewport cannot outrun them, and the second copy is
+   deliberately a different size so the two never share an edge anywhere. */
 .neb-veil {
     opacity: calc(0.42 * var(--neb-i));
     background-image: var(--neb-tile-dust), var(--neb-tile-glow);
-    background-size: 1180px 1180px, 1420px 1420px;
-    background-position: 24% 28%, 62% 44%;
-    background-repeat: repeat;
+    background-size: 190vw 190vh, 240vw 240vh;
+    background-position: 18% 22%, 58% 40%;
+    background-repeat: no-repeat;
     -webkit-mask-image: var(--neb-mask);
     mask-image: var(--neb-mask);
 }
@@ -368,7 +387,7 @@ body {
 .neb-grain {
     opacity: calc(0.028 * var(--neb-i));
     background-image: var(--neb-tile-grain);
-    background-size: 140px 140px;
+    background-size: 336px 336px;
     background-repeat: repeat;
 }
 

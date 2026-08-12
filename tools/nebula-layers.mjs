@@ -8,17 +8,22 @@
 // layer is composited, scrolling it moves an existing texture and produces no
 // new paint work; if it is not, the paint count climbs with scroll distance.
 //
-// `ctl-no-will-change` is the positive control - a nebula that IS expected to
-// repaint. It calibrates what "repainting on scroll" looks like in these units.
+// `ctl: no will-change` is the positive control - a nebula that IS expected to
+// repaint. CAVEAT, learned the hard way: it is not reliably strong any more.
+// Transforms are now rounded to whole pixels, so consecutive frames often write
+// the SAME value and even an un-promoted layer skips the repaint. It produced
+// 12553 raster tasks against v1.1.1's fractional transforms and ~200 against
+// v1.1.2's rounded ones. Treat a non-separating control as "this run proves
+// nothing", never as "the treatment passed".
 import puppeteer from 'puppeteer-core';
 
 const CASES = [
     ['nebula off             ', '?nebula=off', () => {}],
-    ['v1.1.0 static 1 plane  ', '?nebula=present',
+    ['static (speed 0)      ', '?nebula=present',
         () => { if (window.__nebula) window.__nebula.set('speed', 0); }],
-    ['v1.1.1 4 planes moving ', '?nebula=present', () => {}],
-    ['v1.1.1 @ 2x rate       ', '?nebula=present',
-        () => { if (window.__nebula) window.__nebula.set('speed', 2); }],
+    ['v1.1.2 4 planes moving ', '?nebula=present', () => {}],
+    ['v1.1.2 @ 1.5x rate     ', '?nebula=present',
+        () => { if (window.__nebula) window.__nebula.set('speed', 1.5); }],
     ['ctl: no will-change    ', '?nebula=present',
         () => {
             document.querySelector('.bg-nebula').style.willChange = 'auto';

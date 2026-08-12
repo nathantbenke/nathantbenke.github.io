@@ -36,7 +36,7 @@ async function sample(y) {
             const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
             out[s] = m.f;   // translateY
         }
-        out.__op = parseFloat(getComputedStyle(document.querySelector('.bg-nebula')).opacity);
+        out.__op = parseFloat(getComputedStyle(document.querySelector('.neb-field')).opacity);
         out.__y = window.scrollY;
         return out;
     }, sels => sels, SELS).catch(() => null);
@@ -54,7 +54,7 @@ async function sample2(y) {
             const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
             out[s] = m.f;
         }
-        out.__op = parseFloat(getComputedStyle(document.querySelector('.bg-nebula')).opacity);
+        out.__op = parseFloat(getComputedStyle(document.querySelector('.neb-field')).opacity);
         out.__y = window.scrollY;
         return out;
     }, SELS);
@@ -67,7 +67,7 @@ for (const y of stops) rows.push(await sample2(y));
 const pageH = await page.evaluate(() => document.documentElement.scrollHeight);
 console.log(`page height ${pageH}, viewport 900\n`);
 console.log('translateY(px) per layer at each scroll depth  (negative = moved up)\n');
-console.log('  scrollY  ' + SELS.map(s => s.replace('.', '').padStart(11)).join('') + '   group opacity');
+console.log('  scrollY  ' + SELS.map(s => s.replace('.', '').padStart(11)).join('') + '   .neb-field opacity');
 for (const r of rows) {
     console.log('  ' + String(Math.round(r.__y)).padStart(7) + '  ' +
         SELS.map(s => (r[s] === null ? 'n/a' : r[s].toFixed(1)).padStart(11)).join('') +

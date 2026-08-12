@@ -81,6 +81,7 @@
             root.style.removeProperty('--neb-i');
             root.setAttribute('data-nebula', p[0]);
             try { localStorage.setItem('nebula', p[0]); } catch (e) {}
+            if (window.__nebula) window.__nebula.refresh();
             syncReadout();
             paintActive();
         });
@@ -116,6 +117,7 @@
     slider.addEventListener('input', function () {
         root.setAttribute('data-nebula', 'medium');
         root.style.setProperty('--neb-i', slider.value);
+        if (window.__nebula) window.__nebula.refresh();
         syncReadout();
         paintActive();
     });
@@ -129,7 +131,10 @@
     motionWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55';
     panel.appendChild(motionWrap);
 
-    function slider(label, key, min, max, step, fmt) {
+    // NOT named `slider`: that collides with the --neb-i input element declared
+    // above. A function declaration and a var of the same name share one
+    // binding, the element assignment wins, and calling it throws TypeError.
+    function addSlider(label, key, min, max, step, fmt) {
         var lab = document.createElement('label');
         lab.style.cssText = 'display:block;margin-bottom:2px;font-size:11px;color:#c4bfd9';
         var input = document.createElement('input');
@@ -153,16 +158,18 @@
         return input;
     }
 
-    // 2x cap is not cosmetic: the layers carry 520px of bottom slack, and the
-    // fastest plane at 2x travels ~391px over a 10k page. Past that the layer
-    // would scroll out from under the bottom of the viewport.
-    slider('parallax rate', 'speed', 0, 2, 0.05, function (v) {
+    // The cap is not cosmetic: the layers carry 320px of bottom slack, and the
+    // fastest plane at 1.5x travels ~307px over a 10k page. Past that the layer
+    // would scroll out from under the bottom of the viewport. The slack came
+    // down from 520px because it is dead area on EVERY plane and blend cost
+    // scales with layer area - see the note in style.css.
+    addSlider('parallax rate', 'speed', 0, 1.5, 0.05, function (v) {
         var travel = Math.round(0.023 * v * Math.max(0, document.documentElement.scrollHeight - innerHeight));
         return v.toFixed(2) + 'x  (near plane travels ' + travel + 'px)';
     });
-    slider('density at hero', 'top', 0.2, 1, 0.02, function (v) { return v.toFixed(2); });
-    slider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
-    slider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
+    addSlider('density at hero', 'top', 0.2, 1, 0.02, function (v) { return v.toFixed(2); });
+    addSlider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
+    addSlider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
 
     var layersWrap = document.createElement('div');
     layersWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
