@@ -43,7 +43,7 @@
     var title = document.createElement('div');
     title.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px';
     title.innerHTML = '<strong style="letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:#c4bfd9">' +
-        'Nebula v1.1.5</strong>';
+        'Nebula v1.1.7</strong>';
 
     var hide = document.createElement('button');
     hide.type = 'button';
@@ -167,6 +167,22 @@
         var travel = Math.round(0.023 * v * Math.max(0, document.documentElement.scrollHeight - innerHeight));
         return v.toFixed(2) + 'x  (near plane travels ' + travel + 'px)';
     });
+    (function () {
+        var row = document.createElement('label');
+        row.title = 'off = whole-pixel steps (one step per ~43px of scroll); on = exact tracking';
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;margin:2px 0 8px;cursor:pointer;font-size:11px;color:#c4bfd9';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !window.__nebula || window.__nebula.state().subpixel !== false;
+        cb.style.cssText = 'accent-color:#a78bfa;margin:0';
+        cb.addEventListener('change', function () {
+            if (window.__nebula) window.__nebula.set('subpixel', cb.checked);
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode('sub-pixel drift tracking'));
+        motionWrap.appendChild(row);
+    })();
+
     addSlider('density at hero', 'top', 0.2, 1, 0.02, function (v) { return v.toFixed(2); });
     addSlider('density below', 'floor', 0, 1, 0.02, function (v) { return v.toFixed(2); });
     addSlider('falloff distance', 'falloff', 400, 4000, 50, function (v) { return Math.round(v) + 'px'; });
@@ -206,6 +222,40 @@
         layersWrap.appendChild(row);
     });
 
+    // ---- one-click candidates ----
+    // Setting four switches by hand between every A/B is how you end up
+    // comparing two things you did not mean to compare.
+    var candWrap = document.createElement('div');
+    candWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
+    candWrap.appendChild(document.createTextNode('candidates (2 star layers protected):'));
+    panel.appendChild(candWrap);
+
+    var CANDIDATES = [
+        ['A: static nebula + 2 stars', ['drift-static', 'stars-2']],
+        ['B: MOVING nebula + 2 stars', ['stars-2']],
+        ['B-tight: moving, cropped hard', ['drift-tight', 'stars-2']],
+        ['full richness (3 stars, moving)', []]
+    ];
+
+    CANDIDATES.forEach(function (C) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = C[0];
+        btn.style.cssText = 'display:block;width:100%;margin-top:5px;padding:6px 9px;text-align:left;' +
+            'font:inherit;font-size:11px;cursor:pointer;border:1px solid #362a55;border-radius:7px;' +
+            'background:transparent;color:#c4bfd9';
+        btn.addEventListener('click', function () {
+            if (!window.__nebula) return;
+            ['drift-static', 'drift-cropped', 'drift-tight', 'stars-2', 'stars-1']
+                .forEach(function (t) { window.__nebula.setDegrade(t, false); });
+            C[1].forEach(function (t) { window.__nebula.setDegrade(t, true); });
+            var on = window.__nebula.degrade();
+            Object.keys(degBoxes).forEach(function (k) { degBoxes[k].checked = on.indexOf(k) > -1; });
+            paintCost();
+        });
+        candWrap.appendChild(btn);
+    });
+
     // ---- large-viewport degrade ----
     var degWrap = document.createElement('div');
     degWrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #362a55;font-size:11px;color:#c4bfd9';
@@ -215,6 +265,7 @@
     var DEGRADES = [
         ['drift-static', 'drift -> static', 'removes a full-bleed blended surface; costs the nebula parallax only'],
         ['drift-cropped', 'drift -> cropped', 'keeps motion, crops where the mask is already transparent (~20% less area)'],
+        ['drift-tight', 'drift -> tight crop', 'harder crop, roughly half the area - the only way a MOVING drift fits beside 2 stars at 4K'],
         ['stars-2', 'stars 3 -> 2', 'drops the bright star layer'],
         ['stars-1', 'stars 3 -> 1', 'drops the mid and bright star layers']
     ];

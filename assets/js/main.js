@@ -216,6 +216,12 @@
     // background-size values in style.css.
     var STAR_TILE = { '.bg-stars-1': 700, '.bg-stars-2': 460, '.bg-stars-3': 900 };
 
+    // Sub-pixel tracking for the drift layer. On by default: the parallax has
+    // never been eased (it reads window.scrollY directly inside the rAF), so
+    // whole-pixel rounding was the only thing standing between it and exact
+    // tracking. Toggleable because it is a feel judgement, not a measurement.
+    var nebSubpixel = true;
+
     var nebSpeed = 1;        // live multiplier, driven by the ?neb panel
     var nebTop = 1;          // drift density at the hero
     var nebFloor = 0.42;     // drift density once past the falloff
@@ -288,7 +294,11 @@
     // longer a separate blended surface, so cropping it saves no blend. It is
     // harmless (0.14% of pixels, all where the mask is already transparent) and
     // it would start mattering again if drift-static were ever removed.
-    var NEB_AUTO_DEGRADE = ['drift-static', 'drift-cropped', 'stars-1'];
+    // Two star layers are now a hard requirement - they carry the look further
+    // than the nebula's own drift does - so the degrade protects them and gives
+    // up the nebula's motion instead. This is candidate A; candidate B (moving
+    // drift + 2 stars) is one click away in the ?neb panel.
+    var NEB_AUTO_DEGRADE = ['drift-static', 'stars-2'];
     var NEB_AUTO_MP = 6;         // device megapixels at or above which it applies
 
     function deviceMegapixels() {
@@ -354,14 +364,27 @@
             // resamples the layer's texture, and on the tiled grain layer that
             // resampling is what makes its tile boundaries visible as faint
             // vertical lines. Whole pixels sample 1:1.
-            // Rounded to whole pixels, not toFixed(1): a fractional translate
-            // resamples the layer's texture, and on the tiled layers that
-            // resampling is what makes tile boundaries show as faint lines.
-            var v = Math.round(y * l.speed * (l.neb ? nebSpeed : 1));
-            // Star layers wrap within one tile, so they never translate out
-            // from under the viewport however long the page gets. % keeps the
-            // sign in JS, which is what we want - these speeds are negative.
-            if (l.wrap) v = v % l.wrap;
+            var v = y * l.speed * (l.neb ? nebSpeed : 1);
+            if (l.wrap) {
+                // STAR LAYERS: whole pixels. Their tiles repeat, and a
+                // fractional translate resamples a repeating texture - which is
+                // what used to make tile boundaries show as faint lines. It also
+                // softens the star dots, which are 1px features.
+                // Wrapping within one tile means they never translate out from
+                // under the viewport however long the page gets; % keeps the
+                // sign in JS, which is what we want, these speeds are negative.
+                v = Math.round(v) % l.wrap;
+            } else if (nebSubpixel) {
+                // DRIFT: sub-pixel. Rounding quantises it to whole-pixel steps -
+                // at -0.023 that is one step per ~43px of scroll, which reads as
+                // the layer sticking and then catching up rather than tracking.
+                // Nothing here repeats (the glow tile is no-repeat), so there is
+                // no seam to resample into view, and the content is a soft
+                // gradient that loses nothing to interpolation.
+                v = Math.round(v * 100) / 100;
+            } else {
+                v = Math.round(v);
+            }
             l.el.style.transform = 'translate3d(0,' + v + 'px,0)';
         });
 
@@ -407,10 +430,12 @@
     // drive a page that has parallax disabled; no-ops harmlessly if it is.
     window.__nebula = {
         state: function () {
-            return { speed: nebSpeed, top: nebTop, floor: nebFloor, falloff: nebFalloff };
+            return { speed: nebSpeed, top: nebTop, floor: nebFloor,
+                     falloff: nebFalloff, subpixel: nebSubpixel };
         },
         set: function (k, v) {
             if (k === 'speed') nebSpeed = v;
+            else if (k === 'subpixel') nebSubpixel = !!v;
             else if (k === 'top') nebTop = v;
             else if (k === 'floor') nebFloor = v;
             else if (k === 'falloff') nebFalloff = v;
@@ -474,8 +499,11 @@
                 // crop has to be applied by hand or drift-cropped would report
                 // no saving at all. Keep these fractions in step with the
                 // `clip-path: inset(6vh 0 0 14vw)` rule in style.css.
-                if (sel === '.neb-drift' && nebDegrade['drift-cropped']) {
-                    w *= 0.86;
+                if (sel === '.neb-drift' && nebDegrade['drift-tight']) {
+                    w *= 0.70;   // inset(22vh 4vw 4vh 26vw)
+                    h *= 0.74;
+                } else if (sel === '.neb-drift' && nebDegrade['drift-cropped']) {
+                    w *= 0.86;   // inset(6vh 0 0 14vw)
                     h *= 0.94;
                 }
                 out.surfaces.push(sel.slice(1));

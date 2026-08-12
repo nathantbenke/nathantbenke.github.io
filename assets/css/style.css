@@ -395,6 +395,20 @@ body {
     clip-path: inset(6vh 0 0 14vw);
 }
 
+/* A harder crop than drift-cropped, for the case where the nebula must KEEP
+   its motion on a big screen. Two star layers already cost 16.6 MP/frame at 4K
+   and that floor cannot be moved, so the only way a moving drift fits alongside
+   them is to make the drift itself much smaller. This crops to roughly the box
+   the dust columns and rim lights actually occupy after their rotate/scale
+   (leftmost content lands near 44vw, topmost near 43vh), which is about half
+   the area of the full-bleed layer. More visible than drift-cropped - it does
+   reach into where the mask is still faintly non-zero - so it is offered, not
+   defaulted. */
+:root[data-degrade~="drift-tight"] .neb-drift {
+    -webkit-clip-path: inset(22vh 4vw 4vh 26vw);
+    clip-path: inset(22vh 4vw 4vh 26vw);
+}
+
 /* Star layers are 3 of the 4 blended surfaces at full richness. -3 is the
    bright/glow tile and the most expensive per pixel, so it goes first. */
 :root[data-degrade~="stars-2"] .bg-stars-3 { display: none; }
