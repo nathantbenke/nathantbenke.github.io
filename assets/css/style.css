@@ -1104,6 +1104,7 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
 
 .labs-card h3 {
     display: inline-block;
+    vertical-align: middle; /* pairs with .status-chip, see there */
     margin: var(--space-4) var(--space-2) var(--space-2) 0;
 }
 
@@ -1284,21 +1285,34 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
     background: rgba(20, 14, 38, 0.9);
 }
 
-.status-chip--live {
-    color: #7ee0a3;
-    border-color: color-mix(in srgb, #7ee0a3 45%, var(--border));
-}
-
 .status-chip {
     display: inline-block;
-    vertical-align: 0.35em;
+    /* Centred on the title rather than nudged off the baseline. The h3 is
+       vertical-align: middle too, and the chip carries the h3's vertical
+       margins, so both margin boxes share one centre and the chip lands on
+       the title's line-box centre: what a flex row with align-items: center
+       would give, with no wrapper markup. line-height 1 plus a hairline of
+       padding keeps the pill hugging its text instead of inheriting the
+       body's 1.6 and floating in air. */
+    vertical-align: middle;
+    margin: var(--space-4) 0 var(--space-2);
+    line-height: 1;
+    padding: calc(var(--space-1) / 2) var(--space-2);
     font-size: 0.72rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-muted);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 0 var(--space-2);
+}
+
+/* Must follow the base rule: equal specificity, so source order decides.
+   Declared first, the base border shorthand and color cancelled it. The
+   halo is the card hover halo at a quarter of its size. */
+.status-chip--live {
+    color: #7ee0a3;
+    border-color: color-mix(in srgb, #7ee0a3 45%, var(--border));
+    box-shadow: 0 2px 7px color-mix(in srgb, var(--spec-b) 16%, transparent);
 }
 
 .labs-card p { margin: 0; color: var(--text-muted); }
