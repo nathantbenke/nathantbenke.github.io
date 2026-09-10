@@ -36,6 +36,9 @@
     --accent: var(--spec-b);
     --accent-strong: #c4b1ff;
     --magenta: #d63384;
+    /* product status (Labs shelf chips); the same values ntblabs.dev uses */
+    --status-live: #34d399;
+    --status-progress: #b98e46;
     --gradient-spectral: linear-gradient(100deg, var(--spec-a), var(--spec-b), var(--spec-c));
     --gradient-name: linear-gradient(100deg, #8ecdf6, #b79dfc, #f394d6);
     --gradient-pill: linear-gradient(90deg, #7c3aed, #d63384);
@@ -1102,11 +1105,18 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
 
 .labs-card { position: relative; }
 
-.labs-card h3 {
-    display: inline-block;
-    vertical-align: middle; /* pairs with .status-chip, see there */
-    margin: var(--space-4) var(--space-2) var(--space-2) 0;
+/* Title row: the h3 leads, the status chip sits at the far end, and flex
+   centres the chip on the title. The row carries the vertical margins the
+   h3 used to, so the card's rhythm is unchanged. */
+.labs-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 var(--space-2);
 }
+
+.labs-card h3 { margin: 0; }
 
 /* whole tile is one outbound link (stretched-link pattern, card-scoped) */
 .labs-link { color: var(--text); text-decoration: none; }
@@ -1285,35 +1295,42 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
     background: rgba(20, 14, 38, 0.9);
 }
 
+/* Status chip, the ntblabs.dev component in the portfolio's card: a dot
+   ahead of the label, a faint plate, and the shelf's muted border. The dot
+   and its gap are in em so they scale with the label. */
 .status-chip {
-    display: inline-block;
-    /* Centred on the title rather than nudged off the baseline. The h3 is
-       vertical-align: middle too, and the chip carries the h3's vertical
-       margins, so both margin boxes share one centre and the chip lands on
-       the title's line-box centre: what a flex row with align-items: center
-       would give, with no wrapper markup. line-height 1 plus a hairline of
-       padding keeps the pill hugging its text instead of inheriting the
-       body's 1.6 and floating in air. */
-    vertical-align: middle;
-    margin: var(--space-4) 0 var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    flex-shrink: 0;
     line-height: 1;
-    padding: calc(var(--space-1) / 2) var(--space-2);
-    font-size: 0.72rem;
+    padding: var(--space-1) var(--space-2);
+    font-size: 0.8rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-muted);
+    background: color-mix(in srgb, var(--text) 6%, transparent);
     border: 1px solid var(--border);
     border-radius: 999px;
 }
+.status-chip::before {
+    content: "";
+    flex-shrink: 0;
+    width: 0.45em;
+    height: 0.45em;
+    border-radius: 50%;
+    background: var(--status-progress); /* Coming soon, In development */
+}
 
 /* Must follow the base rule: equal specificity, so source order decides.
-   Declared first, the base border shorthand and color cancelled it. The
-   halo is the card hover halo at a quarter of its size. */
-.status-chip--live {
-    color: #7ee0a3;
-    border-color: color-mix(in srgb, #7ee0a3 45%, var(--border));
+   Available is the one lit chip: green dot and text, and the card hover
+   halo at a quarter of its size. */
+.status-chip--available {
+    color: var(--status-live);
+    border-color: color-mix(in srgb, var(--status-live) 45%, var(--border));
     box-shadow: 0 2px 7px color-mix(in srgb, var(--spec-b) 16%, transparent);
 }
+.status-chip--available::before { background: var(--status-live); }
 
 .labs-card p { margin: 0; color: var(--text-muted); }
 
