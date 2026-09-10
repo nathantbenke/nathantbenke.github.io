@@ -242,8 +242,8 @@ const ogSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"
     <rect width="1200" height="630" fill="url(#washC)"/>
     ${stars}
     <text x="80" y="330" font-family="Segoe UI, Arial, sans-serif" font-size="76" font-weight="700" fill="#e8e8ee" letter-spacing="-1">Nathan Thomas-Benke</text>
-    <text x="80" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="32" fill="#9a9aad">XR engineer building real-time 3D training systems</text>
-    <text x="80" y="446" font-family="Segoe UI, Arial, sans-serif" font-size="32" fill="#9a9aad">Unity &#183; government &amp; aerospace R&amp;D</text>
+    <text x="80" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="32" fill="#9a9aad">XR engineer building real-time 3D applications</text>
+    <text x="80" y="446" font-family="Segoe UI, Arial, sans-serif" font-size="32" fill="#9a9aad">Unity &#183; spatial computing &#183; R&amp;D</text>
 </svg>`;
 
 const mark = await sharp(markSrc).resize(240, 240).png().toBuffer();
