@@ -36,16 +36,30 @@ for (const { name, letterboxed } of posters) {
 }
 
 // ---------- ARCS poster: designed title card, NOT a scraped YT thumbnail ----------
-// ARCS is the one video-only card, so its poster carries the card.
-//
-// TWO variants, because one aspect cannot serve both layouts. Below 42rem the
-// facade is 16:9; at and above it the featured card turns the facade into a TALL
-// left column (measured 430x1020 at a 900px viewport, 607x744 at 1440). Feeding
-// the 16:9 card to that column meant object-fit: cover magnified it up to 2.3x
-// and cropped away three quarters of the width - every edge went soft and the
-// title ran off the frame. Both variants are now authored ABOVE their largest
-// display box, so every render is a downscale.
-async function arcsTitleCard({ W, H, markSize, markTop, ruleY, ruleW, titleY, titleSize, subY, subSize, subTrack, stars, file }) {
+// ARCS is the one video-only card. The featured card stacks media on top at
+// every width, so one 16:9 variant serves all layouts. No title or label is
+// drawn: the card's text column already carries both, so the mark is the whole
+// composition: a third of the frame height, centred horizontally, and raised
+// into the upper half so the facade's centred play button clears it.
+async function arcsTitleCard({ W, H, markHeight, markCenterY, stars, file }) {
+    // Built from the 2560px source, not logos/arcs-white.webp: that derivative
+    // is 128px and would be upscaled more than 2x at this size.
+    const alpha = await sharp(path.join(root, 'assets', 'images', 'timeline', 'ARCS_Logo_Colored_outline.png'))
+        .ensureAlpha()
+        .extractChannel(3)
+        .trim({ threshold: 1 })
+        .resize({ height: markHeight })
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+    const { width: mw, height: mh } = alpha.info;
+    const mark = await sharp({ create: { width: mw, height: mh, channels: 3, background: '#eae7f2' } })
+        .joinChannel(alpha.data, { raw: { width: mw, height: mh, channels: 1 } })
+        .png()
+        .toBuffer();
+    const markLeft = Math.round((W - mw) / 2);
+    const markTop = Math.round(markCenterY - mh / 2);
+    const bloomCy = (((markTop + mh / 2) / H) * 100).toFixed(1);
+
     const dots = stars
         .map(([x, y, r, o]) => `<circle cx="${x}" cy="${y}" r="${r}" opacity="${o}" fill="#ffffff"/>`)
         .join('');
@@ -56,66 +70,33 @@ async function arcsTitleCard({ W, H, markSize, markTop, ruleY, ruleW, titleY, ti
             <stop offset="52%" stop-color="#0b0718"/>
             <stop offset="100%" stop-color="#06040e"/>
         </linearGradient>
-        <radialGradient id="tcBloom" cx="50%" cy="30%" r="62%">
+        <radialGradient id="tcBloom" cx="50%" cy="${bloomCy}%" r="62%">
             <stop offset="0%" stop-color="#67e8f9" stop-opacity="0.20"/>
             <stop offset="42%" stop-color="#a78bfa" stop-opacity="0.14"/>
             <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
         </radialGradient>
-        <linearGradient id="tcRule" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#67e8f9" stop-opacity="0"/>
-            <stop offset="50%" stop-color="#a78bfa" stop-opacity="0.9"/>
-            <stop offset="100%" stop-color="#f0abfc" stop-opacity="0"/>
-        </linearGradient>
-    </defs>
+        </defs>
     <rect width="${W}" height="${H}" fill="url(#tcBase)"/>
     <rect width="${W}" height="${H}" fill="url(#tcBloom)"/>
     ${dots}
-    <rect x="${W / 2 - ruleW / 2}" y="${ruleY}" width="${ruleW}" height="${Math.max(2, W / 500)}" fill="url(#tcRule)"/>
-    <text x="${W / 2}" y="${titleY}" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
-          font-size="${titleSize}" font-weight="700" letter-spacing="-1" fill="#eae7f2">ARCS Trainer</text>
-    <text x="${W / 2}" y="${subY}" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
-          font-size="${subSize}" letter-spacing="${subTrack}" fill="#a49fc0">SHOWCASE VIDEO</text>
 </svg>`;
 
-    const mark = await sharp(path.join(root, 'assets', 'img', 'logos', 'arcs-white.webp'))
-        .resize(markSize, markSize, { fit: 'inside' })
-        .png()
-        .toBuffer();
     const dst = out('posters', file);
     await sharp(Buffer.from(cardSvg))
-        .composite([{ input: mark, left: Math.round(W / 2 - markSize / 2), top: markTop }])
+        .composite([{ input: mark, left: markLeft, top: markTop }])
         .webp({ quality: 82 })
         .toFile(dst);
     report.push([`posters/${file}`, `(title card ${W}x${H})`, await kb(dst)]);
 }
 
-// Wide variant: the 16:9 facade below 42rem, and the <img> fallback. 2x the
-// largest 16:9 box the card is ever drawn into.
 await arcsTitleCard({
     file: 'arcs.webp', W: 1600, H: 900,
-    markSize: 240, markTop: 88,
-    ruleY: 652, ruleW: 600, titleY: 760, titleSize: 84, subY: 828, subSize: 32, subTrack: 7,
+    markHeight: 300, markCenterY: 250,
     stars: [
         [140, 120, 2.0, 0.7], [380, 240, 1.4, 0.45], [600, 96, 1.8, 0.6], [840, 192, 1.2, 0.4],
         [1120, 124, 2.2, 0.75], [1380, 260, 1.6, 0.5], [240, 500, 1.6, 0.5], [500, 660, 2.0, 0.65],
         [800, 570, 1.2, 0.4], [1080, 700, 1.8, 0.6], [1320, 540, 1.4, 0.45], [1480, 780, 2.0, 0.7],
         [110, 800, 1.4, 0.45], [700, 810, 1.6, 0.5],
-    ],
-});
-
-// Tall variant: the featured card's left column. Aspect 0.62 sits between the
-// column's measured extremes (0.42 at 900px, 0.82 at 1440), so cover crops at
-// most ~16% off the sides or ~12% off the top and bottom. Everything meaningful
-// therefore lives inside x 150-750 and y 180-1270, and the vertical middle is
-// left empty for the play button.
-await arcsTitleCard({
-    file: 'arcs-tall.webp', W: 900, H: 1450,
-    markSize: 210, markTop: 250,
-    ruleY: 962, ruleW: 420, titleY: 1052, titleSize: 66, subY: 1104, subSize: 24, subTrack: 5.5,
-    stars: [
-        [180, 240, 1.4, 0.6], [700, 320, 1.1, 0.45], [320, 150, 1.6, 0.7], [640, 560, 1.0, 0.4],
-        [240, 700, 1.2, 0.5], [720, 820, 1.5, 0.6], [160, 980, 1.0, 0.4], [760, 1120, 1.3, 0.55],
-        [300, 1240, 1.1, 0.45], [620, 1330, 1.5, 0.6], [450, 1390, 1.0, 0.4], [820, 640, 1.2, 0.5],
     ],
 });
 

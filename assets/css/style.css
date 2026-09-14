@@ -905,29 +905,6 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
 
 .work-card--featured { grid-column: 1 / -1; }
 
-@media (min-width: 42rem) {
-    .work-card--featured {
-        display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-        column-gap: var(--space-6);
-        align-content: start;
-    }
-    .work-card--featured > * { grid-column: 2; }
-    .work-card--featured .media-facade {
-        grid-column: 1;
-        grid-row: 1 / span 6;
-        margin: calc(-1 * var(--space-6));
-        margin-right: 0;
-        height: calc(100% + 2 * var(--space-6));
-        aspect-ratio: auto;
-        min-height: 18rem;
-        border-radius: var(--radius) 0 0 var(--radius);
-        border-bottom: 0;
-        border-right: 1px solid var(--border);
-    }
-    .work-card--featured .card-meta { margin-top: 0; }
-}
-
 .work-card h3 { margin: 0 0 var(--space-1); }
 
 .card-meta {
@@ -975,23 +952,6 @@ section { margin-top: clamp(var(--space-7), 10vh, 6rem); }
 }
 
 .card-desc { flex-grow: 1; }
-
-/* ARCS case study */
-.cs-label {
-    margin: var(--space-4) 0 var(--space-1);
-    font-size: var(--fs--1);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--accent-strong);
-}
-.case-study .cs-label:first-child { margin-top: 0; }
-.cs-body { margin-bottom: 0; }
-.cs-metrics {
-    margin: 0;
-    padding-left: 1.2em;
-}
-.cs-metrics li { margin-bottom: var(--space-1); }
 
 .card-stack {
     color: var(--text-muted);
