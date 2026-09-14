@@ -38,10 +38,13 @@ for (const { name, letterboxed } of posters) {
 // ---------- ARCS poster: designed title card, NOT a scraped YT thumbnail ----------
 // ARCS is the one video-only card. The featured card stacks media on top at
 // every width, so one 16:9 variant serves all layouts. No title or label is
-// drawn: the card's text column already carries both, so the mark is the whole
-// composition: a third of the frame height, centred horizontally, and raised
-// into the upper half so the facade's centred play button clears it.
-async function arcsTitleCard({ W, H, markHeight, markCenterY, stars, file }) {
+// drawn: the card's text column already carries both. The mark is a third of
+// the frame height, centred horizontally, and raised into the upper half; one
+// line of type sits in the lower portion. Both stay clear of the facade's
+// centred play button, which never reaches below y~560 even at phone width.
+// Type is Segoe UI semibold: the page's system-ui stack on Windows, at the
+// weight the card taglines use.
+async function arcsTitleCard({ W, H, markHeight, markCenterY, caption, captionCenterY, captionSize, stars, file }) {
     // Built from the 2560px source, not logos/arcs-white.webp: that derivative
     // is 128px and would be upscaled more than 2x at this size.
     const alpha = await sharp(path.join(root, 'assets', 'images', 'timeline', 'ARCS_Logo_Colored_outline.png'))
@@ -79,6 +82,9 @@ async function arcsTitleCard({ W, H, markHeight, markCenterY, stars, file }) {
     <rect width="${W}" height="${H}" fill="url(#tcBase)"/>
     <rect width="${W}" height="${H}" fill="url(#tcBloom)"/>
     ${dots}
+    <text x="${W / 2}" y="${Math.round(captionCenterY + captionSize * 0.35)}" text-anchor="middle"
+          font-family="Segoe UI, system-ui, Arial, sans-serif" font-size="${captionSize}" font-weight="600"
+          letter-spacing="1" fill="#ffffff">${caption}</text>
 </svg>`;
 
     const dst = out('posters', file);
@@ -92,6 +98,7 @@ async function arcsTitleCard({ W, H, markHeight, markCenterY, stars, file }) {
 await arcsTitleCard({
     file: 'arcs.webp', W: 1600, H: 900,
     markHeight: 300, markCenterY: 250,
+    caption: 'ARCS VR Trainer', captionCenterY: 620, captionSize: 56,
     stars: [
         [140, 120, 2.0, 0.7], [380, 240, 1.4, 0.45], [600, 96, 1.8, 0.6], [840, 192, 1.2, 0.4],
         [1120, 124, 2.2, 0.75], [1380, 260, 1.6, 0.5], [240, 500, 1.6, 0.5], [500, 660, 2.0, 0.65],
